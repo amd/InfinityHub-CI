@@ -51,14 +51,12 @@ WORKDIR /tmp
 # Install UCX
 RUN if [ "$MPI_ENABLED" = "on" ]; then \
       cd /tmp/ \
-      &&  git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
-      && ls \
-      && pwd \
-      &&  cd ucx \
-      &&  ./autogen.sh \
-      &&  mkdir build \
-      &&  cd build \
-      &&  ../contrib/configure-release --prefix=/opt/ucx \
+      && git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
+      && cd ucx \
+      && ./autogen.sh \
+      && mkdir build \
+      && cd build \
+      && ../contrib/configure-release --prefix=/opt/ucx \
             --with-rocm=/opt/rocm --without-knem \
             --without-xpmem  --without-cuda \
             --enable-optimizations  \
@@ -67,8 +65,8 @@ RUN if [ "$MPI_ENABLED" = "on" ]; then \
             --enable-assertions \
             --enable-params-check \
             --disable-examples \
-      &&  make -j 8  \
-      &&  make  install \
+      && make -j 8  \
+      && make  install \
     else \
       echo "UCX was not installed"; \
     fi
@@ -79,10 +77,9 @@ RUN if [ "$MPI_ENABLED" = "on" ] ; then \
       && git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
       && cd ompi \
       && ./autogen.pl \
-      &&  mkdir build \
-      &&  cd build \
-      && ../configure --help \
-      &&  ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
+      && mkdir build \
+      && cd build \
+      && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
             --enable-mca-no-build=btl-uct  \
             --enable-mpi-f90 \
             --enable-mpi-c \
@@ -90,8 +87,8 @@ RUN if [ "$MPI_ENABLED" = "on" ] ; then \
             --enable-mpi \
             --enable-mpi-fortran=yes \
             --disable-debug \
-      &&  make -j 8 \
-      &&  make install \
+      && make -j 8 \
+      && make install \
     else \
       echo "MPI was not installed"; \
     fi
