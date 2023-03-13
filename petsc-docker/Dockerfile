@@ -76,8 +76,6 @@ WORKDIR /tmp
 # Install UCX
 RUN cd /tmp/ \
       &&  git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
-      && ls \
-      && pwd \
       &&  cd ucx \
       &&  ./autogen.sh \
       &&  mkdir build \
@@ -101,7 +99,6 @@ RUN cd /tmp \
       && ./autogen.pl \
       && mkdir build \
       && cd build \
-      && ../configure --help \
       && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
            --enable-mca-no-build=btl-uct \
             --enable-mpi-f90 \
@@ -157,4 +154,3 @@ ENV OMPI_ALLOW_RUN_AS_ROOT=1 \
     PETSC_ARCH=arch-linux-c-opt
 
 CMD ["/bin/bash"]
-
