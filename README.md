@@ -7,3 +7,4 @@ Each builds provides parameters to specify different souce code branches, releas
  - [AMD's Implementation of Gromacs with HIP in Docker](/gromacs-docker/)
  - [HPCG in Docker](/hpcg-docker/)
  - [PETSc in Docker](/petsc-docker/)
+ - [rocHPL](/rochpl/)

@@ -119,7 +119,7 @@ ENV PATH=/opt/ompi/bin:/opt/ucx/bin:$PATH
 
 # Installing PETSc
 RUN if [ "$PETSC_BRANCH" = "default" ]; then \
-    # At time of creating this recipe, there are performance enhansments for PETSc that have not been incorporated in a release.
+    # At time of creating this recipe, there are performance enhancements for PETSc that have not been incorporated in a release.
     git clone https://github.com/petsc/petsc.git \
     && cd petsc \
     && git checkout e874ec00d637a86419bb2cc912cf88b33e5547ef; \
