@@ -45,22 +45,20 @@ WORKDIR /tmp
 # Install UCX
 RUN cd /tmp/ \
     &&  git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
-    && ls \
-    && pwd \
-    &&  cd ucx \
-    &&  ./autogen.sh \
-    &&  mkdir build \
-    &&  cd build \
-    &&  ../contrib/configure-release --prefix=/opt/ucx \
-          --with-rocm=/opt/rocm --without-knem \
-          --without-xpmem  --without-cuda \
-          --enable-optimizations  \
-          --disable-logging \
-          --disable-debug \
-          --enable-assertions \
-          --enable-params-check \
-          --disable-examples \
-    &&  make -j 8  \
+    && cd ucx \
+    && ./autogen.sh \
+    && mkdir build \
+    && cd build \
+    && ../contrib/configure-release --prefix=/opt/ucx \
+        --with-rocm=/opt/rocm --without-knem \
+        --without-xpmem  --without-cuda \
+        --enable-optimizations  \
+        --disable-logging \
+        --disable-debug \
+        --enable-assertions \
+        --enable-params-check \
+        --disable-examples \
+    &&  make -j $(nproc)  \
     &&  make  install
 
 # Install OpenMPI
@@ -68,19 +66,16 @@ RUN cd /tmp \
     && git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
     && cd ompi \
     && ./autogen.pl \
-    &&  mkdir build \
-    &&  cd build \
-    && ../configure --help \
-    &&  ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
-          --enable-mca-no-build=btl-uct  \
-          --enable-mpi-f90 \
-          --enable-mpi-c \
-          --with-pmix CC=gcc  \
-          --enable-mpi \
-          --enable-mpi-fortran=yes \
-          --disable-debug \
-    &&  make -j 8 \
-    &&  make install
+    && mkdir build \
+    && cd build \
+    && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
+        --enable-mca-no-build=btl-uct  \
+        --with-pmix CC=gcc  \
+        --enable-mpi \
+        --enable-mpi-fortran=yes \
+        --disable-debug \
+    && make -j $(nproc) \
+    && make install
 
 # Adding OpenMPI and UCX to PATH
 ENV PATH=/opt/ompi/bin:/opt/ucx/bin:$PATH
@@ -90,16 +85,14 @@ RUN git clone -b ${ROCHPCG_BRANCH} https://github.com/ROCmSoftwarePlatform/rocHP
   && cd rocHPCG \
   && chmod a+x install.sh \
   && DEBIAN_FRONTEND=noninteractive \
-  ./install.sh -di --with-mpi=/opt/openmpi  \
+    ./install.sh -di --with-mpi=/opt/openmpi  \
     --with-rocm=/opt/rocm \
     --gpu-aware-mpi=ON \
     --with-openmp=ON \
     --with-memmgmt=ON \
     --with-memdefrag=ON \
   && rm -f /opt/rocm/bin/hpcg \
-  && ln -s /opt/rocm/bin/rochpcg /opt/rocm/bin/hpcg \
-  && ls -lsa /opt/rocm/rochpcg/bin \
-  && ls -lsa /opt/rocm/bin
+  && ln -s /opt/rocm/bin/rochpcg /opt/rocm/bin/hpcg
 
 # Adding environment variable for Running as ROOT and set MCA pml to UCX
 ENV OMPI_ALLOW_RUN_AS_ROOT=1  \

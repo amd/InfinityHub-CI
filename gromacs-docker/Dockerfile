@@ -65,7 +65,7 @@ RUN if [ "$MPI_ENABLED" = "on" ]; then \
             --enable-assertions \
             --enable-params-check \
             --disable-examples \
-      && make -j 8  \
+      && make -j $(nproc)  \
       && make  install \
     else \
       echo "UCX was not installed"; \
@@ -81,13 +81,11 @@ RUN if [ "$MPI_ENABLED" = "on" ] ; then \
       && cd build \
       && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
             --enable-mca-no-build=btl-uct  \
-            --enable-mpi-f90 \
-            --enable-mpi-c \
             --with-pmix CC=gcc  \
             --enable-mpi \
             --enable-mpi-fortran=yes \
             --disable-debug \
-      && make -j 8 \
+      && make -j $(nproc) \
       && make install \
     else \
       echo "MPI was not installed"; \
@@ -122,7 +120,7 @@ RUN git clone -b ${GROMACS_BRANCH} https://github.com/ROCmSoftwarePlatform/Groma
         -DHIP_HIPCC_FLAGS="-O3 --amdgpu-target=gfx900,gfx906,gfx908,gfx90a --save-temps" \
         -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
       .. \
-  && make -j 4 \
+  && make -j $(nproc) \
   && make install \
   && rm -rf /tmp/*
 

@@ -5,8 +5,6 @@ ARG PETSC_BRANCH="default"
 ARG UCX_BRANCH="v1.13.0"
 ARG OMPI_BRANCH="v5.0.0rc2"
 
-
-
 # Update and Install basic Linux development tools
 RUN apt-get update \
   && apt install -y --reinstall ca-certificates \
@@ -75,12 +73,12 @@ WORKDIR /tmp
 
 # Install UCX
 RUN cd /tmp/ \
-      &&  git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
-      &&  cd ucx \
-      &&  ./autogen.sh \
-      &&  mkdir build \
-      &&  cd build \
-      &&  ../contrib/configure-release --prefix=/opt/ucx \
+      && git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
+      && cd ucx \
+      && ./autogen.sh \
+      && mkdir build \
+      && cd build \
+      && ../contrib/configure-release --prefix=/opt/ucx \
             --with-rocm=$ROCM_PATH --without-knem \
             --without-xpmem --without-cuda \
             --enable-optimizations \
@@ -89,8 +87,8 @@ RUN cd /tmp/ \
             --enable-assertions \
             --enable-params-check \
             --disable-examples \
-      &&  make -j 8 \
-      &&  make install 
+      && make -j $(nproc) \
+      && make install 
 
 # Install OpenMPI
 RUN cd /tmp \
@@ -100,15 +98,13 @@ RUN cd /tmp \
       && mkdir build \
       && cd build \
       && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
-           --enable-mca-no-build=btl-uct \
-            --enable-mpi-f90 \
-            --enable-mpi-c \
+            --enable-mca-no-build=btl-uct \
             --with-pmix CC=gcc \
             --enable-mpi \
             --enable-mpi-fortran=yes \
             --disable-debug \
             --disable-man-pages \
-      && make -j 8 \
+      && make -j $(nproc) \
       && make install
 
 # Adding OpenMPI and UCX to PATH
@@ -116,29 +112,29 @@ ENV PATH=/opt/ompi/bin:/opt/ucx/bin:$PATH
 
 # Installing PETSc
 RUN if [ "$PETSC_BRANCH" = "default" ]; then \
-    # At time of creating this recipe, there are performance enhancements for PETSc that have not been incorporated in a release.
-    git clone https://github.com/petsc/petsc.git \
-    && cd petsc \
-    && git checkout e874ec00d637a86419bb2cc912cf88b33e5547ef; \
-  else \
-    git clone -b ${PETSC_BRANCH} https://github.com/petsc/petsc.git \
-    && cd petsc; \
-  fi \
-  && ./configure --with-cc=mpicc --with-cxx=mpicxx --with-fc=mpif90 \
-         COPTFLAGS="-g -O3" FOPTFLAGS="-g -O3" CXXOPTFLAGS="-g -O3" HIPOPTFLAGS="-g -ggdb -O3 -munsafe-fp-atomics -fPIC -w" \
-         --with-cuda=0 --with-hip=1 --with-hipc=hipcc --with-hip-dir=${ROCM_PATH} \
-         --with-hip-arch=gfx900,gfx906,gfx908,gfx90a \
-         --with-precision=double \
-         --with-clanguage=c \
-         --download-fblaslapack \
-         --download-hypre \
-         --download-hypre-configure-arguments=--enable-unified-memory \
-         --with-debugging=no \
-         --prefix=/opt/petsc \
-  && make PETSC_DIR=/tmp/petsc PETSC_ARCH=arch-linux-c-opt all \
-  && make PETSC_DIR=/tmp/petsc PETSC_ARCH=arch-linux-c-opt install \
-  && make install \
-  && rm -rf /tmp/*
+      # At time of creating this recipe, there are performance enhancements for PETSc that have not been incorporated in a release.
+      git clone https://github.com/petsc/petsc.git \
+      && cd petsc \
+      && git checkout e874ec00d637a86419bb2cc912cf88b33e5547ef; \
+    else \
+      git clone -b ${PETSC_BRANCH} https://github.com/petsc/petsc.git \
+      && cd petsc; \
+    fi \
+      && ./configure --with-cc=mpicc --with-cxx=mpicxx --with-fc=mpif90 \
+            COPTFLAGS="-g -O3" FOPTFLAGS="-g -O3" CXXOPTFLAGS="-g -O3" HIPOPTFLAGS="-g -ggdb -O3 -munsafe-fp-atomics -fPIC -w" \
+            --with-cuda=0 --with-hip=1 --with-hipc=hipcc --with-hip-dir=${ROCM_PATH} \
+            --with-hip-arch=gfx900,gfx906,gfx908,gfx90a \
+            --with-precision=double \
+            --with-clanguage=c \
+            --download-fblaslapack \
+            --download-hypre \
+            --download-hypre-configure-arguments=--enable-unified-memory \
+            --with-debugging=no \
+            --prefix=/opt/petsc \
+      && make PETSC_DIR=/tmp/petsc PETSC_ARCH=arch-linux-c-opt all \
+      && make PETSC_DIR=/tmp/petsc PETSC_ARCH=arch-linux-c-opt install \
+      && make install \
+      && rm -rf /tmp/*
 
 COPY benchmark /opt/petsc
 WORKDIR /opt/petsc

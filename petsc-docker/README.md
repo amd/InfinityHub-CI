@@ -4,14 +4,14 @@
 PETSc, the Portable, Extensible Toolkit for Scientific Computation, pronounced PET-see (the S is silent), is a suite of data structures and routines for the scalable (parallel) solution of scientific applications modeled by partial differential equations. It supports MPI, and GPUs through CUDA, HIP or OpenCL, as well as hybrid MPI-GPU parallelism; it also supports the NEC-SX Tsubasa Vector Engine. PETSc (sometimes called PETSc/TAO) also contains the TAO, the Toolkit for Advanced Optimization, software library.
 
 ## Single-Node Server Requirements
---
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
 | X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
-* [ROCm Installation Guide](https://docs.amd.com/)
+* [ROCm Documentation](https://docs.amd.com/)
+* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
 
 ## PETSc Docker Build
@@ -22,7 +22,7 @@ Instructions on how to build a Docker Container with PETSc.
 - Docker
 
 ### Inputs:
-There are four possible arguments into the Docker build command:
+Possible arguments for the Docker build command  
 
 - #### IMAGE
     Default: rocm/dev-ubuntu-20.04:5.3-complete  
@@ -44,21 +44,22 @@ There are four possible arguments into the Docker build command:
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi).
 
 ### Building PETSc Container:
-Download the Dockerfile from [here](/petsc-docker/Dockerfile)  
-Download the benchmark files from [here](/petsc-docker/benchmark/)  
-Notes for building: 
-- `mycontainer/PETSc` will be the name of your local container.
-- the `.` at the end of the build line is important! It tells Docker where your build context is located!
-- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
-- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-PETSc-container)). If you plan on running PETSc against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
+Download the [Dockerfile](/petsc-docker/Dockerfile)  
+Download the [benchmark files](/petsc-docker/benchmark/)  
 
 To run the default configuration:
 ```
 docker build -t mycontainer/PETSc -f /path/to/Dockerfile . 
 ```
+*Notes for building:*  
+- `mycontainer/PETSc` will be the name of your local container.
+- the `.` at the end of the build line is important! It tells Docker where your build context is located!
+- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-PETSc-container)). If you plan on running PETSc against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
 
 
-To run a custom configuration, include one or more customized build-arg:
+
+To run a custom configuration, include one or more customized build-arg
 DISCLAIMER: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
 ```
 docker build \
@@ -202,6 +203,7 @@ Regarding the dimension to use to "saturate" hardware utilization, PETSc develop
 For example, for a single MI210 GPU a cube dimension around 200 will typically "saturate" hardware utilization, so testing with a range of 100 to 500 should confirm a value that is optimal for a test system with 1 MI210.  Ensure that the global cube size is large enough so that multiple GPUs and/or nodes still process an optimal subset of the cube.
  
 Different hardware may have different "optimal" regions.  For a fair comparison of hardware devices, pick a cube dimension that universally "saturates" all the devices being compared.
+
 
 ## Licensing Information 
 Your use of this application is subject to the terms of the applicable component-level license identified below. To the extent any subcomponent in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application. 

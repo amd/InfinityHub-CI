@@ -25,7 +25,8 @@ HPCG is a complete, stand-alone code that measures the performance of the indivi
 | X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
-* [ROCm Installation Guide](https://docs.amd.com/).
+* [ROCm Documentation](https://docs.amd.com/)
+* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
 
 ## rocHPCG Docker Build
@@ -35,8 +36,8 @@ Instructions on how to build a Docker Container with rocHPCG.
 - Git
 - Docker
 
-### Inputs:
-There are four possible arguments into the Docker build command:  
+### Inputs
+Possible arguments for the Docker build command  
 
 - #### IMAGE
     Default: rocm/dev-ubuntu-20.04:5.3-complete  
@@ -58,18 +59,19 @@ There are four possible arguments into the Docker build command:
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
 ### Building rocHPCG Container:
-Download the Dockerfile from [here](/hpcg-docker/Dockerfile)  
-Notes for building: 
-- `mycontainer/rochpcg` is an example container name.
-- the `.` at the end of the build line is important! It tells Docker where your build context is located!
-- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+Download the [Dockerfile](/hpcg-docker/Dockerfile)  
 
 To run the default configuration:
 ```
 docker build -t mycontainer/rochpcg -f /path/to/Dockerfile . 
 ```
+*Notes for building:*  
+- `mycontainer/rochpcg` is an example container name.
+- the `.` at the end of the build line is important! It tells Docker where your build context is located!
+- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
 
-To run a custom configuration, include one or more customized build-arg:
+
+To run a custom configuration, include one or more customized build-arg
 DISCLAIMER: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
 ```
 docker build \
@@ -82,7 +84,7 @@ docker build \
     . 
 ```
 
-## Running rocHPCG Container:
+## Running rocHPCG Container
 This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
 If needed, please consult with your system administrator or view official documentation.
 
@@ -121,7 +123,6 @@ Examples of `hpcg` run commands are described in the following section.
 
 
 ## Running rocHPCG
----
 
 ### SYNOPSIS
 ```

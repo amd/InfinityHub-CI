@@ -10,6 +10,11 @@ HPL, or High-Performance Linpack, is a benchmark which solves a uniformly random
 | --- | --- | --- | --- | --- | 
 | X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Spack](https://spack.io)<br>[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
+For ROCm installation procedures and validation checks, see:
+* [ROCm Documentation](https://docs.amd.com/)
+* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
+* [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
+
 ## Dependencies 
 The Dependencies for the build are:
 
@@ -27,7 +32,7 @@ The Dependencies for the build are:
 
 ## Building rocHPL
 ### Spack 
-Download the rocHPL Spack script and other build code from [here](/rochpl/spack)
+Download the [rocHPL Spack script and other build code](/rochpl/spack)
 
 
 - `rochpl.package.py` contains the Spack specification for building rocHPL. This file points to the source, defines prerequisite packages and sets some build arguments.  Note that rochpl is currently defined externally from Spack, via the rochpl.package.py file and it will, eventually, be pushed to the standard Spack repository. 
@@ -56,7 +61,7 @@ Inside the `benchmark/bin` directory is the `mpirun_rochpl` script that is used 
 `export PATH=$PWD/bin:$PATH`
 
 ### Docker
-Download the rocHPL Docker script and other build code from [here](/rochpl/docker) if you want build a Docker Container version of the code.
+Download the [rocHPL Docker script and other build code](/rochpl/docker) if you want build a Docker Container version of the code.
 
 The Docker image can be built using the provided Dockerfile source file. Starting in the directory that contains the `docker` directory, issue the command:
 ```
