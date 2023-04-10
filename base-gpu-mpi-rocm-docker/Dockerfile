@@ -30,7 +30,8 @@ RUN rm /etc/apt/sources.list.d/* \
     gfortran \
     flex \
     hwloc \
-  && apt-get clean
+  && apt-get clean \
+  && ln -s /opt/rocm/llvm/bin/offload-arch /opt/rocm/bin/offload-arch
 
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \
