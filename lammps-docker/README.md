@@ -29,7 +29,7 @@ For ROCm installation procedures and validation checks, see:
 
 ## LAMMPS build instructions for AMD Machine Instinct GPUs using Kokkos/HIP
 
-This document gives guidance on how to build the Kokkos backend of LAMMPS for AMD Machine Instinct GPUs using HIP, e.g., the MI-250X, MI-250, MI-210, MI-100, and MI-50.
+This document gives guidance on how to build the Kokkos backend of LAMMPS for AMD Machine Instinct GPUs using HIP, e.g., the MI250X, MI250, MI210, MI100, and MI50.
 This document is not comprehensive, and is primarily intended to be a starting point to enable builds of additional packages and modes.
 For more details on how to build LAMMPS, the user is referred to [the official LAMMPS documentation](https://docs.lammps.org/Build.html), in particular for the [Kokkos backend](https://docs.lammps.org/Build_extras.html#kokkos).
 
@@ -38,7 +38,7 @@ For more details on how to build LAMMPS, the user is referred to [the official L
 This document assumes the following pre-requisites:
   - Standard build tools (cmake) available and installed on the $PATH
   - MPI (preferably with GPU-Aware ROCm support), compiled and installed on the $PATH
-    - For more details see the: [OpenMPI + UCX GPU-Aware MPI ROCm recipe](https://github.com/AMD-HPC/InfinityHub-CI/tree/main/base-gpu-mpi-rocm-docker)
+    - For more details see the: [OpenMPI + UCX GPU-Aware MPI ROCm recipe](https://github.com/amd/InfinityHub-CI/tree/main/base-gpu-mpi-rocm-docker)
   - ROCm is installed, and hipcc is available on the $PATH
 
 ### Build instructions for LAMMPS (bare metal)
