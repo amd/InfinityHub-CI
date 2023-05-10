@@ -18,5 +18,6 @@ For ROCm installation procedures and validation checks, see:
  - [AMD's Implementation of Gromacs with HIP in Docker](/gromacs-docker/)
  - [HPCG in Docker](/hpcg-docker/)
  - [LAMMPS in Docker](/lammps-docker/)
+ - [OpenMM in Docker](/openmm-docker/)
  - [PETSc in Docker](/petsc-docker/)
  - [rocHPL](/rochpl/)
