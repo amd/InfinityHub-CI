@@ -1,0 +1,124 @@
+/*--------------------------------*- C++ -*----------------------------------*\                                                        
+| =========                 |                                                 |                                                        
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |                                                   
+|  \\    /   O peration     | Version:  v2006                                 |                                                     
+|   \\  /    A nd           | Website   www.openfoam.com                      |                                                        
+|    \\/     M anipulation  |                                                 |                                                        
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //                                                         
+
+solvers
+{
+    p
+    {
+        solver petsc;
+
+        petsc
+        {
+            options
+            {
+                ksp_type  cg;
+                ksp_cg_single_reduction  true;
+                ksp_norm_type none;
+                //mat_type aijcusparse; // CUSPARSE                                                                                    
+                //mat_type aijkokkos; // KOKKOS
+		        mat_type mpiaijhipsparse; // HIPSPARSE
+
+                //preconditioner 
+                pc_type gamg;
+                pc_gamg_type "agg"; // smoothed aggregation                                                                            
+                pc_gamg_agg_nsmooths "1"; // number of smooths for smoothed aggregation (not smoother iterations)                      
+                pc_gamg_coarse_eq_limit "100";
+                pc_gamg_reuse_interpolation true;
+                pc_gamg_aggressive_coarsening "2"; //square the graph on the finest N levels
+                pc_gamg_threshold "-1"; // increase to 0.05 if coarse grids get larger                                                 
+                pc_gamg_threshold_scale "0.5"; // thresholding on coarse grids
+                pc_gamg_use_sa_esteig true;
+
+                // mg_level config
+                mg_levels_ksp_max_it "1"; // use 2 or 4 if problem is hard (i.e stretched grids)
+		        mg_levels_esteig_ksp_type cg; //max_it "1"; // use 2 or 4 if problem is hard (i.e stretched grids)                     
+
+                // coarse solve (indefinite PC in parallel with 2 cores)                                                               
+                mg_coarse_ksp_type "gmres";
+                mg_coarse_ksp_max_it "2";
+		
+                // smoother (cheby)                                                                                                    
+                mg_levels_ksp_type chebyshev;
+                mg_levels_ksp_chebyshev_esteig "0,0.05,0,1.1";
+                mg_levels_pc_type "jacobi";
+            }	    
+            caching
+            {
+                // PISO with 2 correctors     
+                matrix
+                {
+                    update periodic;
+
+                    periodicCoeffs
+                    {
+                        frequency  2;
+                    }
+                }
+                // basically setup the preconditioner once                                                         
+                // and reuse it for 40 consecutive solves   
+                preconditioner
+                {
+                    //update always;     
+                    update periodic;
+
+                    periodicCoeffs
+                    {
+                        frequency  40;
+                    }
+                }
+            }
+        }
+        tolerance       1.e-04;
+        relTol          0;
+        maxIter         3000;
+    }
+    
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+    
+    U
+    {
+        solver petsc;	
+        petsc
+        {
+            options
+            {
+                ksp_type bcgs;
+                ksp_norm_type none;
+		        mat_type mpiaijhipsparse; //other options -aijkokkos, aijcusparse, etc.
+                pc_type bjacobi;
+                sub_pc_type ilu;
+            }
+            use_petsc_residual_norm true; // we only run 5 iterations, do not use L1 residual test       
+        }
+        tolerance       0;
+        relTol          0;
+        maxIter         5;
+    }
+}
+
+PISO
+{
+    nCorrectors     2;
+    nNonOrthogonalCorrectors 0;
+    pRefCell        0;
+    pRefValue       0;
+}
+
+// ************************************************************************* //
