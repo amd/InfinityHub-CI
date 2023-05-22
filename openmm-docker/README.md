@@ -14,7 +14,7 @@ For more information about OpenMM, visit
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://docs.amd.com/)
@@ -29,14 +29,15 @@ Instructions on how to build a Docker Container with OpenMM.
 - Docker
 
 ### Inputs
-Possible arguments for the Docker build command  
+Possible `build-arg` for the Docker build command  
 
 - #### IMAGE
     Default: `rocm/dev-ubuntu-22.04:5.5-complete`  
-    *NOTE:* The `-complete` version has all the components required for building and installation.  
-    If you want to use a different version of ROCm or Ubuntu you can find the containers on Docker Hub:
+    Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
+    > Note:  
+    > The `*-complete` version has all the components required for building and installation.  
 
 - #### OPENMM_BRANCH
     Default: `8.0.0`  
@@ -62,14 +63,14 @@ To run the default configuration:
 ```
 docker build -t mycontainer/OpenMM -f /path/to/Dockerfile . 
 ```
-*Notes for building:*  
-- `mycontainer/OpenMM` is an example container name.
-- the `.` at the end of the build line is important! It tells Docker where your build context is located!
-- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>Notes:  
+>- `mycontainer/OpenMM` is an example container name.
+>- the `.` at the end of the build line is important! It tells Docker where your build context is located!
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
 
 
-To run a custom configuration, include one or more customized build-arg
-DISCLAIMER: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
+To run a custom configuration, include one or more customized build-arg  
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
 ```
 docker build \
     -t mycontainer/openmm \
@@ -125,7 +126,8 @@ for benchmark in "${benchmarks[@]}"; do
 done
 ```
 
-*NOTE: the following message will be returned: `/bin/sh: 1: nvidia-smi: not found.` When running the benchmarks using `run-benchmarks`, the benchmark script attempts to run `nvidia-smi` and will fail since this tool is not part of the ROCm runtime supporting AMD Instinct GPUs.  The output will include `nvidia-smi: not found` messages. This message can safely be ignored and there is no effect on the benchmark results.*
+>NOTE: 
+> The following message will be returned: `/bin/sh: 1: nvidia-smi: not found.` When running the benchmarks using `run-benchmarks`, the benchmark script attempts to run `nvidia-smi` and will fail since this tool is not part of the ROCm runtime supporting AMD Instinct GPUs.  The output will include `nvidia-smi: not found` messages. This message can safely be ignored and there is no effect on the benchmark results.
 
 ### Run Benchmark Non-Interactive
 

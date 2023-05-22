@@ -22,7 +22,7 @@ HPCG is a complete, stand-alone code that measures the performance of the indivi
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://docs.amd.com/)
@@ -40,22 +40,23 @@ Instructions on how to build a Docker Container with rocHPCG.
 Possible arguments for the Docker build command  
 
 - #### IMAGE
-    Default: rocm/dev-ubuntu-20.04:5.3-complete  
-    NOTE: The -complete version has all the components required for building and installation.  
-    If you want to use a different version of ROCm or Ubuntu you can find the containers on Docker Hub:
+    Default: `rocm/dev-ubuntu-20.04:5.3-complete`  
+    Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
+    > Note:  
+    > The `*-complete` version has all the components required for building and installation.  
 
 - #### ROCHPCG_BRANCH
-    Default: master  
+    Default: `master`  
     Branch/Tag found: [rocHPCG repo](https://github.com/ROCmSoftwarePlatform/rocHPCG)
 
 - #### UCX_BRANCH
-    Default: v1.13.1  
+    Default: `v1.13.1`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
 - #### OMPI_BRANCH
-    Default: v4.1.4  
+    Default: `v4.1.4`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
 ### Building rocHPCG Container:
@@ -65,14 +66,14 @@ To run the default configuration:
 ```
 docker build -t mycontainer/rochpcg -f /path/to/Dockerfile . 
 ```
-*Notes for building:*  
-- `mycontainer/rochpcg` is an example container name.
-- the `.` at the end of the build line is important! It tells Docker where your build context is located!
-- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>Notes:  
+>- `mycontainer/rochpcg` is an example container name.
+>- the `.` at the end of the build line is important! It tells Docker where your build context is located!
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
 
 
-To run a custom configuration, include one or more customized build-arg
-DISCLAIMER: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
+To run a custom configuration, include one or more customized build-arg  
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
 ```
 docker build \
     -t mycontainer/rochpcg \
@@ -130,17 +131,7 @@ mpirun -n <numprocs> hpcg  <nx> <ny> <nz> <sec>
 ```
 
 ### DESCRIPTION
-HPCG solves the Poisson differential equation discretized with a 27-point stencil on a regular 3D grid using 
-a multi-grid preconditioned conjugate gradient algorithm with a symmetric Gauss-Seidel smoother. It complements
-HPL as a high performance benchmark by measuring the execution rate of a Krylov subspace solver on distributed
-memory hardware to represent computations and data access patterns commonly used when solving scientific problems.
-HPCG is weakly scaled and takes the dimensions `<nx>`, `<ny>`, and `<nz>` of the local grid as its first three input
-parameters. HPCG will decide how to construct the global problem based on the number of available MPI processes
-and the aspect ratio of the local domain. HPCG first determines the residual obtained after 50 iterations when 
-solving the problem with a reference computation on the CPU. This residual is used as a convergence criterion
-for the accelerated algorithm. The benchmark is solved repeatedly as many times as needed to run for the number
-of seconds specified by the fourth input parameter `<sec>`. Official benchmark runs must run for at least 1800s to
-capture sustained performance. 
+HPCG solves the Poisson differential equation discretized with a 27-point stencil on a regular 3D grid using a multi-grid preconditioned conjugate gradient algorithm with a symmetric Gauss-Seidel smoother. It complements HPL as a high performance benchmark by measuring the execution rate of a Krylov subspace solver on distributed memory hardware to represent computations and data access patterns commonly used when solving scientific problems. HPCG is weakly scaled and takes the dimensions `<nx>`, `<ny>`, and `<nz>` of the local grid as its first three input parameters. HPCG will decide how to construct the global problem based on the number of available MPI processes and the aspect ratio of the local domain. HPCG first determines the residual obtained after 50 iterations when solving the problem with a reference computation on the CPU. This residual is used as a convergence criterion for the accelerated algorithm. The benchmark is solved repeatedly as many times as needed to run for the number of seconds specified by the fourth input parameter `<sec>`. Official benchmark runs must run for at least 1800s to capture sustained performance. 
 
 ### BASIC ARGUMENTS
 For basic usage the following HPCG arguments should suffice
@@ -152,7 +143,8 @@ For basic usage the following HPCG arguments should suffice
    <nz>                  Third dimension of local grid
    <sec>                 Target runtime
 ```
-* **NOTE:** - The dimensions of the grid (`<nx>`,`<ny>`,`<nz>`) must all be multiples of **8** to accommodate three multi-grid coarsening levels.
+> Note:
+>- The dimensions of the grid (`<nx>`,`<ny>`,`<nz>`) must all be multiples of **8** to accommodate three multi-grid coarsening levels.
 
 ### EXAMPLE 
 An example of running the HPCG application using 8 GPUs and 8 MPI processes, with local grid size of 280&times;280&times;280:
@@ -170,7 +162,8 @@ MG     =  2143.6 GFlop/s (16539.4 GB/s)     268.0 GFlop/s per process ( 2067.4 G
 Total  =  1969.5 GFlop/s (14926.3 GB/s)     246.2 GFlop/s per process ( 1865.8 GB/s per process)
 Final  =  1949.0 GFlop/s (14771.6 GB/s)     243.6 GFlop/s per process ( 1846.5 GB/s per process)
 ```
-_NOTE: This is just an example of output format, the values obtained will vary depending on the characteristics of the system._
+>Note: 
+>This is just an example of output format, the values obtained will vary depending on the characteristics of the system.
 
 
 

@@ -1,16 +1,25 @@
 # AMD Base Container for GPU-Aware MPI with ROCm using OpenMPI/UCX Applications
 
 ## Overview
-This container recipe is a 'boiler-plate' to building a container using ROCm and OpenMPI/UXC that is GPU-Aware MPI. 
+This container recipe is a 'boiler-plate' to building a container using ROCm and OpenMPI/UXC that is GPU-Aware MPI.  
+This recipe does not support OpenMP-offloading as is.  
+Please set add the following before installing OpenMPI to allow for OpenMP support:
+
+```
+env CC=$ROCM_PATH/bin/amdclang \
+    CXX=$ROCM_PATH/bin/amdclang++ \
+    FC=$ROCM_PATH/bin/amdflang
+```
 
 ## Single-Node Server Requirements
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
-* [ROCm Installation Guide](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
+* [ROCm Documentation](https://docs.amd.com/)
+* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
 
 ## Docker Container Build
@@ -24,7 +33,7 @@ If you are not familiar with creating Docker builds, please see the available [D
 ### Updating the Dockerfile
 
 #### Apt
-The default container does not have every component of ROCm or Ubuntu installed, and additional components may need to be installed depending on your application. If you use the Docker container tag that ends in `-complete` it will have a more complete ROCm environment, see the [Inputs](#inputs) section for more details. These components can easily be installed using a simple `apt-get install ...` command.
+The default container does not have every component of ROCm or Ubuntu installed, and additional components may need to be installed depending on your application. If you use the Docker container tag that ends in `*-complete` it will have a more complete ROCm environment, see the [Inputs](#inputs) section for more details. These components can easily be installed using a simple `apt-get install ...` command.
 List of available ROCm libraries that can be installed with apt-get: 
 `hipblas, hipcub, hipfft, hipsolver, hipsparse, miopen, rccl, rocalution, rocblas, rocfft, rocprim, rocrand, rocsolver, rocsparse, roctracer, rocthrust`
 
@@ -40,22 +49,28 @@ Please consult the [Docker documentation](https://docs.docker.com/engine/referen
 
 
 ### Inputs
-Possible arguments for the Docker build command  
+Possible `build-arg` for the Docker build command  
 
 - #### IMAGE
-    Default: rocm/dev-ubuntu-22.04:5.4.2  
-    NOTE: The -complete version has all the components required for building and installation, not required for all HPC apps. 
-    If you want to use a different version of ROCm or Ubuntu you can find the containers on Docker Hub:
+    Default: `rocm/dev-ubuntu-22.04:5.4.2`  
+    Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
+    > ***Note:***  
+    > The `*-complete` version has all the components required for building and installation.  
 
 - #### UCX_BRANCH
-    Default: v1.13.1  
+    Default: `v1.14.0`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
 - #### OMPI_BRANCH
-    Default: v4.1.4  
+    Default: `v4.1.5`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
+
+- #### APT_GET_APPS
+    Default:  `[BLANK]`  
+    This allows a user to add additional applications and libraries through the apt-get interface in Ubuntu. Using a space separate list `git vim nano` 
+
 
 ### Building Container
 Download the [Dockerfile](/base-gpu-mpi-rocm-docker/Dockerfile)  
@@ -64,21 +79,22 @@ To run the default configuration:
 ```
 docker build -t mycontainer -f /path/to/Dockerfile . 
 ```
-*Notes for building:*  
-- `mycontainer` is an example container name.
-- the `.` at the end of the build line is important. It tells Docker where your build context is located.
-- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+> Notes:  
+>- `mycontainer` is an example container name.
+>- the `.` at the end of the build line is important. It tells Docker where your build context is located.
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
 
-To run a custom configuration, include one or more customized build-arg
-DISCLAIMER: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
+To run a custom configuration, include one or more customized build-arg  
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
 
 ```
 docker build \
     -t mycontainer \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
+    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5-complete \
     --build-arg UCX_BRANCH=master \
     --build-arg OMPI_BRANCH=main \
+    --build-arg APT_GET_APPS="vim nano git"
     . 
 ```
 

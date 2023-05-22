@@ -2,17 +2,11 @@
 
 ## Overview
 The Large-scale Atomic/Molecular Massively
-Parallel Simulator (LAMMPS) is a classical molecular dynamics code for materials
-modeling. It is capable of modeling 2d or 3d systems composed of only a few up to billions of particles. The code is primarily designed to run in parallel computers that support the Message Passing Interface (MPI) library and spatial decomposition of the simulation domain.  
+Parallel Simulator (LAMMPS) is a classical molecular dynamics code for materials modeling. It is capable of modeling 2d or 3d systems composed of only a few up to billions of particles. The code is primarily designed to run in parallel computers that support the Message Passing Interface (MPI) library and spatial decomposition of the simulation domain.  
 
 This document provides build recipes for running LAMMPS on AMD Instinct GPUs via the Kokkos backend.
 
-LAMMPS is distributed as an [open source
-code](https://docs.lammps.org/Intro_opensource.html) under the terms of
-the GPLv2. The current version of LAMMPS can be
-downloaded [here](https://lammps.sandia.gov/download.html). Links to older versions are also included. All LAMMPS development is done
-via [GitHub](https://github.com/lammps/lammps), so all versions can also
-be accessed there. Periodic releases are also posted to SourceForge.
+LAMMPS is distributed as an [open source code](https://docs.lammps.org/Intro_opensource.html) under the terms of the GPLv2. The current version of LAMMPS can be downloaded [here](https://lammps.sandia.gov/download.html). Links to older versions are also included. All LAMMPS development is done via [GitHub](https://github.com/lammps/lammps), so all versions can also be accessed there. Periodic releases are also posted to SourceForge.
 
 More information about LAMMPS can be found in the [LAMMPS Website](https://www.lammps.org/#gsc.tab=0) and in the [LAMMPS Manual](https://docs.lammps.org/Manual.html).
 
@@ -20,7 +14,7 @@ More information about LAMMPS can be found in the [LAMMPS Website](https://www.l
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> AMD Instinct MI50 GPU(s) | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> AMD Instinct MI50 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://docs.amd.com/)
@@ -29,7 +23,7 @@ For ROCm installation procedures and validation checks, see:
 
 ## LAMMPS build instructions for AMD Machine Instinct GPUs using Kokkos/HIP
 
-This document gives guidance on how to build the Kokkos backend of LAMMPS for AMD Machine Instinct GPUs using HIP, e.g., the MI-250X, MI-250, MI-210, MI-100, and MI-50.
+This document gives guidance on how to build the Kokkos backend of LAMMPS for AMD Machine Instinct GPUs using HIP, e.g., the MI250X, MI250, MI210, MI100, and MI50.
 This document is not comprehensive, and is primarily intended to be a starting point to enable builds of additional packages and modes.
 For more details on how to build LAMMPS, the user is referred to [the official LAMMPS documentation](https://docs.lammps.org/Build.html), in particular for the [Kokkos backend](https://docs.lammps.org/Build_extras.html#kokkos).
 
@@ -38,7 +32,7 @@ For more details on how to build LAMMPS, the user is referred to [the official L
 This document assumes the following pre-requisites:
   - Standard build tools (cmake) available and installed on the $PATH
   - MPI (preferably with GPU-Aware ROCm support), compiled and installed on the $PATH
-    - For more details see the: [OpenMPI + UCX GPU-Aware MPI ROCm recipe](https://github.com/AMD-HPC/InfinityHub-CI/tree/main/base-gpu-mpi-rocm-docker)
+    - For more details see the: [OpenMPI + UCX GPU-Aware MPI ROCm recipe](/base-gpu-mpi-rocm-docker)
   - ROCm is installed, and hipcc is available on the $PATH
 
 ### Build instructions for LAMMPS (bare metal)
@@ -83,7 +77,7 @@ export PATH=$(realpath ./install/bin):$PATH
   - Enable `MPI` support, using the `mpicxx` on the path as the `MPI_CXX` compiler.
     - The above assumes an MPI with a standard `mpicxx`-type wrapper. Instructions may differ for systems with other MPI-stacks without this type of wrapper (e.g., Cray/HPE), 
   - Enable `Kokkos-HIP` support, using `hipcc` on the path as the `CXX` compiler (this is also used to compile `HIP` code)
-  - Enable MI-250X/250/210 support via the `VEGA90A` arch.  For other MI cards different Kokkos arch's should be used as [detailed by Kokkos](https://kokkos.github.io/kokkos-core-wiki/keywords.html#architecture-keywords).
+  - Enable MI250X/250/210 support via the `VEGA90A` arch.  For other MI cards different Kokkos arch's should be used as [detailed by Kokkos](https://kokkos.github.io/kokkos-core-wiki/keywords.html#architecture-keywords).
     - Optionally, compilation flags for specific CPU archictures can be specified as [detailed by Kokkos](https://kokkos.github.io/kokkos-core-wiki/keywords.html#architecture-keywords)
   - Enabling a handful of key optimization flags (`HIP_MULTIPLE_KERNEL_INSTANTIATIONS` and `munsafe-fp-atomics`) 
 
@@ -101,13 +95,13 @@ To run the default configuration:
 ```
 docker build -t mycontainer/lammps -f /path/to/Dockerfile . 
 ```
-### Notes
-- `mycontainer/lammps` is an example container name.
-- the `.` at the end of the build line is important. It tells Docker where your build context is located.
-- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>Notes:
+>- `mycontainer/lammps` is an example container name.
+>- the `.` at the end of the build line is important. It tells Docker where your build context is located.
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
 
-To run a custom configuration, include one or more customized build-arg
-DISCLAIMER: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
+To run a custom configuration, include one or more customized build-arg  
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
 ```
 docker build \
     -t mycontainer/lammps \
@@ -190,7 +184,7 @@ The information contained herein is for informational purposes only, and is subj
  
 ## License and Attributions
 
-© 2022 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
+© 2022-2023 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
 

@@ -10,7 +10,7 @@ Quality assurance is based on rigorous testing. The process of code evaluation, 
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://docs.amd.com/)
@@ -29,10 +29,10 @@ Possible `build-arg` for the Docker build command
 
 - #### IMAGE
     Default: `rocm/dev-ubuntu-22.04:5.4.2-complete`  
-    Tag found: [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)  
-    >NOTE:  
-    >The `*-complete` version has all the components required for building and installation.  
-    If you want to use a different version of ROCm or Ubuntu you can find the containers on Docker Hub:
+    Docker Tags found: 
+    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
+    > Note:  
+    > The `*-complete` version has all the components required for building and installation.  
     
 
 - #### OPENFOAM_VERSION
@@ -72,7 +72,7 @@ docker build -t mycontainer/openfoam -f /path/to/Dockerfile .
 > - The `scripts` directory is required within the build context directory, and the contents will be copied into the container.
 
 To run a custom configuration, include one or more customized build-arg  
-**DISCLAIMER:** This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
 ```
 docker build \
     -t mycontainer/openfoam \

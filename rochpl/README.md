@@ -8,7 +8,7 @@ HPL, or High-Performance Linpack, is a benchmark which solves a uniformly random
 ## System Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Build/Run Tools | 
 | --- | --- | --- | --- | --- | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Spack](https://spack.io)<br>[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Spack](https://spack.io)<br>[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://docs.amd.com/)
@@ -20,15 +20,15 @@ The Dependencies for the build are:
 
 - ### rocHPL source
     Location: [rocHPL Repo](https://github.com/ROCmSoftwarePlatform/rocHPL.git)  
-    Branch: main
+    Branch: `main`
 
 - ### UCX 
     Location: [UXC repo](https://github.com/openucx/ucx)  
-    Branch: v1.13.1  
+    Branch: `v1.13.1`  
 
 - ### Open MPI
     Location: [OpenMPI repo](https://github.com/open-mpi/ompi)  
-    Branch: v4.1.4
+    Branch: `v4.1.4`
 
 ## Building rocHPL
 ### Spack 
@@ -153,7 +153,8 @@ The  **rocHPL**  benchmark is typically weak scaled so that the global matrix fi
 8 GCD:  `mpirun_rochpl -P 2 -Q 4 -N 256000 --NB 512`  
 16 GCD:  `mpirun_rochpl -P 4 -Q 4 -N 360448 --NB 512`
 
-Note these are example command lines and optimal values may vary depending on system characteristics.
+>Note:
+> These are example command lines and optimal values may vary depending on system characteristics.
 
 Overall performance of the benchmark is measured in 64-bit floating point operations (FLOPs) per second. Performance is reported at the end of the run to the user's specified output (by default the performance is printed to  **stdout**  and a results file  `HPL.out`).
 

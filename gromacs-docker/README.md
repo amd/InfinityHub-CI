@@ -3,16 +3,15 @@ This AMD Container is based on the 2022 release of GROMACS modified by AMD. This
 
 
 ## Overview
----
 GROMACS is a versatile package to perform molecular dynamics, i.e. simulate the Newtonian equations of motion for systems with hundreds to millions of particles. It is primarily designed for biochemical molecules like proteins, lipids and nucleic acids that have a lot of complicated bonded interactions, but since GROMACS is extremely fast at calculating the nonbonded interactions (that usually dominate simulations) many groups are also using it for research on non-biological systems, e.g. polymers.
 For more information about GROMACS, visit [gromacs.org](https://www.gromacs.org).
 
 For more information on the ROCm™ open software platform and access to an active community discussion on installing, configuring, and using ROCm, please visit the ROCm web pages at www.AMD.com/ROCm and [ROCm Community Forum](https://community.amd.com/t5/rocm/ct-p/amd-rocm)
-Note:
-- This container is based on a fork of the GROMACS project written for AMD GPUs - it is not an official release by the GROMACS team;
-- This container is not developed by the GROMACS team;
-- This container is not maintained or supported by the GROMACS team;
-- The source of the GROMACS fork is publicly available here: https://github.com/ROCmSoftwarePlatform/Gromacs
+>Notes:
+>- This container is based on a fork of the GROMACS project written for AMD GPUs - it is not an official release by the GROMACS team;
+>- This container is not developed by the GROMACS team;
+>- This container is not maintained or supported by the GROMACS team;
+>- The source of the GROMACS fork is publicly available here: https://github.com/ROCmSoftwarePlatform/Gromacs
 
 
 ## Single-Node Server Requirements
@@ -20,16 +19,16 @@ Note:
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> UbuntU 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
-Note: The GROMACS application container assumes that the server contains the required x86-64 CPU(s) and at least one of the listed AMD GPUs. Also, the server must have one of the required operating systems and the listed ROCm driver version installed to run the Docker container. The server must also have a Docker Engine installed to run the container. Please visit the Docker Engine install web site at https://docs.docker.com/engine/install/ to install the latest Docker Engine for the operating system installed on the server. If Singularity use is planned, please visit https://sylabs.io/docs/ for the latest Singularity install documentation.  
+>Note: 
+>The GROMACS application container assumes that the server contains the required x86-64 CPU(s) and at least one of the listed AMD GPUs. Also, the server must have one of the required operating systems and the listed ROCm driver version installed to run the Docker container. The server must also have a Docker Engine installed to run the container. Please visit the Docker Engine install web site at https://docs.docker.com/engine/install/ to install the latest Docker Engine for the operating system installed on the server. If Singularity use is planned, please visit https://sylabs.io/docs/ for the latest Singularity install documentation.  
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://docs.amd.com/)
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
  
 ## AMD's Implementation of Gromacs with HIP Docker Build
----
 Instructions on how to build a Docker Container with AMD's implementation of Gromacs.
 
 ### Build System Requirements
@@ -37,30 +36,31 @@ Instructions on how to build a Docker Container with AMD's implementation of Gro
 - Docker
 
 ### Inputs
-Possible arguments for the Docker build command  
+Possible `build-arg` for the Docker build command  
 
 - #### IMAGE
-    Default: rocm/dev-ubuntu-20.04:5.3-complete  
-    *NOTE:* The -complete version has all the components required for building and installation.  
-    If you want to use a different version of ROCm or Ubuntu you can find the containers on Docker Hub:
+    Default: `rocm/dev-ubuntu-20.04:5.3-complete`  
+    Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
+    > Note:  
+    > The `*-complete` version has all the components required for building and installation. 
 
 - #### GROMACS_BRANCH
-    Default: develop_2022_amd  
+    Default: `develop_2022_amd`  
     Branch/Tag found: [AMD's implementation of Gromacs with HIP repo](https://github.com/ROCmSoftwarePlatform/Gromacs).
 
 - #### MPI_ENABLED
-    Default: off  
+    Default: `off`  
     Options: `off` or `on`
     If this option is set to off, UCX and Open MPI will not be installed, and the following two options will not be used.
 
 - #### UCX_BRANCH
-    Default: v1.13.1  
+    Default: `v1.13.1`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx).
 
 - #### OMPI_BRANCH
-    Default: v4.1.4  
+    Default: `v4.1.4`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi).
 
 ### Building AMD's implementation of Gromacs with HIP Container
@@ -71,14 +71,14 @@ To run the default configuration:
 ```
 docker build -t mycontainer/gromacs-hip -f /path/to/Dockerfile . 
 ```
-*Notes for building:*  
-- `mycontainer/gromacs-hip` is an example container name. 
-- the `.` at the end of the build line is important! It tells Docker where your build context is located!
-- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
-- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-amd-implementation-of-gromacs-with-hip-container)). If you plan on running AMD's implementation of Gromacs with HIP against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
+>Notes:  
+>- `mycontainer/gromacs-hip` is an example container name. 
+>- the `.` at the end of the build line is important! It tells Docker where your build context is located!
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-amd-implementation-of-gromacs-with-hip-container)). If you plan on running AMD's implementation of Gromacs with HIP against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
 
-To run a custom configuration, include one or more customized build-arg
-DISCLAIMER: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
+To run a custom configuration, include one or more customized build-arg  
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
 ```
 docker build \
     -t mycontainer/gromacs-hip \
@@ -92,7 +92,6 @@ docker build \
 ```
 
 ## Running AMD implementation of Gromacs with HIP Container
----
 Start an interactive session from host:
 
 ```
