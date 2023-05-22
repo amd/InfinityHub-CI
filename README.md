@@ -16,6 +16,7 @@ For ROCm installation procedures and validation checks, see:
 ## Applications:
  - [AMD Base Docker Container for GPU-Aware MPI in ROCm applications](/base-gpu-mpi-rocm-docker/)
  - [AMD's Implementation of Gromacs with HIP in Docker](/gromacs-docker/)
+ - [CP2K](/cp2k-docker/)
  - [HPCG in Docker](/hpcg-docker/)
  - [LAMMPS in Docker](/lammps-docker/)
  - [OpenMM in Docker](/openmm-docker/)
