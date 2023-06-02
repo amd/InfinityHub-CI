@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [[ -z "$1" ]]; then
+    echo "please provide number of GPUs (1 or 2 supported)"
+    exit 1
+elif [[ $1 -gt 2 ]]; then
+    echo "Maximum of 2 gpus is supported for tgv benchmark"
+    exit 1
+fi
+
+cd /examples/tgv
+echo "Import cube_40.msh"
+pyfr import cube_40.msh cube_40.pyfrm
+
+if [[ "$1" -eq "2" ]]; then
+    echo "Creating partisions"
+    pyfr partition 2 cube_40.pyfrm .
+fi
+
+echo "Running tgv benchmark"
+mpirun -np $1 pyfr -v run -b hip -p cube_40.pyfrm tgv.ini
