@@ -1,0 +1,1 @@
+python3 /opt/specfem3d/benchmarks/main.py "$@"

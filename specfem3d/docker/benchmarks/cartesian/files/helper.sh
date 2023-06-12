@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+echo $OMPI_COMM_WORLD_LOCAL_RANK
+
+export HIP_VISIBLE_DEVICES=${OMPI_COMM_WORLD_LOCAL_RANK}
+
+$@
+
