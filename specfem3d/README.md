@@ -65,15 +65,12 @@ Download the [specfem3d Docker and Spack script and other build code](/specfem3d
 
 - If you do not already have Spack installed, run the command to install Spack ( `git clone -c feature.manyFiles=true https://github.com/spack/spack.git`) starting in your home directory. 
 
-To run the Spack build for SPECFEM3D:
-```
-# copy the provided specfem3d and ucx package to the Spack repo. for example,
-# cp ucx_package.py  /home/spack/var/spack/repos/builtin/packages/ucx/package.py
-# cp specfem3dcartesian_package.py /home/spack/var/spack/repos/builtin/packages/specfem3d/package.py
+To run the Spack build for SPECFEM3D, copy the provided specfem3d and ucx package to your Spack repo. For example,  
 
-# run the Spack commands shown in the Dockerfile
-```
-You will need to edit the steps for your own environment.
+cp ucx_package.py  /home/spack/var/spack/repos/builtin/packages/ucx/package.py  
+cp specfem3dcartesian_package.py /home/spack/var/spack/repos/builtin/packages/specfem3d/package.py  
+
+Extract and run the Spack commands from the Dockerfile. You will need to edit the commands to remove the Docker related syntax.
 
 On the first run, the build will take multiple hours to build all the components. 
 
