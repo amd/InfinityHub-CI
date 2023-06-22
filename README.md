@@ -22,4 +22,5 @@ For ROCm installation procedures and validation checks, see:
  - [OpenFOAM in Docker](/openfoam-docker/)
  - [OpenMM in Docker](/openmm-docker/)
  - [PETSc in Docker](/petsc-docker/)
+ - [PyFR in Docker](/pyfr-docker/)
  - [rocHPL](/rochpl/)
