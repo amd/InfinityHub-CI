@@ -1,12 +1,7 @@
 #!/bin/bash
 
-cd /examples/naca0021
-unzip -u naca0021_p3_1c.msh.zip
-mkdir ../$1gpu-naca0021
-cd ../$1gpu-naca0021
-cp ../naca0021-input-set/naca0021_p3_1c.msh .
-cp ../naca0021-input-set/p3_warmup.ini .
-cp ../naca0021-input-set/3d_naca.ini .
+cd /examples/naca0021/
+unzip -u /examples/naca0021/naca0021_p3_1c.msh.zip -d .
 
 pyfr import naca0021_p3_1c.msh naca0021_p3_1c.pyfrm
 if [[ -z "$1" ]]; then

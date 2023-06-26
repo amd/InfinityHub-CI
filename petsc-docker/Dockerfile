@@ -34,7 +34,7 @@ RUN apt-get update \
     kmod \
     python3 \
     python3-distutils \
-    libomp-7-dev \
+    libomp-dev \
     dos2unix \
     libopenblas-dev \
     libnuma-dev \

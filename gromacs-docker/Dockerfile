@@ -35,8 +35,9 @@ RUN rm /etc/apt/sources.list.d/* \
     libfftw3-dev \
     kmod \
     python3 \
-    libomp-7-dev \
+    libomp-dev \
     rocfft \
+    tar \
   && apt-get clean
 
 # Requires cmake > 3.22 

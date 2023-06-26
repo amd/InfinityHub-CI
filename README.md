@@ -24,3 +24,4 @@ For ROCm installation procedures and validation checks, see:
  - [PETSc in Docker](/petsc-docker/)
  - [PyFR in Docker](/pyfr-docker/)
  - [rocHPL](/rochpl/)
+ - [Specfem3D - Cartesian](/specfem3d/)

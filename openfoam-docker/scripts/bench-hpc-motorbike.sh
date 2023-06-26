@@ -13,7 +13,7 @@ function setup()
 {
     # setting the env
     MAXGPUS=10
-    if [[ ${NGPUS} -le 0 ]] ||  [[ ${NGPUS} > ${MAXGPUS} ]]; then  
+    if [[ ${NGPUS} -le 0 ]] ||  [[ ${NGPUS} -gt ${MAXGPUS} ]]; then  
         # ERR condition
         echo " ERROR: This script is designed to run with a maximum of ${MAXGPUS} GPUs."
         echo "        Either change your current selection of NGPUs: ${NGPUS} or modify the 'MAXGPUS' count in the script!  "

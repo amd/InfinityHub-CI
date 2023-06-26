@@ -125,19 +125,19 @@ The script extracts, then converts the mesh to a PyFR mesh first, for multiple G
 As a convenience, this is performed in the benchmark script which can be run using one to eight GPUs.  
 **1 GPU**
 ```
-/examples/tgv/run_tgv 1
+/examples/naca0021/run_naca0021 1
 ```
 **2 GPU**
 ```
-/examples/tgv/run_tgv 2
+/examples/naca0021/run_naca0021 2
 ```
 **4 GPU**
 ```
-/examples/tgv/run_tgv 4
+/examples/naca0021/run_naca0021 4
 ```
 **8 GPU**
 ```
-/examples/tgv/run_tgv 8
+/examples/naca0021/run_naca0021 8
 ```
 
 #### PyFR Test Cases
