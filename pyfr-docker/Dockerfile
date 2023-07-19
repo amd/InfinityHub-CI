@@ -3,7 +3,7 @@ ARG IMAGE="rocm/dev-ubuntu-22.04:5.4.2-complete"
 FROM ${IMAGE}
 
 ARG PYFR_BRANCH="v1.15.0"
-ARG UCX_BRANCH="v1.14.0"
+ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 
 

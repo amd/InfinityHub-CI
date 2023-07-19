@@ -4,7 +4,7 @@ FROM ${IMAGE}
 
 ARG OPENMM_BRANCH="8.0.0"
 ARG OPENMMHIP_BRANCH="master"
-ARG UCX_BRANCH="v1.14.0"
+ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 
 RUN echo "gfx906"      > /opt/rocm/bin/target.lst \
@@ -41,6 +41,7 @@ RUN rm /etc/apt/sources.list.d/* \
     python3-dev \
     swig \
     cython3 \
+    python3-pip \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3 10 \
     && pip3 install numpy scipy \
   && apt-get clean

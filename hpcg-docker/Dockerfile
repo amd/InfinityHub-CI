@@ -3,8 +3,8 @@ ARG IMAGE="rocm/dev-ubuntu-20.04:5.3-complete"
 FROM ${IMAGE}
 
 ARG ROCHPCG_BRANCH="master"
-ARG UCX_BRANCH="v1.13.1"
-ARG OMPI_BRANCH="v4.1.4"
+ARG UCX_BRANCH="v1.14.1"
+ARG OMPI_BRANCH="v4.1.5"
 
 # Update and Install basic Linux development tools
 RUN rm /etc/apt/sources.list.d/* \
@@ -70,7 +70,7 @@ RUN cd /tmp \
     && cd build \
     && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
         --enable-mca-no-build=btl-uct  \
-        --with-pmix CC=gcc  \
+        --with-pmix=internal \
         --enable-mpi \
         --enable-mpi-fortran=yes \
         --disable-debug \

@@ -24,9 +24,9 @@ For more information on the ROCm™ open software platform and access to an acti
 >Note: 
 >The GROMACS application container assumes that the server contains the required x86-64 CPU(s) and at least one of the listed AMD GPUs. Also, the server must have one of the required operating systems and the listed ROCm driver version installed to run the Docker container. The server must also have a Docker Engine installed to run the container. Please visit the Docker Engine install web site at https://docs.docker.com/engine/install/ to install the latest Docker Engine for the operating system installed on the server. If Singularity use is planned, please visit https://sylabs.io/docs/ for the latest Singularity install documentation.  
 For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://docs.amd.com/)
+* [ROCm Documentation](https://rocm.docs.amd.com)
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
+* [ROCm Examples](https://github.com/amd/rocm-examples)
  
 ## AMD's Implementation of Gromacs with HIP Docker Build
 Instructions on how to build a Docker Container with AMD's implementation of Gromacs.
@@ -56,12 +56,12 @@ Possible `build-arg` for the Docker build command
     If this option is set to off, UCX and Open MPI will not be installed, and the following two options will not be used.
 
 - #### UCX_BRANCH
-    Default: `v1.13.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx).
+    Default: `v1.14.1`  
+    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
 - #### OMPI_BRANCH
-    Default: `v4.1.4`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi).
+    Default: `v4.1.5`  
+    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
 ### Building AMD's implementation of Gromacs with HIP Container
 Download the [Dockerfile](/gromacs-docker/Dockerfile)  
@@ -200,7 +200,17 @@ Optimal performance for each benchmark and GPU/GCD configuration can be tuned by
 ## Licensing Information
 Your access and use of this application is subject to the terms of the applicable component-level license identified below. To the extent any subcomponent in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application.
 
-The application is provided in a container image format that includes the following separate and independent components:  Ubuntu (License: Creative Commons CC-BY-SA version 3.0 UK license), Gromacs (License: LGPL 2.1), CMAKE (License: BSD 3), OpenMPI (License: BSD 3-Clause), OpenUCX (License: BSD 3-Clause), ROCm (License: Custom/MIT/Apache V2.0/UIUC NCSA). Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER.
+The application is provided in a container image format that includes the following separate and independent components: 
+|Package | License | URL|
+|---|---|---|
+|Ubuntu| Creative Commons CC-BY-SA Version 3.0 UK License |[Ubuntu Legal](https://ubuntu.com/legal)|
+|CMAKE|OSI-approved BSD-3 clause|[CMake License](https://cmake.org/licensing/)|
+|OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
+|OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|Gromacs|LGPL 2.1|[Gromacs](https://www.gromacs.org/)<br /> [Gromacs License](https://github.com/gromacs/gromacs/blob/main/COPYING)|
+
+Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER.
 
 The GROMACS source code and selected set of binary packages are available here: www.gromacs.org. GROMACS is Free Software, available under the GNU Lesser General Public License (LGPL), version 2.1. You can redistribute it and/or modify it under the terms of the LGPL as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
 

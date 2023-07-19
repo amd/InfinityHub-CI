@@ -13,9 +13,9 @@ Quality assurance is based on rigorous testing. The process of code evaluation, 
 | X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://docs.amd.com/)
+* [ROCm Documentation](https://rocm.docs.amd.com)
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
+* [ROCm Examples](https://github.com/amd/rocm-examples)
 
 ## OpenFOAM Docker Build
 Instructions on how to build a Docker Container with OpenFOAM.
@@ -50,11 +50,11 @@ Possible `build-arg` for the Docker build command
     >Initial HIP support was added in v3.18.0 with further optimizations included in minor releases. We recommend using v3.19 or newer for performance runs on AMD hardware
 
 - #### UCX_BRANCH
-    Default: `v1.14.0`  
+    Default: `v1.14.1`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
 - #### OMPI_BRANCH
-    Default: `v5.0.0rc11`  
+    Default: `v4.1.5`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
 ### Building OpenFOAM Container
@@ -203,7 +203,21 @@ singularity run --writable-tmpfs \
 
 Your use of this application is subject to the terms of the applicable component-level license identified below. To the extent any subcomponent in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application.
 
-The application is provided in a container image format that includes the following separate and independent components: OpenFOAM (GPL v3), Ubuntu (License: Creative Commons CC-BY-SA version 3.0 UK License), ROCm (License: Custom/MIT/Apache V2.0/UIUC OSL), PETSc (License: BSD 2-Clause), PETScFOAM (License: GPL V3), Scotch (License: CeCILL-C free/libre software license), HYPRE (License: Apache V2.0/MIT). Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER.
+The application is provided in a container image format that includes the following separate and independent components:
+|Package | License | URL|
+|---|---|---|
+|Ubuntu| Creative Commons CC-BY-SA Version 3.0 UK License |[Ubuntu Legal](https://ubuntu.com/legal)|
+|CMAKE|OSI-approved BSD-3 clause|[CMake License](https://cmake.org/licensing/)|
+|OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
+|OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|OpenFOAM|GPL v3|[OpenFOAM](https://www.openfoam.com)<br />[OpenFOAM License](https://www.openfoam.com/documentation/licencing)|
+|PETSc|BSD-2 Clause | [PETSc](https://petsc.org/)<br />[PETSc License](https://petsc.org/release/install/license/)|
+|PETScFOAM|GPL V3|[PETSc4FOAM](https://develop.openfoam.com/modules/external-solver)|
+|HYPRE|Apache V2.0/MIT|[HYPRE Licenses](https://github.com/hypre-space/hypre#license)|
+|Scotch|CeCILL-C|[Scotch Web Page](https://www.labri.fr/perso/pelegrin/scotch/)<br /> [Scotch License](https://gitlab.inria.fr/scotch/scotch/-/blob/master/LICENSE_en.txt)|
+
+Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER.
 
 See the [OpenFOAM official page](https://www.openfoam.com/documentation/licencing) for more information on licensing.
 

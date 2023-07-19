@@ -1,9 +1,9 @@
-ARG IMAGE="rocm/dev-ubuntu-20.04:5.3.3-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:5.4.2-complete"
 
 FROM ${IMAGE}
-ARG PETSC_BRANCH="default"
-ARG UCX_BRANCH="v1.13.0"
-ARG OMPI_BRANCH="v5.0.0rc2"
+ARG PETSC_BRANCH="v3.19.0"
+ARG UCX_BRANCH="v1.14.1"
+ARG OMPI_BRANCH="v4.1.5"
 
 # Update and Install basic Linux development tools
 RUN apt-get update \
@@ -99,7 +99,8 @@ RUN cd /tmp \
       && cd build \
       && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
             --enable-mca-no-build=btl-uct \
-            --with-pmix CC=gcc \
+            --without-verbs \
+            --with-pmix=internal\
             --enable-mpi \
             --enable-mpi-fortran=yes \
             --disable-debug \
@@ -111,18 +112,21 @@ RUN cd /tmp \
 ENV PATH=/opt/ompi/bin:/opt/ucx/bin:$PATH
 
 # Installing PETSc
-RUN if [ "$PETSC_BRANCH" = "default" ]; then \
-      # At time of creating this recipe, there are performance enhancements for PETSc that have not been incorporated in a release.
-      git clone https://github.com/petsc/petsc.git \
+RUN git clone -b ${PETSC_BRANCH} https://github.com/petsc/petsc.git \
       && cd petsc \
-      && git checkout e874ec00d637a86419bb2cc912cf88b33e5547ef; \
-    else \
-      git clone -b ${PETSC_BRANCH} https://github.com/petsc/petsc.git \
-      && cd petsc; \
-    fi \
-      && ./configure --with-cc=mpicc --with-cxx=mpicxx --with-fc=mpif90 \
-            COPTFLAGS="-g -O3" FOPTFLAGS="-g -O3" CXXOPTFLAGS="-g -O3" HIPOPTFLAGS="-g -ggdb -O3 -munsafe-fp-atomics -fPIC -w" \
-            --with-cuda=0 --with-hip=1 --with-hipc=hipcc --with-hip-dir=${ROCM_PATH} \
+      && ./configure \
+            COPTFLAGS="-g -O3" \
+            FOPTFLAGS="-g -O3" \
+            CXXOPTFLAGS="-g -O3" \
+            HIPOPTFLAGS="-g -ggdb -O3 -munsafe-fp-atomics -fPIC -w" \
+            --prefix=/opt/petsc \
+            --with-cuda=0 \
+            --with-cc=mpicc \
+            --with-cxx=mpicxx \
+            --with-fc=mpif90 \
+            --with-hip=1 \
+            --with-hipc=hipcc \
+            --with-hip-dir=${ROCM_PATH} \
             --with-hip-arch=gfx900,gfx906,gfx908,gfx90a \
             --with-precision=double \
             --with-clanguage=c \
@@ -130,7 +134,6 @@ RUN if [ "$PETSC_BRANCH" = "default" ]; then \
             --download-hypre \
             --download-hypre-configure-arguments=--enable-unified-memory \
             --with-debugging=no \
-            --prefix=/opt/petsc \
       && make PETSC_DIR=/tmp/petsc PETSC_ARCH=arch-linux-c-opt all \
       && make PETSC_DIR=/tmp/petsc PETSC_ARCH=arch-linux-c-opt install \
       && make install \

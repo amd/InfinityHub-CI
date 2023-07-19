@@ -12,79 +12,25 @@ benchmark_src_dir=ksp/ksp/tutorials
 benchmark_src_file=bench_kspsolve.c
 benchmark_exec=bench_kspsolve
 
+aij_type=mpiaijhipsparse
+vec_type=mpihip
+
 function setup()
 {
-    # setting the env
-    case "${DEVICE_OFFLOADING}" in
-        hip|HIP|Hip)
-            platform=HIP
-            aij_type=mpiaijhipsparse
-            vec_type=mpihip
-            ;;
-        cuda|CUDA|Cuda)
-            platform=CUDA
-            aij_type=mpiaijcusparse
-            vec_type=mpicuda
-            ;;
-        *|--*=|*) # unsupported offloading
-            echo "
-==============================================================
-    Error: Unsupported offloading type - ${DEVICE_OFFLOADING}
-           Available Options: HIP or CUDA
-==============================================================" >&2
-            exit 1
-            ;;
-    esac
 
-    case "${NGPUS}" in
-        0)
-                echo "
-==============================================================
-    Error: #GPUs were set to 0. Update the variable ngpus to
-            use between 1-10 GPUs. To use more than 10 GPUs
-            modify the script accrodingly.
-==============================================================" >&2
-            exit 1
-            ;;
-        1)
-        export ${platform}_VISIBLE_DEVICES=0
-        ;;
-        2)
-        export ${platform}_VISIBLE_DEVICES=0,1
-        ;;
-        3)
-        export ${platform}_VISIBLE_DEVICES=0,1,2
-        ;;
-        4)
-        export ${platform}_VISIBLE_DEVICES=0,1,2,3
-        ;;
-        5)
-        export ${platform}_VISIBLE_DEVICES=0,1,2,3,4
-        ;;
-        6)
-        export ${platform}_VISIBLE_DEVICES=0,1,2,3,4,5
-        ;;
-        7)
-        export ${platform}_VISIBLE_DEVICES=0,1,2,3,4,5,6
-        ;;
-        8)
-        export ${platform}_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
-        ;;
-        9)
-        export ${platform}_VISIBLE_DEVICES=0,1,2,3,4,5,6,7,8
-        ;;
-        10)
-        export ${platform}_VISIBLE_DEVICES=0,1,2,3,4,5,6,7,8,9
-        ;;
-        *) # This script assume only 10 GPUs are available
-            echo "
-==============================================================
-    Error: This script assumes that only 10 GPUs are present.
-            Please modify the script if needed.
-==============================================================" >&2
-            exit 1
-            ;;
-    esac
+    # setting the env
+    MAXGPUS=10
+    if [[ ${NGPUS} -le 0 ]] ||  [[ ${NGPUS} -gt ${MAXGPUS} ]]; then  
+        # ERR condition
+        echo " ERROR: This script is designed to run with a maximum of ${MAXGPUS} GPUs."
+        echo "        Either change your current selection of NGPUs: ${NGPUS} or modify the 'MAXGPUS' count in the script!  "
+        exit 1
+    fi
+    gpu_string="0"
+    for (( gpunum=1; gpunum<${NGPUS} ; gpunum++ )) ; do
+        gpu_string+=",${gpunum}"
+    done
+    export HIP_VISIBLE_DEVICES=${gpu_string}
 
     # setting up options to run the benchmark
     echo " "
@@ -92,11 +38,8 @@ function setup()
     SETUP
 --------------------"
 
-    if [[ $FLAG_D -eq 0 ]]; then
-        echo "Using default device offloading support: $DEVICE_OFFLOADING"
-    else
-        echo "Using device offloading support: $DEVICE_OFFLOADING"
-    fi
+    echo "Using default device offloading support: HIP"
+    
 
     if [[ $FLAG_G -eq 0 ]]; then
         echo "Using default #GPU for this benchmark: $NGPUS"
@@ -201,7 +144,6 @@ usage: $0
        -c | --clean     Clean the case directory
        -r | --run-only  skip build, and directly run the benchmark
        -g | --ngpus     #GPUs to be used (between 1-10), defaults to 1
-       -d | --gpu-support support for GPU offloading (e.g.: HIP or CUDA)
        -l | --log-view  Enables -log_view to see more details at end of PETSc solve
        -n | --mat-size  Prescribe a Mat size (e.g -n 200 will select a 200^3 matrix)
        -pc| --pc-type   Prescribe custom options for preconditioner
@@ -231,11 +173,6 @@ parse_args(){
                 FLAG_G=1
                 shift 2
                 ;;
-            -d|--gpu-support)
-                DEVICE_OFFLOADING="$2"
-                FLAG_D=1
-                shift 2
-                ;;
             -l|--log-view)
                 LOG_VIEW=1
                 shift 1
@@ -262,11 +199,6 @@ parse_args(){
                 ;;
         esac
     done
-
-    if [[ -z "${DEVICE_OFFLOADING+x}" ]]; then
-        DEVICE_OFFLOADING=HIP
-        FLAG_D=0
-    fi
 
     if [[ -z "${NGPUS+x}" ]]; then
         NGPUS=1

@@ -9,9 +9,9 @@ Each builds provides parameters to specify different source code branches, relea
 | X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
 
 For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://docs.amd.com/)
+* [ROCm Documentation](https://rocm.docs.amd.com)
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [Testing the ROCm Installation](https://rocmdocs.amd.com/en/latest/Installation_Guide/Installation-Guide.html#testing-the-rocm-installation)
+* [ROCm Examples](https://github.com/amd/rocm-examples)
 
 ## Applications:
  - [AMD Base Docker Container for GPU-Aware MPI in ROCm applications](/base-gpu-mpi-rocm-docker/)
@@ -24,4 +24,6 @@ For ROCm installation procedures and validation checks, see:
  - [PETSc in Docker](/petsc-docker/)
  - [PyFR in Docker](/pyfr-docker/)
  - [rocHPL](/rochpl/)
+    - [docker](/rochpl/docker/)
+    - [spack](/rochpl/spack/)
  - [Specfem3D - Cartesian](/specfem3d/)

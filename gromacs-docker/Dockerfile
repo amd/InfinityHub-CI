@@ -4,8 +4,8 @@ FROM ${IMAGE}
 
 ARG GROMACS_BRANCH="develop_2022_amd"
 ARG MPI_ENABLED="off"
-ARG UCX_BRANCH="v1.13.1"
-ARG OMPI_BRANCH="v4.1.4"
+ARG UCX_BRANCH="v1.14.1"
+ARG OMPI_BRANCH="v4.1.5"
 
 # Update and Install basic Linux development tools
 RUN rm /etc/apt/sources.list.d/* \
@@ -82,7 +82,7 @@ RUN if [ "$MPI_ENABLED" = "on" ] ; then \
       && cd build \
       && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
             --enable-mca-no-build=btl-uct  \
-            --with-pmix CC=gcc  \
+            --with-pmix=internal \
             --enable-mpi \
             --enable-mpi-fortran=yes \
             --disable-debug \

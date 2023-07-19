@@ -3,8 +3,8 @@ ARG IMAGE="rocm/dev-ubuntu-20.04:5.4.3-complete"
 FROM ${IMAGE}
 
 ARG CP2K_BRANCH="v2023.1"
-ARG UCX_BRANCH="v1.14.0"
-ARG OMPI_BRANCH="v4.1.4"
+ARG UCX_BRANCH="v1.14.1"
+ARG OMPI_BRANCH="v4.1.5"
 ARG GPU_VER="Mi250"
 
 # Update and Install basic Linux development tools
