@@ -1,0 +1,24 @@
+#-- Compiler and flags for different build type
+CC                = mpicc
+CXX               = mpicxx
+CFLAGS_DEBUG      = -g -O0
+CFLAGS_OPTIMIZE   = -Ofast
+CXXFLAGS_DEBUG    = -g -O0 -std=c++14
+CXXFLAGS_OPTIMIZE = -Ofast -std=c++14
+
+GPUCXX            = hipcc
+
+
+#-- Use GPU-aware MPI
+MPI_GPU           = -DMPI_GPU
+
+MPI_FLAGS         = -DMPI_CHOLLA
+
+OMP_NUM_THREADS   = 8
+
+HDF5_ROOT         = /opt/hdf5
+MPI_ROOT          = /opt/ompi
+
+GPUFLAGS          = --offload-arch=gfx906,gfx908,gfx90a -Wno-unused-result -fPIE
+
+HIPCONFIG	      = -I $(ROCM_PATH)/include $(shell hipconfig -C) 

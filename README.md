@@ -16,6 +16,9 @@ For ROCm installation procedures and validation checks, see:
 ## Applications:
  - [AMD Base Docker Container for GPU-Aware MPI in ROCm applications](/base-gpu-mpi-rocm-docker/)
  - [AMD's Implementation of Gromacs with HIP in Docker](/gromacs-docker/)
+ - [Cholla](/cholla)
+   - [Docker](/cholla/docker/)
+   - [Bare Metal](/cholla/baremetal/)
  - [CP2K](/cp2k-docker/)
  - [HPCG in Docker](/hpcg-docker/)
  - [LAMMPS in Docker](/lammps-docker/)
@@ -24,6 +27,6 @@ For ROCm installation procedures and validation checks, see:
  - [PETSc in Docker](/petsc-docker/)
  - [PyFR in Docker](/pyfr-docker/)
  - [rocHPL](/rochpl/)
-    - [docker](/rochpl/docker/)
-    - [spack](/rochpl/spack/)
+    - [Docker](/rochpl/docker/)
+    - [Spack](/rochpl/spack/)
  - [Specfem3D - Cartesian](/specfem3d/)
