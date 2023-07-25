@@ -20,6 +20,8 @@ For ROCm installation procedures and validation checks, see:
    - [Docker](/cholla/docker/)
    - [Bare Metal](/cholla/baremetal/)
  - [CP2K](/cp2k-docker/)
+ - [Grid](/grid/)
+    - [Docker](/grid/docker/)
  - [HPCG in Docker](/hpcg-docker/)
  - [LAMMPS in Docker](/lammps-docker/)
  - [OpenFOAM in Docker](/openfoam-docker/)
