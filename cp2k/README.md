@@ -1,4 +1,6 @@
 # CP2K
+
+## Overview
 CP2K is a quantum chemistry and solid state physics software package that can perform atomistic simulations of solid state, liquid, molecular, periodic, material, crystal, and biological systems. CP2K provides a general framework for different modeling methods such as [DFT](http://en.wikipedia.org/wiki/Density_functional_theory) using the mixed [Gaussian and plane waves approaches GPW and GAPW](https://www.cp2k.org/quickstep#gpw). Supported theory levels include DFTB, LDA, GGA, MP2, RPA, semi-empirical methods (AM1, PM3, PM6, RM1, MNDO, …), and classical force fields (AMBER, CHARMM, …). CP2K can do simulations of molecular dynamics, metadynamics, Monte Carlo, Ehrenfest dynamics, vibrational analysis, core level spectroscopy, energy minimization, and transition state optimization using NEB or dimer method. Detailed overview of features may be found at the [CP2K site](https://www.cp2k.org/features).
 
 CP2K is written in Fortran 2008 and can be run efficiently in parallel using a combination of multi-threading, MPI, and HIP/CUDA. The CP2K software package is [freely available](https://www.cp2k.org/download) under the GPL license at https://www.cp2k.org.
@@ -20,98 +22,17 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation)
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## Build CP2K Container
-This section describes the instructions for building a Docker container with CP2K.
-
-### Build System Requirements
-- Git
-- Docker
+## Build Recipes
+- [Bare Metal build](/cp2k/baremetal/)
+- [Docker/Singularity Build](/cp2k/docker/)
 
 
-### Inputs
-Possible `build-arg` for the Docker build command  
+## Running CP2K Benchmarks
 
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-20.04:5.4.3-complete`  
-    Docker Hub Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
-    
-    
+<details>
+<summary>MI210/MI100 GPUs</summary>
 
-- #### CP2K_BRANCH
-    Default: `v2023.1`  
-    Branch/Tag found: [CP2K repo](https://github.com/cp2k/cp2k)
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-- #### GPU_VER
-    Default: `Mi250`   
-    Options: `Mi50`, `Mi100`, `Mi250`  
-    Specifies the GPU architecture for which DBCSR will be built. Mi250 is used for all MI200 series accelerators.
-
-
-### Build Instructions
-Download the [CP2K Dockerfile](/cp2k-docker/Dockerfile).
-
-To build the default configuration:
-```
-docker build -t mycontainer/cp2k -f /path/to/Dockerfile . 
-```
->Notes:  
->- `mycontainer/cp2k` will be the name of your local container.
->- the `.` at the end of the build line is important! It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context.
-
-
-To run a custom configuration, include one or more customized `--build-arg` parameter.  
-*DISCLAIMER*: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
-```
-docker build \
-    -t mycontainer/cp2k \
-    -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
-    --build-arg CP2K_BRANCH=master \
-    --build-arg UCX_BRANCH=v1.8.0 \
-    --build-arg OMPI_BRANCH=v4.0.3 \
-    --build-arg GPU_VER=Mi100 \
-    . 
-```
-
-## Run CP2K Container
-### Interactive
-
-#### Docker 
-```
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --ipc=host -e PMIX_MCA_gds=^ds21 mycontainer/cp2k /bin/bash
-```
-#### Singularity 
-To build a Singularity image from the locally created docker file do the following:
-```
-singularity build cp2k.sif docker-daemon://mycontainer/cp2k:latest
-```
-To launch a Singularity image build locally
-```
-singularity shell --no-home --writable-tmpfs cp2k.sif
-```
-
-#### A Note on CP2K Executables
-
-In this container, you will find two CP2K executables, each tuned for different sets of benchmarks.  
-- For RPA Benchmarks:`cp2k.psmp.no_dbcsr_gpu`  
-    This executable has been built without the DBCSR GPU backend as it improves the performance of Random Phase Approximation (RPA) benchmarks.
-- For DFT Benchmarks:`cp2k.psmp.no_pw_gpu`  
-    This executable has been built without the PW GPU backend as it improves the performance of Linear Scaling Density Functional Theory (LS-DFT) benchmarks.
-
-##### Running CP2K benchmarks on MI210/MI100 GPUs
+### MI210/MI100 GPUs
 
 The following command can be used to run the [H2O-DFT-LS (NREP2)](https://github.com/cp2k/cp2k/blob/master/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp) benchmark with 8 GPUs:
 
@@ -126,7 +47,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_pw_gpu \
+    cp2k.psmp \
     -i /opt/cp2k/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp \
     -o /tmp/H2O-DFT-LS-NREP2-8GPU.txt
 ```
@@ -147,7 +68,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_pw_gpu \
+    cp2k.psmp \
     -i /opt/cp2k/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp \
     -o /tmp/H2O-DFT-LS-NREP2-4GPU.txt
 ```
@@ -173,7 +94,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_dbcsr_gpu \
+    cp2k.psmp \
     -i H2O-32-PBE-TZ.inp \
     -o /tmp/32-H2O-RPA-init-1GPU.txt
 ```
@@ -191,7 +112,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_dbcsr_gpu \
+    cp2k.psmp \
     -i H2O-32-RI-dRPA-TZ.inp \
     -o /tmp/32-H2O-RPA-solver-8GPU.txt
 ```
@@ -203,7 +124,10 @@ A grep for `"CP2K     "` in the output files `/tmp/32-H2O-RPA-*.txt` will show t
 >Note:  
 >The above-mentioned commands can also be run verbatim on a dual socket server with 8 MI100 GPUs and 128 physical CPU cores. If your system configuration is different, please adjust the parameters accordingly.
 
-##### Running CP2K benchmarks on MI250 GPUs
+</details>
+<details>
+<summary>MI250 GPUs</summary>
+### MI250 GPUs
 
 An MI250 GPU contains two Graphics Compute Dies (GCDs) each of which is presented to the application
 as a separate GPU device. When running with MI250 GPUs, the scripts that set up CPU and GPU affinities,
@@ -226,7 +150,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_pw_gpu \
+    cp2k.psmp \
     -i /opt/cp2k/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp \
     -o /tmp/H2O-DFT-LS-NREP2-1GPU.txt
 ```
@@ -243,7 +167,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_pw_gpu \
+    cp2k.psmp \
     -i /opt/cp2k/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp \
     -o /tmp/H2O-DFT-LS-NREP2-4GPU.txt
 ```
@@ -270,7 +194,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_dbcsr_gpu \
+    cp2k.psmp \
     -i H2O-32-PBE-TZ.inp \
     -o /tmp/32-H2O-RPA-init-1GPU.txt
 ```
@@ -288,7 +212,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_dbcsr_gpu \
+    cp2k.psmp \
     -i H2O-32-RI-dRPA-TZ.inp \
     -o /tmp/32-H2O-RPA-solver-1GPU.txt
 ```
@@ -306,7 +230,7 @@ mpirun \
     --bind-to none \
     set_cpu_affinity.sh \
     set_gpu_affinity.sh \
-    cp2k.psmp.no_dbcsr_gpu \
+    cp2k.psmp \
     -i H2O-32-RI-dRPA-TZ.inp \
     -o /tmp/32-H2O-RPA-solver-4GPU.txt
 ```
@@ -314,65 +238,7 @@ mpirun \
 In the above-mentioned commands, the `NUM_CPUS`, `NUM_GPUS` and `RANK_STRIDE` variables are used by the helper scripts that set GPU and CPU affinity for CP2K processes and their threads. The `RANK_STRIDE` option allows the processes and their threads to be spread out and pinned to physical cores across the two sockets. If your system has a different configuration, please adjust the parameters accordingly.
 
 A grep for `"CP2K     "` in the output files `/tmp/32-H2O-RPA-*.txt` will show the elapsed time for each run.
-
-### Non-interactive
-
-#### Docker
-
-The same H2O-DFT-LS (NREP2) benchmark with 8 GPUs can run from the command line as follows:
-```
-docker run \
-    --rm \
-    --device=/dev/kfd \
-    --device=/dev/dri \
-    --security-opt seccomp=unconfined \
-    --ipc=host \
-    -e NUM_CPUS=128 \
-    -e NUM_GPUS=8 \
-    -e RANK_STRIDE=8 \
-    -e OMP_NUM_THREADS=8 \
-    -e PMIX_MCA_gds=^ds21 \
-    -v $(pwd):/tmp/ \
-    mycontainer/cp2k:latest \
-    bash -c """ \
-    mpirun \
-        --oversubscribe \
-        -np 16 \
-        --bind-to none \
-        set_cpu_affinity.sh \
-        set_gpu_affinity.sh \
-        cp2k.psmp.no_pw_gpu \
-        -i /opt/cp2k/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp \
-        -o /tmp/H2O-DFT-LS-NREP2-8GPU-docker.txt \
-    """
-```
-
-#### Singularity
-To run the same benchmark using Singularity, type:
-```
-SINGULARITYENV_NUM_CPUS=128 \
-SINGULARITYENV_NUM_GPUS=8 \
-SINGULARITYENV_RANK_STRIDE=8 \
-SINGULARITYENV_OMP_NUM_THREADS=8 \
-singularity exec \
-    --no-home \
-    --writable-tmpfs \
-    --pwd /opt/cp2k/benchmarks/QS_mp2_rpa/32-H2O \
-    --bind $(pwd):/tmp/ \
-    cp2k.sif \
-    bash -c \
-    """ \
-    mpirun \
-        --oversubscribe \
-        -np 16 \
-        --bind-to none \
-        set_cpu_affinity.sh \
-        set_gpu_affinity.sh \
-        cp2k.psmp.no_pw_gpu \
-        -i /opt/cp2k/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp \
-        -o /tmp/H2O-DFT-LS-NREP2-8GPU-singularity.txt \
-    """
-```
+</details>
 
 ## Licensing Information
 
