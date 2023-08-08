@@ -3,6 +3,10 @@
 ## Overview
 This document provides instructions on how to build Cholla into a Docker container that is portable between environments.
 
+### Build System Requirements
+- Git
+- Docker
+
 ## Inputs
 Possible `build-arg` for the Docker build command  
 
@@ -69,7 +73,7 @@ If you want access to the HDF5 files generated during the run, please add `-v $(
 ```
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/cholla /bin/bash
 ```
-#### Docker Non-Interactive
+#### Docker Single Command
 ```
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/cholla <Cholla Command>
 ```
@@ -88,7 +92,7 @@ To launch a Singularity image build locally.
 singularity shell --no-home --writable-tmpfs -pwd /benchmark cholla.sif
 ```
 
-#### Singularity Non-Interactive
+#### Singularity Single Command
 To launch a Singularity image build locally.
 ```
 singularity run --no-home --writable-tmpfs -pwd /benchmark cholla.sif <Cholla Command>
@@ -117,5 +121,3 @@ The information contained herein is for informational purposes only, and is subj
 © 2022-2023 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
-
-All other trademarks and copyrights are property of their respective owners and are only mentioned for informative purposes.

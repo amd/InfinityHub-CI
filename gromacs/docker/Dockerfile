@@ -118,7 +118,7 @@ RUN git clone -b ${GROMACS_BRANCH} https://github.com/ROCmSoftwarePlatform/Groma
         -DBUILD_TESTING=ON \
         -DGMXBUILD_UNITTESTS=ON \
         -DGMX_GPU_USE_VKFFT=on \
-        -DHIP_HIPCC_FLAGS="-O3 --amdgpu-target=gfx900,gfx906,gfx908,gfx90a --save-temps" \
+        -DHIP_HIPCC_FLAGS="-O3 --amdgpu-target=gfx900,gfx906,gfx908,gfx90a" \
         -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
       .. \
   && make -j $(nproc) \

@@ -31,8 +31,8 @@ For ROCm installation procedures and validation checks, see:
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
 ## Build Recipes
+- [Bare Metal Build](/cholla/baremetal/)
 - [Docker/Singularity Build](/cholla/docker/)
-- [Baremetal Build](/cholla/baremetal/)
 
 ## Running Cholla Benchmarks
 These examples are using the [Cholla Docker Build](/cholla/docker/), which build the binary file cholla.hydro.cholla-container based on environment variable `CHOLLA_MACHINE` set to `cholla-container` and was build/installed into `/opt/cholla`. 
@@ -45,10 +45,22 @@ You can run the examples using the command syntax below, where `#` is the number
 mpirun -np # cholla.hydro.cholla-container <benchmark-to-run>
 ```
 ### Examples: 
-* 4 GPU 3D sound wave<br>`mpirun -np 4 cholla.hydro.cholla-container /opt/cholla/examples/3D/sound_wave.txt`
-* 8 GPU 3D Sound wave<br>`mpirun -np 8 cholla.hydro.cholla-container /opt/cholla/examples/3D/sound_wave.txt`
-* 4 GPU 3D sod<br> `mpirun -np 4 cholla.hydro.cholla-container /opt/cholla/examples/3D/sod.txt`
-* 8 GPU 3D sod<br> `mpirun -np 8 cholla.hydro.cholla-container /opt/cholla/examples/3D/sod.txt`
+* 4 GPU 3D sound wave
+```
+mpirun -np 4 cholla.hydro.cholla-container /opt/cholla/examples/3D/sound_wave.txt
+```
+* 8 GPU 3D Sound wave
+```
+mpirun -np 8 cholla.hydro.cholla-container /opt/cholla/examples/3D/sound_wave.txt
+```
+* 4 GPU 3D sod<br> 
+```
+mpirun -np 4 cholla.hydro.cholla-container /opt/cholla/examples/3D/sod.txt
+```
+* 8 GPU 3D sod<br> 
+```
+mpirun -np 8 cholla.hydro.cholla-container /opt/cholla/examples/3D/sod.txt
+```
 
 Each MPI rank will bind to a particular unique GPU (1 rank per device) and strong-scale the problem accordingly. Please define `HIP_VISIBLE_DEVICES` to control which particular GPUs are available to Cholla. 
 
