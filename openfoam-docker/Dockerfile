@@ -170,8 +170,8 @@ RUN source ${OPENFOAM_DIR}/etc/bashrc \
     && cp -r $(dirname $(find /root/ -iname libpetscFoam.so)) /openfoam
 
 ENV PATH=${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/bin:${THIRDPARTY_DIR}/scotch_${SCOTCH_VER}/bin:$PATH \
-    LD_LIBRARY_PATH=/openfoam/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/petsc-3.19.0/lib:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=/openfoam/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/petsc-3.19.0/lib:$LIBRARY_PATH
+    LD_LIBRARY_PATH=/openfoam/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/petsc-${PETSC_VER}/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=/openfoam/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/petsc-${PETSC_VER}/lib:$LIBRARY_PATH
 
 COPY /scripts /benchmark
 
