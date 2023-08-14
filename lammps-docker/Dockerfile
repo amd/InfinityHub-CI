@@ -33,6 +33,10 @@ RUN rm /etc/apt/sources.list.d/* \
     hwloc \
   && apt-get clean
 
+RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
+    &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst
+
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \
   && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.22/cmake-3.22.2-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake

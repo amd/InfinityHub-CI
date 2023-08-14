@@ -55,12 +55,12 @@ ENV ROCM_PATH=/opt/rocm \
     OMPI_HOME=/opt/ompi
 
 ENV HCC_HOME=$ROCM_PATH/hcc \
-    HIP_PATH=$ROCM_PATH/hip 
+    HIP_PATH=$ROCM_PATH/hip
 
 # Adding rocm to the Environment 
 ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:$HCC_HOME/bin:$HIP_PATH/bin:$PATH 
 
-# To reduce build time only 
+# To reduce build time only use one
 RUN echo "gfx900"      > /opt/rocm/bin/target.lst \
     &&  echo "gfx906"  >> /opt/rocm/bin/target.lst \
     &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \

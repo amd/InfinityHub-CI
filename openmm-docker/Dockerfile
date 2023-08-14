@@ -7,10 +7,9 @@ ARG OPENMMHIP_BRANCH="master"
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 
-RUN echo "gfx906"      > /opt/rocm/bin/target.lst \
-    && echo "gfx908"  >> /opt/rocm/bin/target.lst \
-    && echo "gfx90a"  >> /opt/rocm/bin/target.lst \
-    && chmod a+r /opt/rocm/bin/target.lst
+RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
+    &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst
 
 # Update and Install basic Linux development tools
 RUN rm /etc/apt/sources.list.d/* \

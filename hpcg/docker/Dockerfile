@@ -31,14 +31,26 @@ RUN rm /etc/apt/sources.list.d/* \
     gfortran \
     flex \
     hwloc \
+    m4 \
   && apt-get clean
+
+RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
+    &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst
 
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \
   && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.22/cmake-3.22.2-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
 
 # Adding rocm/cmake to the PATH
-ENV PATH=/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:/opt/cmake/bin:$PATH
+ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:$PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$ROCM_PATH/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$CPLUS_INCLUDE_PATH \
+    CPATH=$ROCM_PATH/include:$CPATH \
+    INCLUDE=$ROCM_PATH/include:$INCLUDE \
+    LC_ALL=C
 
 WORKDIR /tmp
 
@@ -59,7 +71,8 @@ RUN cd /tmp/ \
         --enable-params-check \
         --disable-examples \
     &&  make -j $(nproc)  \
-    &&  make  install
+    &&  make  install \
+    && cd .. && rm -rf /ucx
 
 # Install OpenMPI
 RUN cd /tmp \
@@ -75,24 +88,33 @@ RUN cd /tmp \
         --enable-mpi-fortran=yes \
         --disable-debug \
     && make -j $(nproc) \
-    && make install
+    && make install \
+    && cd .. && rm -rf /ompi
 
 # Adding OpenMPI and UCX to PATH
-ENV PATH=/opt/ompi/bin:/opt/ucx/bin:$PATH
+ENV PATH=$OMPI_PATH/bin:$UCX_PATH/bin:$PATH \
+    LD_LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$CPLUS_INCLUDE_PATH \
+    CPATH=$OMPI_PATH/include:$UCX_PATH/include:$CPATH \
+    INCLUDE=$OMPI_PATH/include:$UCX_PATH/include:$INCLUDE \
+    PKG_CONFIG_PATH=$OMPI_PATH/lib/pkgconfig:$UCX_PATH/lib/pkgconfig:$PKG_CONFIG_PATH 
 
+WORKDIR /opt
 # Installing rocHPCG
 RUN git clone -b ${ROCHPCG_BRANCH} https://github.com/ROCmSoftwarePlatform/rocHPCG.git \
   && cd rocHPCG \
   && chmod a+x install.sh \
-  && DEBIAN_FRONTEND=noninteractive \
-    ./install.sh -di --with-mpi=/opt/openmpi  \
-    --with-rocm=/opt/rocm \
-    --gpu-aware-mpi=ON \
-    --with-openmp=ON \
-    --with-memmgmt=ON \
-    --with-memdefrag=ON \
+  && ./install.sh \
+      --with-mpi=/opt/openmpi  \
+      --with-rocm=/opt/rocm \
+      --gpu-aware-mpi=ON \
+      --with-openmp=ON \
+      --with-memmgmt=ON \
+      --with-memdefrag=ON \
   && rm -f /opt/rocm/bin/hpcg \
-  && ln -s /opt/rocm/bin/rochpcg /opt/rocm/bin/hpcg
+  && ln -s /opt/rocHPCG/build/release/bin/rochpcg /opt/rocm/bin/hpcg
 
 # Adding environment variable for Running as ROOT and set MCA pml to UCX
 ENV OMPI_ALLOW_RUN_AS_ROOT=1  \

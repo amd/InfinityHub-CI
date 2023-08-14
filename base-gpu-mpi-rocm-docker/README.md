@@ -11,6 +11,13 @@ env CC=$ROCM_PATH/bin/amdclang \
     FC=$ROCM_PATH/bin/amdflang
 ```
 
+This container builds for the GPU attached to the system it is built on. 
+If there is no GPU on the system/node it is build on please update `$(/opt/rocm/bin/offload-arch)` in the following command with the GPU architecture for the cluster. 
+```
+echo "$(/opt/rocm/bin/offload-arch)" > /opt/rocm/bin/target.lst
+```
+- MI100 - gfx908
+- MI200 - gfx90a
 ## Single-Node Server Requirements
 
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 

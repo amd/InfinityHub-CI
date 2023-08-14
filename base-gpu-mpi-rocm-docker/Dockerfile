@@ -1,4 +1,4 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.4.2"
+ARG IMAGE="rocm/dev-ubuntu-22.04:5.6.0"
 
 FROM ${IMAGE}
 
@@ -32,8 +32,9 @@ RUN rm /etc/apt/sources.list.d/* \
     gfortran \
     flex \
     hwloc ${APT_GET_APPS}\
-  && apt-get clean \
-  && ln -s /opt/rocm/llvm/bin/offload-arch /opt/rocm/bin/offload-arch
+  && apt-get clean
+
+RUN echo "$(/opt/rocm/bin/offload-arch)" > /opt/rocm/bin/target.lst
 
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \

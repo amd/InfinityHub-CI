@@ -32,98 +32,11 @@ For ROCm installation procedures and validation checks, see:
 ## rocHPCG Docker Build
 Instructions on how to build a Docker Container with rocHPCG.
 
-### Build System Requirements
-- Git
-- Docker
+### Building Recipes:
+[Bare Metal Build](/hpcg/baremetal/)
+[Docker/Singularity Build](/hpcg/docker/)
 
-### Inputs
-Possible arguments for the Docker build command  
-
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-20.04:5.3-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
-
-- #### ROCHPCG_BRANCH
-    Default: `master`  
-    Branch/Tag found: [rocHPCG repo](https://github.com/ROCmSoftwarePlatform/rocHPCG)
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-### Building rocHPCG Container:
-Download the [Dockerfile](/hpcg-docker/Dockerfile)  
-
-To run the default configuration:
-```
-docker build -t mycontainer/rochpcg -f /path/to/Dockerfile . 
-```
->Notes:  
->- `mycontainer/rochpcg` is an example container name.
->- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
-
-
-To run a custom configuration, include one or more customized build-arg  
-*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
-```
-docker build \
-    -t mycontainer/rochpcg \
-    -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
-    --build-arg ROCHPCG_BRANCH=devel \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
-    . 
-```
-
-## Running rocHPCG Container
-This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
-If needed, please consult with your system administrator or view official documentation.
-
-### Docker
-To run the container interactively, run the following command:
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           -it  mycontainer/rochpcg  bash
-```
-and launch any `hpcg` run command from the prompt. 
-
-
-For non-interactive runs, simply replace `bash` with the `hpcg` run command:
-
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           mycontainer/rochpcg  \
-           <hpcg run command>
-```
-
-To create a Singularity container from your local Docker container, run the following command:
-```
-singularity build hpcg.sif  docker-daemon://mycontainer/rochpcg:latest
-```
-
-Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a non-interactive run:
-```
-singularity exec  --no-home --pwd /benchmark hpcg.sif <hpcg run command>
-```
-
-Examples of `hpcg` run commands are described in the following section.
-
-
-## Running rocHPCG
+## Running rocHPCG Benchmark
 
 ### SYNOPSIS
 ```
