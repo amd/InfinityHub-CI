@@ -17,106 +17,16 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## OpenFOAM Docker Build
-Instructions on how to build a Docker Container with OpenFOAM.
+### Building Recipes
+[Docker/Singularity Build](/openfoam/docker/)
 
-### Build System Requirements
-- Git
-- Docker
-
-### Inputs
-Possible `build-arg` for the Docker build command  
-
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.4.2-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
-    
-
-- #### OPENFOAM_VERSION
-    Default: `v2212`  
-    Branch/Tag found: [OpenFOAM repo](https://develop.openfoam.com/Development/openfoam)
-
-- #### SCOTCH_VER
-    Default: `7.0.3`  
-    Branch/Tag found: [Scotch repo](https://gitlab.inria.fr/scotch/scotch.git)
-
-- #### PETSC_VER
-    Default: `3.19.0`  
-    Branch/Tag found: [PETSc repo](https://gitlab.com/petsc/petsc)  
-    >NOTE:  
-    >Initial HIP support was added in v3.18.0 with further optimizations included in minor releases. We recommend using v3.19 or newer for performance runs on AMD hardware
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-### Building OpenFOAM Container
-- Download the [Dockerfile](/openfoam-docker/Dockerfile)  
-- Download the [OpenFoam scripts](/openfoam-docker/scripts/)
-
-To run the default configuration:
-```
-docker build -t mycontainer/openfoam -f /path/to/Dockerfile . 
-```
-> NOTES:  
-> - `mycontainer/openfoam` is an example container name.
-> - the `.` at the end of the build line is important! It tells Docker where your build context is located!
-> - `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
-> - The `scripts` directory is required within the build context directory, and the contents will be copied into the container.
-
-To run a custom configuration, include one or more customized build-arg  
-*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
-```
-docker build \
-    -t mycontainer/openfoam \
-    -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-22.04:5.3.3-complete \
-    --build-arg OPENFOAM_VERSION=master \
-    --build-arg SCOTCH_VER=master \
-    --build-arg PETSC_VER=main \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
-    . 
-```
-
-## Running OpenFOAM Container
-This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
-If needed, please consult with your system administrator or view official documentation.
-OpenFOAM container is configured with a set of standard HPC Benchmarks approved by the [OpenFOAM HPC Technical Committee](https://wiki.openfoam.com/High_Performance_Computing\_(HPC)\_Technical\_Committee). Two bash scripts are included in `/benchmark` directory inside the container that allow running the `Lid_driven_cavity-3D` and `HPC_motorbike` benchmarks, respectively. These scripts can be used in either the interactive or non-interactive mode, as explained below.  
+## Running OpenFOAM
+This section describes how to launch two HPC Benchmarks approved by the [OpenFOAM HPC Technical Committee](https://wiki.openfoam.com/High_Performance_Computing\_(HPC)\_Technical\_Committee). For the container there are [OpenFoam Benchmark Scripts](/openfoam/docker/scripts/) that have been included at `/benchmark` inside the container that allow running the `Lid_driven_cavity-3D` and `HPC_motorbike` benchmarks, respectively. If OpenFOAM has been installed with ROCm and MPI support, similarly to the [OpenFOAM container](/openfoam/docker/Dockerfile) these [OpenFoam Benchmark Scripts](/openfoam/docker/scripts/) will work in any environment. 
 > NOTE:  
-> All benchmarks available from the [OpenFOAM HPC Technical Committee](https://develop.openfoam.com/committees/hpc) are available in the `/benchmark/HPC_Benchmark` directory and can be run by following the instructions provided in the repository. Follow a similar procedure for your customized workloads/benchmarks to use PETSc solvers and enable GPU offloading
+> All benchmarks available from the [OpenFOAM HPC Technical Committee](https://develop.openfoam.com/committees/hpc) are available in the [OpenFOAM Docker Image](/openfoam/docker/Dockerfile) in the `/benchmark/HPC_Benchmark` directory and can be run by following the instructions provided in the repository. Follow a similar procedure for your customized workloads/benchmarks to use PETSc solvers and enable GPU offloading.
 
-### Interactive Container 
-To run the container interactively, run the following command:
-#### Docker 
-Launching Docker Container
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           -it  mycontainer/openfoam  bash
-```
-#### Singularity
-Creating Singularity container from Docker
-```
-singularity build openfoam.sif docker-daemon://mycontainer/openfoam:latest
-```
-Launching Singularity Container
-```
-singularity shell --writable-tmpfs \
-                    --no-home \
-                    --pwd /benchmark \
-                    openfoam.sif
-```
 
-#### Run Benchmarks:
+#### Run OpenFOAM Benchmarks
 There are a few options that can be applied to both benchmarks. 
 
 ```
@@ -177,27 +87,6 @@ Time   ExecutionTime (s)
 0.005   80.52
 --------------------
 ```
-
-### Non-Interactive
-
-#### Docker
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           -it  mycontainer/openfoam \
-           ./bench-hpc-motorbike.sh -g 8 -v
-```
-
-#### Singularity
-```
-singularity run --writable-tmpfs \
-                    --no-home \
-                    --pwd /benchmark \
-                    openfoam.sif \
-                    ./bench-lid-driven-cavity.sh -g 8 -v
-```
-
 
 ## Licensing Information
 

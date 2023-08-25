@@ -14,82 +14,12 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## PETSc Docker Build
-Instructions on how to build a Docker Container with PETSc.
+### Building Recipes
+[Docker/Singularity Build](/petsc/docker/)
 
-### System Requirements
-- Git
-- Docker
+## Running PETS Benchmark
+A 3D Poisson Solve is included with the source code and is designed to assess the performance characteristics of PETSc library. As of now, the benchmark can be located in the `src/ksp/ksp/tutorials/` directory, within the [PETSc GIT repository](). This Script [run-benchmark.sh](/petsc/docker/benchmark/run-benchmark.sh) can be used to build and run the benchmark. It is included in the [PETSc Docker image](/petsc/docker/).
 
-### Inputs:
-Possible `build-arg` for the Docker build command    
-
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-20.04:5.3-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
-
-- #### PETSc_BRANCH
-    Default: default: `main`  
-    Branch/Tag found: [ PETSc repo](https://github.com/petsc/petsc.git).
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-### Building PETSc Container:
-Download the [Dockerfile](/petsc-docker/Dockerfile)  
-Download the [benchmark files](/petsc-docker/benchmark/)  
-
-To run the default configuration:
-```
-docker build -t mycontainer/PETSc -f /path/to/Dockerfile . 
-```
->Notes:  
->- `mycontainer/PETSc` will be the name of your local container.
->- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
->- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-PETSc-container)). If you plan on running PETSc against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
-
-
-
-To run a custom configuration, include one or more customized build-arg  
-*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
-```
-docker build \
-    -t mycontainer/PETSc \
-    -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
-    --build-arg PETSc_BRANCH=v3.18.2 \
-    --build-arg MPI_ENABLED=on \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
-    . 
-```
-
-## Running PETSc Container:
-A 3D Poisson Solve is included with the source code and is designed to assess the performance characteristics of PETSc library. As of now, the benchmark can be located in the `src/ksp/ksp/tutorials/` directory. A `run-benchmark.sh` script is included which can be used to build and run the benchmark.
-
-### Using Docker
-
-#### INTERACTIVE
-To run the container and build the benchmark interactively, use: 
-
-``` 
-docker run --rm -it --device /dev/dri --device /dev/kfd --security-opt seccomp=unconfined -w /opt/petsc mycontainer/PETSc  /bin/bash
-```
-
-Use `pwd` to ensure the current directory is `/opt/petsc/`. If not, navigate to the directory with:
-```
-cd /opt/petsc
-```
 For the `run-benchmark.sh` bash script included here, the usage can be found by adding the `-h` which prints the different arguments that can be passed to the script. For example:
 
 ```
@@ -163,31 +93,6 @@ KSP iters:     103
 KSPSolve:      4.65297 seconds
 FOM:           1.719e+06 DoFs/sec
 ===========================================
-```
-#### NON-INTERACTIVE
-To run the benchmark using docker in a non-interactive mode, use the following command:
-```
-docker run --rm -it --device /dev/dri --device /dev/kfd --security-opt seccomp=unconfined -w  /opt/petsc mycontainer/PETSc  ./run-benchmark.sh -g 1
-```
-
-### Using Singularity
-This section assumes that an up-to-date version of Singularity is installed on your system and properly configured for your system. Please consult with your system administrator or view official Singularity documentation.
-
-To create a Singularity container from your local Docker container, run the following command:
-```
-singularity build petsc.sif docker-daemon://mycontainer/PETSc
-```
-You can then use examples from the preceding section to use the image. For example, to run the benchmark problem, launch a container in interactive-mode:
-```
-singularity run --pwd /opt/petsc --writable-tmpfs petsc.sif /bin/bash
-```
-Then benchmarks can be run similar to the previous section. For example, to run on 1 GPU use the command: 
-```
-./run-benchmark.sh -g 1
-```
-Alternatively, to directly run the benchmark on 1 GPU in a non-interactive mode, the following command can be used:
-```
-singularity run --pwd /opt/petsc --writable-tmpfs petsc.sif ./run-benchmark.sh -g 1
 ```
 ## Performance Considerations
 PETSc has not previously provided a benchmark for performance evaluation, but the current benchmark was recently introduced to facilitate comparisons of performance as parameters and hardware are varied.  The figure of merit (FoM) used by the Poisson Solve benchmark is "Degrees of Freedom per second" (DoF/sec), with a larger DoF/sec indicating better performance.

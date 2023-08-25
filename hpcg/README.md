@@ -29,10 +29,7 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## rocHPCG Docker Build
-Instructions on how to build a Docker Container with rocHPCG.
-
-### Building Recipes:
+### Building Recipes
 [Bare Metal Build](/hpcg/baremetal/)
 [Docker/Singularity Build](/hpcg/docker/)
 

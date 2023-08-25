@@ -21,102 +21,21 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## OpenMM Docker Build
-Instructions on how to build a Docker Container with OpenMM.
-
-### Build System Requirements
-- Git
-- Docker
-
-### Inputs
-Possible `build-arg` for the Docker build command  
-
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.5-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
-
-- #### OPENMM_BRANCH
-    Default: `8.0.0`  
-    Branch/Tag found: [OpenMM repo](https://github.com/openmm/openmm.git)  
-
-- #### OPENMMHIP_BRANCH
-    Default: `Master`  
-    Branch/Tag found: [OpenMM repo](https://github.com/openmm/openmm.git)  
-
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)  
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)  
-
-### Building OpenMM Container:
-Download the [Dockerfile](/openmm-docker/Dockerfile)  
-
-To run the default configuration:
-```
-docker build -t mycontainer/OpenMM -f /path/to/Dockerfile . 
-```
->Notes:  
->- `mycontainer/OpenMM` is an example container name.
->- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
-
-
-To run a custom configuration, include one or more customized build-arg  
-*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
-```
-docker build \
-    -t mycontainer/openmm \
-    -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5.0-complete \
-    --build-arg OPENMM_BRANCH=main \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
-    . 
-```
-
-## Running OpenMM Container
-This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
-If needed, please consult with your system administrator or view official documentation.
-
-### Docker
-To run the container interactively, run the following command:
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           -it  mycontainer/openmm  bash
-```
-
-### Singularity
-To build a singularity container from a docker container run the following command:
-```
-singularity build openmm.sif docker-daemon://mycontainer/openmm
-```
-To launch a singularity container interactively run the following command:
-```
-singularity shell --pwd /opt/openmm/examples/ --no-home --writable-tmpfs openmm.sif
-```
-
-### Executing Benchmarks
-Once the container has been launched, there are several different benchmarks that can be run:
+### Building Recipes
+[Docker/Singularity Build](/openmm/docker/)
+## Running OpenMM Benchmarks
+Within the [OpenMM Repo](https://github.com/openmm/openmm.git) there are many examples provided:
 `gbsa`, `rf`, `pme`, `amoebagk`, `amoebapme`, `apoa1rf`, `apoa1pme`, `apoa1ljpme`, `amber20-dhfr`.  
-Each benchmark can be run at `single`, `double`, or `mixed` precision. 
 
-From the directory `/opt/openmm/examples/` these benchmark examples can be executed by the following, by substituting `$BENCHMARK_NAME` and `$PRECISION` for the desired combination. 
+Each example can be run at `single`, `double`, or `mixed` precision. 
+
+From the directory `<path/to>/openmm/examples/` these benchmark examples can be executed by the following, by substituting `$BENCHMARK_NAME` and `$PRECISION` for the desired combination. 
 ```
 python3 benchmark.py --platform HIP --test $BENCHMARK_NAME --precision $PRECISION
 ```
 
-To execute all of these benchmarks execute the following:
-```
+To execute all of these benchmarks execute by creating a simple bash script with the following
+```bash
 benchmarks=(gbsa rf pme amoebagk amoebapme apoa1rf apoa1pme apoa1ljpme amber20-dhfr)
 precisions=(single mixed double)
 for benchmark in "${benchmarks[@]}"; do
@@ -127,32 +46,7 @@ done
 ```
 
 >NOTE: 
-> The following message will be returned: `/bin/sh: 1: nvidia-smi: not found.` When running the benchmarks using `run-benchmarks`, the benchmark script attempts to run `nvidia-smi` and will fail since this tool is not part of the ROCm runtime supporting AMD Instinct GPUs.  The output will include `nvidia-smi: not found` messages. This message can safely be ignored and there is no effect on the benchmark results.
-
-### Run Benchmark Non-Interactive
-
-#### Docker
-These can be executed using the same method as in the [Executing Benchmarks section](#executing-benchmarks)
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           -it  mycontainer/openmm \
-           python3 benchmark.py --platform HIP --test $BENCHMARK_NAME --precision $PRECISION
-```
-
-#### Singularity
-Run the following command:
-```
-singularity run --pwd /opt/openmm/examples/ \
-    --no-home \
-    --writable-tmpfs \
-    openmm.sif \
-    python3 benchmark.py --platform HIP --test $BENCHMARK_NAME --precision $PRECISION
-```
-
-### Custom Simulation
-To run a custom simulation, included any scripts and data files in the container at build time adding [Docker Copy](https://docs.docker.com/engine/reference/builder/#copy) commands in the provided [Dockerfile](/openmm-docker/Dockerfile) or mounting the files into the container at runtime with [Docker Volumes](https://docs.docker.com/storage/volumes/) or [Singularity Mount](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html). 
+> The following message will be returned: `/bin/sh: 1: nvidia-smi: not found.` When running the benchmarks using `benchmark.py`, the benchmark script attempts to run `nvidia-smi` and will fail since this tool is not part of the ROCm runtime supporting AMD Instinct GPUs.  The output will include `nvidia-smi: not found` messages. This message can safely be ignored and there is no effect on the benchmark results.
 
 ## Licensing Information
 Your access and use of this application is subject to the terms of the applicable component-level license identified below. To the extent any sub-component in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application.

@@ -14,130 +14,58 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## Docker Container Build
-These instructions use Docker to create an HPC Application Container.  
-If you are not familiar with creating Docker builds, please see the available [Docker manuals and references](https://docs.docker.com/).
+### Building Recipes
+[Docker/Singularity Build](/pyfr/docker/)
 
-### Build System Requirements
-- Git
-- Docker
 
-### Inputs
-Possible `build-arg` for the Docker build command  
-
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.4.2-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation. 
-
-- #### PYFR_BRANCH
-    Default: `v1.15.0`  
-    Branch/Tag found: [PyFr](https://github.com/PyFR/PyFR).
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-### Building Container
-Download the contents of the [PyFR-docker directory](/pyfr-docker/)  
-
-To run the default configuration:
-```
-docker build -t mycontainer/pyfr -f /path/to/Dockerfile . 
-```
-> Notes:  
->- `mycontainer/pyfr` is an example container name.
->- the `.` at the end of the build line is important. It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
-
-To run a custom configuration, include one or more customized build-arg  
-*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
-
-```
-docker build \
-    -t mycontainer/pyfr \
-    -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5-complete \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main
-    . 
-```
-
-## Running PyFR Container:
+## Running PyFR Benchmarks
 This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
 If needed, please consult with your system administrator or view official documentation.
 
-### Docker
-To run the container interactively, run the following command:
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           -it mycontainer/pyfr bash
-```
-
-### Singularity 
-Singularity, like Docker, can be used for running HPC containers.  
-To create a Singularity container from your local Docker container, run the following command:
-```
-singularity build pyfr.sif  docker-daemon://mycontainer/pyfr:latest
-```
-
-Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a interactive run
-```
-singularity shell --no-home --writable-tmpfs --pwd /examples pyfr.sif
-```
-*For more details on Singularity please see their [User Guide](https://docs.sylabs.io/guides/3.7/user-guide/)*
 
 ### PyFR Examples
-This container has several examples, the [PyFR Test Cases](https://github.com/PyFR/PyFR-Test-Cases.git) come directly from PyFR organization on github.
+There are several PyFR examples in the [PyFR Test Cases](https://github.com/PyFR/PyFR-Test-Cases.git) repo as well as a [BSF](/pyfr/docker/examples/bsf/), [Naca0021](/pyfr/docker/examples/naca0021/), and [TVG](/pyfr/docker/examples/tgv/) that PyFR supports. We have details for the latter. 
+> Note:
+> These benchmarks/examples prefer to be run in an interactive session, if the output is captured to a file, it will result in a single line with possibly hundreds of thousands of characters. `tail -c 80 <PyFR-example.log>` should capture the last executed frame with the elapsed time. Depending on the size of the example, it may be a few characters off. 
+
+<details>
+<summary> BSF </summary>
 
 #### BSF
  The script will make PyFR boot up the benchmark, compile the GPU kernels, and execute the simulation.  
- The user can track progress through a built-in progress bar in the application.
+ The user can track progress through a built-in progress bar in the application.  
 ```
 /examples/bsf/run_bsf 
 ```
 > NOTE: It is not possible to run the BFS input set with more than one GPU currently.
+</details>
+
+<details>
+<summary> TGV </summary>  
 
 #### TGV
 The script converts the mesh to a PyFR mesh first and compiles the GPU kernels, and executes the simulation.  
-As a convenience, this is performed in the benchmark script which can be run using one or two GPUs.  
-**1 GPU**
+As a convenience, this is performed in the benchmark script which can be run using 1 or 2 GPUs.  
+Replace `<NGPU>` with the desired number of GPUs to use
 ```
-/examples/tgv/run_tgv 1
+/examples/tgv/run_tgv <NGPU>
 ```
-**2 GPU**
-```
-/examples/tgv/run_tgv 2
-```
+</details>
+
+<details>
+<summary>  NACA0021 </summary>
 
 #### NACA0021
 The script extracts, then converts the mesh to a PyFR mesh first, for multiple GPU runs it will partition the mesh, then compiles the GPU kernels, and executes the simulation.  
-As a convenience, this is performed in the benchmark script which can be run using one to eight GPUs.  
-**1 GPU**
+As a convenience, this is performed in the benchmark script which can be run using 1 to 8 GPUs.  
+Replace `<NGPU>` with the desired number of GPUs to use
 ```
-/examples/naca0021/run_naca0021 1
+/examples/naca0021/run_naca0021 <NGPU>
 ```
-**2 GPU**
-```
-/examples/naca0021/run_naca0021 2
-```
-**4 GPU**
-```
-/examples/naca0021/run_naca0021 4
-```
-**8 GPU**
-```
-/examples/naca0021/run_naca0021 8
-```
+</details>
+
+<details>
+<summary>  PyFR Test Cases </summary>
 
 #### PyFR Test Cases
 The PyFR test cases have been already provided into the container, they are located at `/examples/PyFR-Test-Cases`, These examples must be run interactively. 
@@ -147,23 +75,7 @@ The instructions on how to run these test cases can be located at [PyFr Examples
 > - Paraview has not been included in the container  
 > - Unstructured VTK (.vtu) files can be placed in a mounted directory to access them on host machine. See [Docker](https://docs.docker.com/storage/volumes/) or [Singularity](https://apptainer.org/user-docs/master/bind_paths_and_mounts.html) documentation for details on how to mount a directory into the container. 
 
-### PyFR Examples Non-Interactive
-#### Docker
-To execute the BSF example in a non-interactive fashion, use the following command:
-```
-docker run --device=/dev/kfd \
-           --device=/dev/dri \
-           --security-opt seccomp=unconfined \
-           -it mycontainer/pyfr /examples/bsf/run_bsf
-```
-
-#### Singularity 
-After building a singularity container, run the following to execute the BSF example using singularity in a non-interactive fashion:
-```
-singularity run --no-home --writable-tmpfs pyfr.sif /examples/bsf/run_bsf
-```
-
-> NOTE: For both Docker and Singularity, the bsf command can be replaced with the tgv or naca0021 command for the to run the desired example. 
+</details>
 
 ## Licensing Information
 Your access and use of this application is subject to the terms of the applicable component-level license identified below. To the extent any subcomponent in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application.
