@@ -31,6 +31,8 @@ For ROCm installation procedures and validation checks, see:
 - [HPCG](/hpcg/)
   - [Bare Metal](/hpcg/baremetal/)
   - [Docker](/hpcg/docker/)
+- [Kokkos](/kokkos/)
+  - [Docker](/kokkos/docker/)
 - [LAMMPS](/lammps/)
   - [Bare Metal](/lammps/baremetal/)
   - [Docker](/lammps/docker/)
