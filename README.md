@@ -21,6 +21,8 @@ For ROCm installation procedures and validation checks, see:
 - [Cholla](/cholla)
   - [Bare Metal](/cholla/baremetal/)
   - [Docker](/cholla/docker/)
+- [Chroma](/chroma/)
+  - [Docker](/chroma/docker/)
 - [CP2K](/cp2k/)
   - [Bare Metal](/cp2k/baremetal/)
   - [Docker](/cp2k/docker/)
