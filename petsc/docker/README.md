@@ -9,7 +9,7 @@ Instructions on how to build a Docker Container with PETSc.
 Possible `build-arg` for the Docker build command    
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.4.2-complete`  
+    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     > Note:  

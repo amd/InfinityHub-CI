@@ -1,7 +1,7 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.4.2-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
 
 FROM ${IMAGE}
-ARG PETSC_BRANCH="v3.19.0"
+ARG PETSC_BRANCH="v3.20.0"
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 
@@ -61,16 +61,17 @@ RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
 
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake \
-  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.22/cmake-3.22.2-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
+  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.2-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
 
 # Adding rocm/cmake to the PATH
 ENV ROCM_PATH=/opt/rocm
-ENV HIP_PATH=$ROCM_PATH/hip \
-      HCC_HOME=$ROCM_PATH/hcc
-ENV PATH=$PATH:$HCC_HOME/bin:$HIP_PATH/bin:$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:/opt/ompi/bin \
-      LIBRARY_PATH=$LIBRARY_PATH:$ROCM_PATH/lib:$ROCM_PATH/llvm/lib:$ROCM_PATH/hip/lib:$ROCM_PATH/hsa/lib:$ROCM_PATH/lib64:/opt/openmm/lib \
-      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCM_PATH/lib:$ROCM_PATH/llvm/lib:$ROCM_PATH/hip/lib:$ROCM_PATH/hsa/lib:$ROCM_PATH/lib64:/opt/openmm/lib \
-      INCLUDE=$INCLUDE:$ROCM_PATH/include:$ROCM_PATH/llvm/include:$ROCM_PATH/hsa/include 
+ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:/opt/cmake/bin:$PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse:$CPLUS_INCLUDE_PATH \
+    CPATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse$CPATH \
+    INCLUDE=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse:$INCLUDE
 
 WORKDIR /tmp
 

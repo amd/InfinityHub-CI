@@ -9,7 +9,7 @@ Instructions on how to build a Docker Container with AMD's implementation of Gro
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-20.04:5.3-complete`  
+    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)

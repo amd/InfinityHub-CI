@@ -1,4 +1,4 @@
-ARG IMAGE="rocm/dev-ubuntu-20.04:5.3-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
 
 FROM ${IMAGE}
 
@@ -40,7 +40,11 @@ RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
 
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \
-  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.22/cmake-3.22.2-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
+  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
+
+ENV ROCM_PATH=/opt/rocm \
+    UCX_PATH=/opt/ucx \
+    OMPI_PATH=/opt/ompi
 
 # Adding rocm/cmake to the PATH
 ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:$PATH \

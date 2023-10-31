@@ -11,7 +11,7 @@ This document provides instructions on how to build CP2K into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - #### IMAGE
-    Default: `rocm/dev-ubuntu-20.04:5.4.3-complete`  
+    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
     Docker Hub Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)

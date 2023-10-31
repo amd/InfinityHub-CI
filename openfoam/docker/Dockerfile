@@ -1,4 +1,4 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.4.2-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
 
 FROM ${IMAGE}
 
@@ -6,7 +6,7 @@ ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 ARG OPENFOAM_VERSION="v2212"
 ARG SCOTCH_VER="7.0.3"
-ARG PETSC_VER="3.19.0"
+ARG PETSC_VER="3.20.0"
 ARG USE_HYPRE=TRUE
 
 # Update and Install basic Linux development tools
@@ -54,11 +54,14 @@ ENV ROCM_PATH=/opt/rocm \
     UCX_HOME=/opt/ucx \
     OMPI_HOME=/opt/ompi
 
-ENV HCC_HOME=$ROCM_PATH/hcc \
-    HIP_PATH=$ROCM_PATH/hip
-
 # Adding rocm to the Environment 
-ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:$HCC_HOME/bin:$HIP_PATH/bin:$PATH 
+ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:/opt/cmake/bin:$PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib \
+    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64 \
+    C_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse \
+    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse \
+    CPATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse \
+    INCLUDE=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse
 
 # To reduce build time only use one
 RUN echo "gfx900"      > /opt/rocm/bin/target.lst \

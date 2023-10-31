@@ -59,7 +59,7 @@ Please consult the [Docker documentation](https://docs.docker.com/engine/referen
 Possible `build-arg` for the Docker build command  
 
 - #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.4.2`  
+    Default: `rocm/dev-ubuntu-22.04:5.7`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)

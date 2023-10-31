@@ -1,4 +1,4 @@
-ARG IMAGE=rocm/dev-ubuntu-22.04:5.6-complete
+ARG IMAGE=rocm/dev-ubuntu-22.04:5.7-complete
 
 FROM ${IMAGE}
 
@@ -33,7 +33,7 @@ RUN set -ex \
         apt-utils \
         gnupg
 RUN mkdir -p /opt/cmake \
-    && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.23/cmake-3.23.0-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
+    && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
 
 # Adding rocm/cmake to the PATH
 ENV ROCM_PATH=/opt/rocm \

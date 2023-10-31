@@ -1,4 +1,4 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.4.2"
+ARG IMAGE="rocm/dev-ubuntu-22.04:5.7"
 
 FROM ${IMAGE}
 
@@ -33,8 +33,7 @@ RUN rm /etc/apt/sources.list.d/* \
     gfortran \
     flex \
     hwloc \
-  && apt-get clean \
-  && ln -s /opt/rocm/llvm/bin/offload-arch /opt/rocm/bin/offload-arch
+  && apt-get clean
 
 RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
     &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
@@ -42,7 +41,7 @@ RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
 
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \
-  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.22/cmake-3.22.2-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
+  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
 
 ENV ROCM_PATH=/opt/rocm \
     UCX_PATH=/opt/ucx \

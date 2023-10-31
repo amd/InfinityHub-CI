@@ -1,4 +1,4 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.6-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
 
 FROM ${IMAGE}
 
