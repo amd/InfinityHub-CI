@@ -1,7 +1,7 @@
-# MILC Docker Build Instructions 
+# QUDA Docker Build Instructions 
 
 ## Overview
-This document provides instructions on how to build MILC into a Docker container that is portable between environments.
+This document provides instructions on how to build QUDA into a Docker container that is portable between environments.
 
 ### Build System Requirements
 - Git
@@ -11,7 +11,7 @@ This document provides instructions on how to build MILC into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - ## IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.6-complete`  
+    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
@@ -26,9 +26,9 @@ Possible `build-arg` for the Docker build command
     Default: `v4.1.5`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
-- ## MILC_BRANCH
+- ## QUDA_BRANCH
     Default: `develop`  
-    Branch/Tag found: [MILC repo](https://github.com/milc-qcd/milc_qcd/)
+    Branch/Tag found: [QUDA repo](https://github.com/lattice/quda.git)
 
 - ## QMP_BRANCH
     Default: `devel`  
@@ -37,10 +37,6 @@ Possible `build-arg` for the Docker build command
 - ## QIO_BRANCH
     Default: `master`  
     Branch/Tag found: [QIO repo](https://github.com/usqcd-software/qio.git)
-
-- ## QUDA_BRANCH
-    Default: `develop`  
-    Branch/Tag found: [QUDA repo](https://github.com/lattice/quda.git)
 
 - ## GPU_TARGET
     Default: `gfx90a`  
@@ -52,11 +48,11 @@ Possible `build-arg` for the Docker build command
     
 
 ## Building Container
-Download the [Dockerfile](/milc/docker/Dockerfile)
+Download the [Dockerfile](/quda/docker/Dockerfile)
 
 To run the default configuration:
 ```
-docker build -t mycontainer/milc -f /path/to/Dockerfile . 
+docker build -t mycontainer/quda -f /path/to/Dockerfile . 
 ```
 > Notes:  
 >- `mycontainer` is an example container name.
@@ -67,58 +63,57 @@ To run a custom configuration, include one or more customized build-arg
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
 ```
 docker build \
-    -t mycontainer/milc \
+    -t mycontainer/quda \
     -f /path/to/Dockerfile \
     --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5-complete \
     --build-arg UCX_BRANCH=master \
     --build-arg OMPI_BRANCH=main \
+    --build-arg QUDA_BRANCH=master
     --build-arg QMP_BRANCH=master
     --build-arg QIO_BRANCH=master
     --build-arg QDPXX_BRANCH=master
-    --build-arg QUDA_BRANCH=master
-    --build-arg MILC_BRANCH=master
     --build-arg GPU_TARGET="gfx908,gfx90a"
     . 
 ```
 
-## Running an MILC Container
+## Running an QUDA Container
 Both Docker and Singularity can be run interactively or as a single command.
 
-To run the [MILC Benchmarks](/milc/README.md#running-milc-benchmarks), just replace the `<MILC Command>` the examples in [Running MILC Benchmarks](/milc/README.md#running-milc-benchmarks) section of the MILC readme. The commands can be run directly in an interactive session as well. 
+To run the [QUDA Benchmarks](/quda/README.md#running-quda-benchmarks), just replace the `<QUDA Command>` the examples in [Running QUDA Benchmarks](/quda/README.md#running-quda-benchmarks) section of the QUDA readme. The commands can be run directly in an interactive session as well. 
 
 ### Docker
-For access to the tuning files, please add `-v $(pwd):/tmp/tuning` before `mycontainer/milc` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
+For access to the tuning files, please add `-v $(pwd):/tmp/tuning` before `mycontainer/quda` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
 To run a single command docker, it will be necessary to mount the tuning files in for better performance. 
 
 #### Docker Interactive
 ```
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/milc /bin/bash
+docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/quda /bin/bash
 ```
 #### Docker Single Command
 ```
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/milc <MILC Command>
+docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/quda <QUDA Command>
 ```
 
 ### Singularity 
-For access to the tuning files, please add `--bind $(pwd):/tmp/tuning` before `milc.sif` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
+For access to the tuning files, please add `--bind $(pwd):/tmp/tuning` before `quda.sif` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
 To run a single command singularity, it will be necessary to mount the tuning files in for better performance. 
 
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:
 ```
-singularity build milc.sif docker-daemon://mycontainer/milc:latest
+singularity build quda.sif docker-daemon://mycontainer/quda:latest
 ```
 
 #### Singularity Interactive
 To launch a Singularity image build locally.
 ```
-singularity shell --no-home --writable-tmpfs -pwd /benchmark milc.sif
+singularity shell --no-home --writable-tmpfs -pwd /benchmark quda.sif
 ```
 
 #### Singularity Single Command
 To launch a Singularity image build locally.
 ```
-singularity run --no-home --writable-tmpfs -pwd /benchmark milc.sif <MILC Command>
+singularity run --no-home --writable-tmpfs -pwd /benchmark quda.sif <QUDA Command>
 ```
 
 
@@ -133,10 +128,9 @@ The application is provided in a container image format that includes the follow
 |OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
 |OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
-|MILC|MIT (Custom)|[MILC](http://physics.utah.edu/~detar/milc/)<br >[MILC License](https://github.com/milc-qcd/milc_qcd/blob/master/LICENSE)|
+|QUDA|MIT (Custom) |[QUDA](https://github.com/lattice/quda)<br >[QUDA License](https://github.com/lattice/quda/blob/develop/LICENSE)|
 |QMP|Jefferson Science Associates LLC Copyright (Custom) |[QMP](https://github.com/usqcd-software/qmp)<br >[QMP License](https://github.com/usqcd-software/qmp/blob/master/LICENSE)|
 |QIO|Jefferson Science Associates LLC Copyright (Custom) |[QIO](https://github.com/usqcd-software/qio)<br >[QIO License](https://github.com/usqcd-software/qio/blob/master/COPYING)|
-|QUDA|MIT (Custom) |[QUDA](https://github.com/lattice/quda)<br >[QUDA License](https://github.com/lattice/quda/blob/develop/LICENSE)|
 
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF SUCH THIRD-PARTY CONTENT IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THIRD-PARTY CONTENT.
