@@ -44,6 +44,8 @@ For ROCm installation procedures and validation checks, see:
   - [Docker](/openmm/docker/)
 - [PETSc](/petsc/)
   - [Docker](/petsc/docker/)
+- [PIconGPU](/picongpu/)
+  - [Docker](/picongpu/docker/)
 - [PyFR](/pyfr/)
   - [Docker](/pyfr/docker/)
 - [rocHPL](/rochpl/)

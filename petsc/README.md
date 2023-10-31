@@ -17,7 +17,7 @@ For ROCm installation procedures and validation checks, see:
 ### Building Recipes
 [Docker/Singularity Build](/petsc/docker/)
 
-## Running PETS Benchmark
+## Running PETSc Benchmark
 A 3D Poisson Solve is included with the source code and is designed to assess the performance characteristics of PETSc library. As of now, the benchmark can be located in the `src/ksp/ksp/tutorials/` directory, within the [PETSc GIT repository](). This Script [run-benchmark.sh](/petsc/docker/benchmark/run-benchmark.sh) can be used to build and run the benchmark. It is included in the [PETSc Docker image](/petsc/docker/).
 
 For the `run-benchmark.sh` bash script included here, the usage can be found by adding the `-h` which prints the different arguments that can be passed to the script. For example:

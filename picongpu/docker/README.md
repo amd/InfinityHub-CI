@@ -1,5 +1,5 @@
-# PETSc Docker Build Instructions
-Instructions on how to build a Docker Container with PETSc.
+# PIconGPU Docker Build Instructions
+Instructions on how to build a Docker Container with PIconGPU.
 
 ## System Requirements
 - Git
@@ -9,17 +9,17 @@ Instructions on how to build a Docker Container with PETSc.
 Possible `build-arg` for the Docker build command    
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.4.2-complete`  
+    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     > Note:  
     > The `*-complete` version has all the components required for building and installation.  
 
-- ### PETSc_BRANCH
-    Default: default: `v3.19.0`  
-    Branch/Tag found: [ PETSc repo](https://github.com/petsc/petsc.git).
+- ### PICONGPU_BRANCH
+    Default: default: `release-0.7.0`  
+    Branch/Tag found: [ PIconGPU repo](https://github.com/ComputationalRadiationPhysics/picongpu).
     >NOTE:  
-    >Initial HIP support was added in v3.18.0 with further optimizations included in minor releases. We recommend using v3.19 or newer for performance runs on AMD hardware
+    >master branch and release-0.7.0 branches have different tests, benchmarks, examples. The test build into this container is not available the master branch at this time.
 
 - ### UCX_BRANCH
     Default: `v1.14.1`  
@@ -29,29 +29,36 @@ Possible `build-arg` for the Docker build command
     Default: `v4.1.5`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
-## Building PETSc Container:
-Download the all files at [PETSc Docker](/petsc/docker/)  
+- ## HDF5_BRANCH
+    Default: `hdf5-1_14_1`  
+    Branch/Tag found: [HDF5 repo](https://github.com/HDFGroup/hdf5.git)
 
+- ## GPU_TARGET
+    Default: `gfx90a`  
+    Only one GPU architecture needs to be provided.  
+    - gfx908 (MI100)
+    - gfx90a (MI210, MI250)
+
+## Building PIconGPU Container:
 To run the default configuration:
 ```
-docker build -t mycontainer/PETSc -f /path/to/Dockerfile . 
+docker build -t mycontainer/picongpu -f /path/to/Dockerfile . 
 ```
 >Notes:  
->- `mycontainer/PETSc` will be the name of your local container.
+>- `mycontainer/picongpu` will be the name of your local container.
 >- the `.` at the end of the build line is important! It tells Docker where your build context is located!
 >- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
->- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-PETSc-container)). If you plan on running PETSc against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
 
 
 
 To run a custom configuration, include one or more customized build-arg  
-*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance. 
 ```
 docker build \
-    -t mycontainer/PETSc \
+    -t mycontainer/PIconGPU \
     -f /path/to/Dockerfile \
     --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
-    --build-arg PETSc_BRANCH=v3.18.2 \
+    --build-arg PICONGPU_BRANCH=dev \
     --build-arg MPI_ENABLED=on \
     --build-arg UCX_BRANCH=master \
     --build-arg OMPI_BRANCH=main \
@@ -59,11 +66,12 @@ docker build \
 ```
 
 
-## Running PETSc Container
+## Running PIconGPU Container
 This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
-If needed, please consult with your system administrator or view official documentation.
+If needed, please consult with your system administrator or view official documentation. 
+PNGwriter and HDF-5 have been provided inside this container to help generate visual outputs. To access outside of the container mount an output directory the container using dockers/singularity mount/volume API.
 
-To run the [PETSc Benchmarks](/petsc/README.md#running-petsc-benchmark), just replace the `<PETSc Command>` the examples in [Running PETSc Benchmarks](/petsc/README.md#running-petsc-benchmark) section of the PETSc readme. The commands can be run directly in an interactive session as well. 
+To run the [PIconGPU Benchmarks](/picongpu/README.md#running-picongpu-benchmark), just replace the `<PIconGPU Command>` the examples in [Running PIconGPU Benchmarks](/picongpu/README.md#running-picongpu-benchmark) section of the PIconGPU readme. The commands can be run directly in an interactive session as well. 
 
 ### Docker
 
@@ -74,8 +82,8 @@ docker run --rm -it \
     --device /dev/dri \
     --device /dev/kfd \
     --security-opt seccomp=unconfined \
-    -w /opt/petsc \
-    mycontainer/PETSc  /bin/bash
+    -w /opt/picon-examples/khi_fom \
+    mycontainer/picongpu  /bin/bash
 ```
 
 #### Docker Single Command
@@ -85,16 +93,16 @@ docker run --rm -it \
     --device /dev/dri \
     --device /dev/kfd \
     --security-opt seccomp=unconfined \
-    -w  /opt/petsc \
-    mycontainer/PETSc  \
-    <PETSc Command> 
+    -w  /opt/picon-examples/khi_fom \
+    mycontainer/picongpu  \
+    <PIconGPU Command> 
 ```
 
 ### Singularity
 This section assumes that an up-to-date version of Singularity is installed on your system and properly configured for your system. Please consult with your system administrator or view official Singularity documentation.
 To build a Singularity container from your local Docker container, run the following command:
 ```
-singularity build petsc.sif docker-daemon://mycontainer/PETSc
+singularity build picongpu.sif docker-daemon://mycontainer/picongpu
 ```
 
 
@@ -103,10 +111,9 @@ To launch a Singularity image build into an interactive session
 ```
 singularity shell \
     --no-home \
-    --pwd /opt/petsc \
+    --pwd /opt/picon-examples/khi_fom \
     --writable-tmpfs \
-    petsc.sif \
-    /bin/bash
+    picongpu.sif 
 ```
 
 #### Singularity Single Command
@@ -114,10 +121,10 @@ To launch a Singularity image with a single command, useful for batch scrips.
 ```
 singularity run \
     --no-home \
-    --pwd /opt/petsc \
+    --pwd /opt/picon-examples/khi_fom \
     --writable-tmpfs \
-    petsc.sif \
-    <PETSc Command>
+    picongpu.sif \
+    <PIconGPU Command>
 ```
 
 
@@ -133,9 +140,9 @@ The application is provided in a container image format that includes the follow
 |OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
 |OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
-|PETSc|BSD-2 Clause | [PETSc License](https://petsc.org/release/install/license/)|
-|Scotch|CeCILL-C|[Scotch Web Page](https://www.labri.fr/perso/pelegrin/scotch/)<br /> [Scotch License](https://gitlab.inria.fr/scotch/scotch/-/blob/master/LICENSE_en.txt)|
-|HYPRE|Apache V2.0/MIT|[HYPRE Licenses](https://github.com/hypre-space/hypre#license)|
+|PIconGPU|GPLv3+ license | [PIconGPU](https://picongpu.readthedocs.io/en/latest/) <br/> [PIconGPU License](https://github.com/ComputationalRadiationPhysics/picongpu/blob/master/LICENSE.md)|
+|HDF5|BSD-like(CUSTOM)|[HDF5 License](https://github.com/HDFGroup/hdf5/blob/develop/COPYING)|
+|PNGwriterGPLv2+|[PNGwriter License](https://github.com/pngwriter/pngwriter/)|
 
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER. 
@@ -148,5 +155,3 @@ The information contained herein is for informational purposes only, and is 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein.  Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.    
 
 All other trademarks and copyrights are property of their respective owners and are only mentioned for informative purposes.   
-
-

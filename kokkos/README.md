@@ -25,7 +25,7 @@ The build recipe provided here is to provide a clean environment to work with Ko
 In the docker container, the environment has been setup so that the headers and libraries have been included in the environment and are ready to build on top of.  
 Popular projects that use Kokkos: [LAMMPS](/lammps/), [Trillnos](https://trilinos.github.io/), [BableStream](https://github.com/UoB-HPC/BabelStream)
 
-There are many more options that can be added, they are listed on [Kokkos Wiki](https://kokkos.github.io/kokkos-core-wiki/keywords.html). Each project is unique with different requirements, the build provided here is very basic with the tests enabled. With theses tests Kokkos can be tuned for any environment.
+There are many more options that can be added, they are listed on [Kokkos Wiki](https://kokkos.github.io/kokkos-core-wiki/keywords.html). Each project is unique with different requirements, the build provided here is very basic with the tests enabled. With these tests Kokkos can be tuned for any environment.
 
 To run the tests in the provided container instructions, [start up the image](/kokkos/docker/README.md#running-kokkos-container).  
 To run Kokkos standard suite of tests, do the following. 
