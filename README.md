@@ -38,6 +38,8 @@ For ROCm installation procedures and validation checks, see:
   - [Docker](/lammps/docker/)
 - [MILC](/milc/)
   - [Docker](/milc/docker/)
+- [MPAS](/mpas/)
+  - [Bare Metal](/mpas/)
 - [OpenFOAM](/openfoam/)
   - [Docker](/openfoam/docker/)
 - [OpenMM](/openmm/)
