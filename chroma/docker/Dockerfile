@@ -1,4 +1,4 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.6-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:6.0-complete"
 
 FROM ${IMAGE}
 
@@ -21,7 +21,7 @@ RUN rm /etc/apt/sources.list.d/* \
     make \
     vim \
     nano \
-    libtinfo* \
+    libtinfo-dev\
     initramfs-tools \
     libelf-dev \
     numactl \
@@ -33,7 +33,7 @@ RUN rm /etc/apt/sources.list.d/* \
     automake \
     libtool \
     pkg-config \
-    libnuma* \
+    libnuma-dev \
     gfortran \
     flex \
     hwloc \
@@ -61,10 +61,10 @@ ENV ROCM_PATH=/opt/rocm \
 ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/llvm/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:$PATH \
         LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$LD_LIBRARY_PATH \
         LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LIBRARY_PATH \
-        C_INCLUDE_PATH=$ROCM_PATH/include:$C_INCLUDE_PATH \
-        CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$CPLUS_INCLUDE_PATH \
-        CPATH=$ROCM_PATH/include:$CPATH \
-        INCLUDE=$ROCM_PATH/include:$INCLUDE \
+        C_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipfft:$C_INCLUDE_PATH \
+        CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipfft:$CPLUS_INCLUDE_PATH \
+        CPATH=$ROCM_PATH/include:$ROCM_PATH/include/hipfft:$CPATH \
+        INCLUDE=$ROCM_PATH/include:$ROCM_PATH/include/hipfft:$INCLUDE \
         LLVN_DIR=${ROCM_PATH}/llvm/lib/cmake/llvm \
         LLD_DIR=${ROCM_PATH}/llvm/lib/cmake/lld
 
@@ -128,7 +128,6 @@ ENV PATH=$OMPI_PATH/bin:$UCX_PATH/bin:$PATH \
         MPIF90=$OMPI_PATH/bin/mpif90 \
         INSTALLROOT=/opt
 
-
 #qmp
 RUN git clone -b ${QMP_BRANCH} --recursive https://github.com/usqcd-software/qmp.git \
         && cd qmp \
@@ -137,9 +136,6 @@ RUN git clone -b ${QMP_BRANCH} --recursive https://github.com/usqcd-software/qmp
         && cmake .. \
             -DQMP_MPI=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER=mpicc \
-            -DCMAKE_C_STANDARD=99 \
-            -DCMAKE_C_EXTENSIONS=OFF \
             -DCMAKE_INSTALL_PREFIX=${INSTALLROOT}/qmp  \
             -DBUILD_SHARED_LIBS=ON \
         && cmake --build . -j $(nproc) -v \
@@ -157,22 +153,18 @@ ENV PATH=${INSTALLROOT}/qmp/bin:$PATH \
 
 #qio
 RUN git clone -b ${QIO_BRANCH} --recursive https://github.com/usqcd-software/qio.git \
-    && cd qio \
-    && mkdir build \
-    && ./autogen.sh \
-    && cd build \
-    && ../configure \
-        CFLAGS=-std=gnu99 CC=mpicc CFLAGS=-std=gnu99 LDFLAGS=-lmpi \
-        --prefix=${INSTALLROOT}/qio \
-        -with-qmp=${INSTALLROOT}/qmp \
-        --enable-largefile \
-        --disable-qmp-route \
-        --enable-fast_route \
-        --enable-dml-output-buffering \
-        --enable-dml-bufsize=33554432 \
-    && make -j $(nproc) -v \
-    && make install \
-    && rm -rf /tmp/*
+        && cd qio \
+        && mkdir build \
+        && cd build \
+        && cmake .. \
+            -D CMAKE_BUILD_TYPE=RELEASE \
+            -D BUILD_SHARED_LIBS=ON \
+            -D QIO_ENABLE_PARALLEL_BUILD=ON \
+            -D QMP_DIR=${INSTALLROOT}/qmp/lib/cmake/QMP \
+            -D CMAKE_INSTALL_PREFIX=${INSTALLROOT}/qio \
+        && make -j $(nproc) -v \
+        && make install \
+        && rm -rf /tmp/*
 
 ENV PATH=${INSTALLROOT}/qio/bin:$PATH \
         LD_LIBRARY_PATH=${INSTALLROOT}/qio/lib:$LD_LIBRARY_PATH \
@@ -220,53 +212,33 @@ ENV PATH=${INSTALLROOT}/qdpxx/bin:$PATH \
 #quda
 RUN git clone -b ${QUDA_BRANCH} --recursive https://github.com/lattice/quda.git \
         && cd quda \
+        && find . -type f -name "*make" -exec sed -i "s/hipfft\/include/include\/hipfft/" {} \; \
         && mkdir build \
         && cd build \
         && cmake /tmp/quda \
-            -G "Unix Makefiles" \
-            -DQUDA_TARGET_TYPE="HIP" \
-            -DROCM_PATH=${ROCM_PATH} \
+            -DCMAKE_INSTALL_PREFIX=${INSTALLROOT}/quda \
+            -DCMAKE_BUILD_TYPE=RELEASE \
+            -DQUDA_TARGET_TYPE=HIP \
             -DQUDA_DIRAC_CLOVER=ON \
-            -DQUDA_DIRAC_CLOVER_HASENBUSCH=ON \
-            -DQUDA_DIRAC_DOMAIN_WALL=ON \
-            -DQUDA_DIRAC_NDEG_TWISTED_MASS=OFF \
-            -DQUDA_DIRAC_STAGGERED=ON \
-            -DQUDA_DIRAC_TWISTED_MASS=OFF \
-            -DQUDA_DIRAC_TWISTED_CLOVER=OFF \
-            -DQUDA_DIRAC_WILSON=ON \
-            -DQUDA_DYNAMIC_CLOVER=OFF \
-            -DQUDA_FORCE_GAUGE=ON \
-            -DQUDA_FORCE_HISQ=ON \
-            -DQUDA_GAUGE_ALG=ON \
-            -DQUDA_GAUGE_TOOLS=OFF \
-            -DQUDA_QDPJIT=OFF \
-            -DQUDA_INTERFACE_QDPJIT=OFF \
-            -DQUDA_INTERFACE_MILC=ON \
-            -DQUDA_INTERFACE_CPS=OFF \
-            -DQUDA_INTERFACE_QDP=ON \
-            -DQUDA_INTERFACE_TIFR=OFF \
-            -DQUDA_MAGMA=OFF \
-            -DQUDA_GPU_ARCH="$GPU_TARGET" \
-            -DGPU_ARCH="$GPU_TARGET" \
+            -DQUDA_DOWNLOAD_EIGEN=ON \
+            -DQUDA_GPU_ARCH=$GPU_TARGET \
             -DQUDA_QMP=ON \
             -DQMP_DIR=${INSTALLROOT}/qmp/lib/cmake/QMP \
-            -DQUDA_OPENMP=OFF \
-            -DQUDA_MULTIGRID=OFF \
-            -DQUDA_MAX_MULTI_BLAS_N=9 \
-            -DQUDA_DOWNLOAD_EIGEN=ON \
-            -DCMAKE_INSTALL_PREFIX=${INSTALLROOT}/quda \
-            -DCMAKE_BUILD_TYPE="RELEASE" \
-            -DCMAKE_CXX_COMPILER="mpicxx"\
-            -DCMAKE_C_COMPILER="mpicc" \
-            -DBUILD_SHARED_LIBS=ON \
-            -DQUDA_BUILD_SHAREDLIB=ON \
-            -DQUDA_BUILD_ALL_TESTS=ON \
-            -DCMAKE_CXX_STANDARD=17 \
-            -DCMAKE_C_STANDARD=99 \
-            -DQUDA_CTEST_DISABLE_BENCHMARKS=ON \
-            -DQUDA_ENABLE_P2P=ON \
-        && cmake --build . -v -j 8 \
+            -DQUDA_QIO=ON \
+            -DQMP_DIR=${INSTALLROOT}/qio/lib/cmake/qio \
+            -DQUDA_DIRAC_DEFAULT_OFF=ON \
+            -DQUDA_DIRAC_STAGGERED=ON \
+            -DCMAKE_CXX_COMPILER=mpicxx \
+            -DCMAKE_C_COMPILER=mpicc \
+            -DCMAKE_HIP_COMPILER=mpicxx \
+            -DCMAKE_CXX_FLAGS="-O3 -ggdb --save-temps" \
+            -DCMAKE_C_FLAGS="-O3 -ggdb --save-temps" \
+            -DCMAKE_HIP_FLAGS="-O3 -ggdb --offload-arch=${GPU_TARGET} --save-temps" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-O3 -ggdb" \
+            -DCMAKE_EXE_LINKER_FLAGS="-O3 -ggdb --offload-arch=${GPU_TARGET}" \
+        && cmake --build . -v -j $(nproc) \
         && cmake --install . \
+        && sed -i 's/\/opt\/rocm\/hipfft\/include/\/opt\/rocm\/include\/hipfft/'   /opt/quda/lib/cmake/QUDA/QUDATargets.cmake \
         && rm -rf /tmp/*
 
 ENV PATH=${INSTALLROOT}/quda/bin:$PATH \
@@ -277,7 +249,6 @@ ENV PATH=${INSTALLROOT}/quda/bin:$PATH \
         CPATH=${INSTALLROOT}/quda/include:$CPATH \
         INCLUDE=${INSTALLROOT}/quda/include:$INCLUDE \
         PKG_CONFIG_PATH=${INSTALLROOT}/quda/lib/pkgconfig:$PKG_CONFIG_PATH
-
 
 #Chroma 
 RUN git clone --recursive -b ${CHROMA_BRANCH} https://github.com/JeffersonLab/chroma.git \
@@ -313,14 +284,14 @@ ENV PATH=${INSTALLROOT}/chroma/bin:$PATH \
         PKG_CONFIG_PATH=${INSTALLROOT}/chroma/lib/pkgconfig:$PKG_CONFIG_PATH \
         QUDA_ENABLE_P2P=0 \
         QUDA_ENABLE_GDR=0 \
-        QUDA_RESOURCE_PATH=/tmp/tuning
+        QUDA_RESOURCE_PATH=/tmp
 
 
 # Download benchmark
 RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1KmF32sM_Ts8uYMqj7eTPV4aeG0ZPEOyR' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p'))&id=1KmF32sM_Ts8uYMqj7eTPV4aeG0ZPEOyR" -O /szscl_bench.zip && rm -rf /tmp/cookies.txt \
         && unzip /szscl_bench.zip -d / \
         && rm /szscl_bench.zip \
-        && chmod -R +x /bench
+        && chmod -R 777 /bench
 
 WORKDIR /bench
 

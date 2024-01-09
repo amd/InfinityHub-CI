@@ -1,7 +1,7 @@
 ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
 
 FROM ${IMAGE}
-ARG PETSC_BRANCH="v3.20.0"
+ARG PETSC_BRANCH="v3.20.3"
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 
@@ -26,7 +26,7 @@ RUN apt-get update \
     automake \
     libtool \
     pkg-config \
-    libnuma* \
+    libnuma-dev \
     gfortran \
     flex \
     hwloc \
@@ -43,7 +43,7 @@ RUN apt-get update \
     libmpfr-dev \
     bison \
     libelf1 \
-    libtinfo* \
+    libtinfo-dev\
     initramfs-tools \
     rocm-hip-runtime \
     rocm-hip-sdk \

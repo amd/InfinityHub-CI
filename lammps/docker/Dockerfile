@@ -1,8 +1,8 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:6.0-complete"
 
 FROM ${IMAGE}
 
-ARG LAMMPS_BRANCH="stable_23Jun2022_update4"
+ARG LAMMPS_BRANCH="stable_2Aug2023_update1"
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 
@@ -16,7 +16,7 @@ RUN rm /etc/apt/sources.list.d/* \
     make \
     vim \
     nano \
-    libtinfo* \
+    libtinfo-dev\
     initramfs-tools \
     libelf-dev \
     numactl \
@@ -27,7 +27,7 @@ RUN rm /etc/apt/sources.list.d/* \
     automake \
     libtool \
     pkg-config \
-    libnuma* \
+    libnuma-dev \
     gfortran \
     flex \
     hwloc \

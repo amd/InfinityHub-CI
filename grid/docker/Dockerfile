@@ -1,4 +1,4 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:6.0-complete"
 
 FROM ${IMAGE}
 
@@ -15,7 +15,7 @@ RUN rm /etc/apt/sources.list.d/* \
     make \
     vim \
     nano \
-    libtinfo* \
+    libtinfo-dev \
     initramfs-tools \
     libelf-dev \
     numactl \
@@ -27,7 +27,7 @@ RUN rm /etc/apt/sources.list.d/* \
     automake \
     libtool \
     pkg-config \
-    libnuma* \
+    libnuma-dev \
     gfortran \
     flex \
     hwloc \
@@ -37,27 +37,35 @@ RUN rm /etc/apt/sources.list.d/* \
     libssl-dev \
     zlib1g-dev \
     python3 \
+    libssl-dev \
   && apt-get clean
+
 
 # Note: only need to define the GFX arch that you are using
 RUN echo "gfx900"      > /opt/rocm/bin/target.lst \
-    &&  echo "gfx906"  >> /opt/rocm/bin/target.lst \ 
-    &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \       
-    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst     
+    &&  echo "gfx906"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst
         
 RUN chmod a+r /opt/rocm/bin/target.lst  
 
-ENV ROCM_PATH=/opt/rocm
-ENV HIP_PATH=$ROCM_PATH/hip \
-    HCC_HOME=$ROCM_PATH/hcc
+ENV ROCM_PATH=/opt/rocm \
+    UCX_HOME=/opt/ucx \
+    OMPI_HOME=/opt/ompi
+
+# Adding rocm/cmake to the Environment 
+ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:$PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$ROCM_PATH/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$CPLUS_INCLUDE_PATH \
+    CPATH=$ROCM_PATH/include:$CPATH \
+    INCLUDE=$ROCM_PATH/include:$INCLUDE
 
 WORKDIR /tmp
 
-# Install UCX
-RUN cd /tmp/ \
-      && echo git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
-      && git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
-      && ls -lsa  \
+#Install UCX
+RUN git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
       && cd ucx \
       && ./autogen.sh \
       && mkdir build \
@@ -77,10 +85,7 @@ RUN cd /tmp/ \
       && rm -rf ucx
 
 # Install OpenMPI
-RUN cd /tmp \
-      && echo git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
-      && git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
-      && ls -lsa  \
+RUN git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
       && cd ompi \
       && ./autogen.pl\
       && mkdir build \
@@ -98,11 +103,18 @@ RUN cd /tmp \
       && rm -rf ompi
 
 # Adding OpenMPI and UCX to PATH
-ENV PATH=/opt/ompi/bin:/opt/ucx/bin:$PATH
+ENV PATH=$OMPI_HOME/bin:$UCX_HOME/bin:$PATH \
+    LD_LIBRARY_PATH=$OMPI_HOME/lib:$UCX_HOME/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$OMPI_HOME/lib:$UCX_HOME/lib:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$OMPI_HOME/include:$UCX_HOME/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$OMPI_HOME/include:$UCX_HOME/include:$CPLUS_INCLUDE_PATH \
+    CPATH=$OMPI_HOME/include:$UCX_HOME/include:$CPATH \
+    INCLUDE=$OMPI_HOME/include:$UCX_HOME/include:$INCLUDE \
+    PKG_CONFIG_PATH=$OMPI_HOME/lib/pkgconfig:$UCX_HOME/lib/pkgconfig:$PKG_CONFIG_PATH
 
-#
-# Build app
-#
+
+#Build app
+
 ENV GRID_PATH=/opt/grid
 
 RUN git clone -b ${GRID_BRANCH} https://github.com/paboyle/Grid.git \
@@ -125,7 +137,7 @@ RUN git clone -b ${GRID_BRANCH} https://github.com/paboyle/Grid.git \
         CXX=hipcc \
         MPICXX=mpicxx \
         CPPFLAGS="-I${ROCM_PATH}/include -I${ROCM_PATH}/include/roctracer -std=c++17 " \
-        LDFLAGS="-L${ROCM_PATH}/lib -L${ROCM_PATH}/roctracer/lib -lroctracer64 -lroctx64 -std=c++17" \
+        LDFLAGS="-L${ROCM_PATH}/lib -L${ROCM_PATH}/lib/roctracer -lroctracer64 -lroctx64 -std=c++17" \
    && make -j 8 \
    && make install \
    && cd /tmp \

@@ -112,13 +112,13 @@ singularity build milc.sif docker-daemon://mycontainer/milc:latest
 #### Singularity Interactive
 To launch a Singularity image build locally.
 ```
-singularity shell --no-home --writable-tmpfs -pwd /benchmark milc.sif
+singularity shell --no-home --writable-tmpfs --pwd /benchmark milc.sif
 ```
 
 #### Singularity Single Command
 To launch a Singularity image build locally.
 ```
-singularity run --no-home --writable-tmpfs -pwd /benchmark milc.sif <MILC Command>
+singularity run --no-home --writable-tmpfs --pwd /benchmark milc.sif <MILC Command>
 ```
 
 

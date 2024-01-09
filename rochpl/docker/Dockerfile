@@ -1,158 +1,124 @@
-# 
-# This script builds a Docker based Container 
-# for the HPL (rochpl) application, via Spack.
-# It is based on AMD ROCm 5.3.2 code and 
-# requires the host system to have a ROCm V 5.x kernel.
-#
- 
-FROM ubuntu:20.04
+ARG IMAGE="rocm/dev-ubuntu-22.04:6.0-complete"
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    SPACK_ROOT=/usr/local \
-    FORCE_UNSAFE_CONFIGURE=1
+FROM ${IMAGE}
 
-WORKDIR /home/user
-
-# Install basic Spack requirements 
-
-RUN  apt-get update \
-     && apt-get install -y --no-install-recommends \
-        autoconf \
-        build-essential \
-        ca-certificates \
-        coreutils \
-        curl \
-        environment-modules \
-        git \
-        python \
-        unzip \
-        vim \
-     && rm -rf /var/lib/apt/lists/*
-
-# Install python 3.9 (Spack requirement)
-
-RUN  apt-get update \
-     && apt-get  install -y software-properties-common \
-     && add-apt-repository ppa:deadsnakes/ppa \
-     && apt-get install -y python3.9
-
-RUN  echo "source $SPACK_ROOT/share/spack/setup-env.sh" \
-      > /etc/profile.d/spack.sh
-
-RUN cat /etc/profile.d/spack.sh
-
-# Install spack 
-
-RUN curl -s -L https://api.github.com/repos/spack/spack/tarball \
-      | tar xzC  $SPACK_ROOT --strip 1
-
-# Show where spack is installed 
-
-RUN find $SPACK_ROOT -name spack
+ARG HPL_BRANCH="main"
+ARG UCX_BRANCH="v1.14.1"
+ARG OMPI_BRANCH="v4.1.5"
 
 
-# Copyright 2013-2022 Lawrence Livermore National Security, LLC and other
-# Spack Project Developers. See the top-level COPYRIGHT file for details.
-#
-# SPDX-License-Identifier: (Apache-2.0 OR MIT)
+# Update and Install basic Linux development tools
+RUN rm /etc/apt/sources.list.d/* \
+  && apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-certificates \
+    git \
+    ssh \
+    make \
+    vim \
+    nano \
+    libtinfo-dev\
+    initramfs-tools \
+    libelf-dev \
+    numactl \
+    curl \
+    wget \
+    tmux \
+    build-essential \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    libnuma-dev \
+    gfortran \
+    flex \
+    hwloc \
+  && apt-get clean
 
-#
-# A Dockerfile that will create an instance of the rocHPL application via Spack.
-#
-# We expect the sources subdirectory will have the files:
-#
-# ./sources/rochpl.package.py    spack definition of building rochpl
-#
-# This currently builds a Ubuntu 20.04 O/S image and an AMD ROCm(tm) 5.3.2 based applications.
-#
-# Spack is an open source project that offers a package management framework and tool for installing complex scientific software.
-# It is designed to support multiple versions and configurations of a software on many different platforms and environments.
-# Spack is development by Lawrence Livermore National Laboratory.
+# Requires cmake > 3.22 
+RUN mkdir -p /opt/cmake  \
+  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
+
+ENV ROCM_PATH=/opt/rocm \
+    UCX_PATH=/opt/ucx \
+    OMPI_PATH=/opt/ompi
+
+# Adding rocm/cmake to the Environment 
+ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:$PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$ROCM_PATH/lib/rocblas/library:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/lib/rocblas/library:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/rocblas/:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/rocblas/:$CPLUS_INCLUDE_PATH \
+    CPATH=$ROCM_PATH/include:$ROCM_PATH/include/rocblas/:$CPATH \
+    INCLUDE=$ROCM_PATH/include:$ROCM_PATH/include/rocblas/:$INCLUDE
+
+WORKDIR /tmp
+
+# Install UCX
+RUN cd /tmp/ \
+    && git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
+    && cd ucx \
+    && ./autogen.sh \
+    && mkdir build \
+    && cd build \
+    && ../contrib/configure-release --prefix=$UCX_PATH \
+        --with-rocm=$ROCM_PATH \
+        --without-knem \
+        --without-xpmem  \
+        --without-cuda \
+        --enable-optimizations  \
+        --disable-logging \
+        --disable-debug \
+        --disable-examples \
+    && make -j $(nproc)  \
+    && make install \
+    && rm -rf /tmp/ucx
+
+# Install OpenMPI
+RUN cd /tmp \
+    && git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
+    && cd ompi \
+    && ./autogen.pl \
+    && mkdir build \
+    && cd build \
+    && ../configure --prefix=$OMPI_PATH --with-ucx=$UCX_PATH \
+        --enable-mca-no-build=btl-uct  \
+        --without-verbs \
+        --with-pmix=internal \
+        --enable-mpi \
+        --enable-mpi-fortran=yes \
+        --disable-man-pages \
+        --disable-debug \
+    && make -j $(nproc) \
+    && make install \
+    && rm -rf /tmp/ompi
+
+# Adding OpenMPI and UCX to Environment
+ENV PATH=$OMPI_PATH/bin:$UCX_PATH/bin:$PATH \
+    LD_LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$CPLUS_INCLUDE_PATH \
+    CPATH=$OMPI_PATH/include:$UCX_PATH/include:$CPATH \
+    INCLUDE=$OMPI_PATH/include:$UCX_PATH/include:$INCLUDE \
+    PKG_CONFIG_PATH=$OMPI_PATH/lib/pkgconfig:$UCX_PATH/lib/pkgconfig:$PKG_CONFIG_PATH
+
+# Installing rocHPL
 
 
-# RUN env
 
-# Other system dependencies  (some entries may be removed in the future)
-RUN apt-get update -y \
-   && DEBIAN_FRONTEND=noninteractive \
-        apt-get install -y \
-        g++              \
-        gfortran         \
-        libnuma-dev      \
-        libgmp-dev       \
-        libboost-all-dev \
-        autoconf         \
-        libtool          \
-        flex             \
-        cmake            \
-        tar              \
-        pkg-config       \
-        initramfs-tools  \
-        unzip            \
-        bison            \
-        python3          \
-        python3-distutils \
-        tmux             \
-        vim emacs        \
-        dos2unix         \
-        wget curl        \
-        bindfs sudo
+RUN git clone -b ${HPL_BRANCH} https://github.com/ROCmSoftwarePlatform/rocHPL.git \
+    && cd rocHPL \
+    && ./install.sh \
+        --prefix=/opt/rochpl \
+        --with-rocm=/opt/rocm/ \
+        --with-mpi=/opt/ompi \
+    && rm -rf /tmp/rocHPL
 
-# HPL needs omp.h so add the required include directory
-RUN find / -name omp.h
-ENV HIPCC_COMPILE_FLAGS_APPEND="-I /usr/lib/gcc/x86_64-linux-gnu/9/include/"
-
-# ROCm install based on: https://docs.amd.com/bundle/ROCm-Installation-Guide-v5.3.2/page/Introduction_to_ROCm_Installation_Guide_for_Linux.html
-
-RUN apt-get update -y
-RUN wget https://repo.radeon.com/amdgpu-install/5.3.2/ubuntu/focal/amdgpu-install_5.3.50302-1_all.deb
-RUN apt-get install -y ./amdgpu-install_5.3.50302-1_all.deb
-RUN amdgpu-install -y --usecase=hiplibsdk,rocm  --no-dkms
-
-RUN  echo "gfx906"   >  /opt/rocm/bin/target.lst
-RUN  echo "gfx908"   >> /opt/rocm/bin/target.lst
-RUN  echo "gfx90a"   >> /opt/rocm/bin/target.lst
-
-ENV ROCM_TARGET_LST=/opt/rocm/bin/target.lst
-
-######################
-# Install rocHPL via Spack
-######################
-
-# copy the rochpl package file into place
-
-COPY ./sources/rochpl.package.py .
-
-RUN mkdir -p /usr/local/var/spack/repos/builtin/packages/rochpl/ \
- && cp -p rochpl.package.py /usr/local/var/spack/repos/builtin/packages/rochpl/package.py   \
- && ls -lsa /usr/local/var/spack/repos/builtin/packages/rochpl/package.py \
- && cat /usr/local/var/spack/repos/builtin/packages/rochpl/package.py
-
-RUN spack env create -d .  \
-     && eval `spack env activate --sh . ` \
-     && spack add rochpl +rocm amdgpu_target="gfx906,gfx908,gfx90a"  build_type=Release \
-     && spack install
-
-
-# create a benchmark directory to make it easier to run rochpl
-
-RUN ln -s `spack location --install-dir rochpl` benchmark
-RUN mkdir -p /opt
-RUN ln -s `spack location --install-dir rochpl` /opt/rochpl
-
-WORKDIR /home/user/benchmark
-
-ENV PATH=/home/user/benchmark:/home/user/benchmark/bin:$PATH 
-
-ENV  OMPI_ALLOW_RUN_AS_ROOT=1 \
-     OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
-
-# Basic UCX configuration. User should verify / update these parms.
-
-ENV  OMPI_MCA_pml=ucx \
-     OMPI_MCA_osc=ucx \
-     OMPI_MCA_pml_ucx_tls=any \
-     OMPI_MCA_pml_ucx_devices=any \
-     OMPI_MCA_pml_ucx_verbose=100
+# Adding environment variable for Running as ROOT and set MCA pml to UCX
+ENV PATH=$PATH:/opt/rochpl:/opt/rochpl/bin\
+    OMPI_ALLOW_RUN_AS_ROOT=1  \
+    OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 \
+    OMPI_MCA_pml=ucx
 
 CMD ["/bin/bash"]

@@ -10,14 +10,14 @@ This Kokkos Container is a platform for building HPC applications using Kokkos a
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
+    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     > Note:  
     > The `*-complete` version has all the components required for building and installation. 
 
 - ### KOKKOS_BRANCH
-    Default: `4.0.01`  
+    Default: `4.2.00`  
     Branch/Tag found: [Kokkos](https://github.com/kokkos/kokkos.git).
 
 - ### ENABLE_OPENMP

@@ -12,7 +12,7 @@ This document provides instructions on how to build rocHPCG into a Docker contai
 Possible arguments for the Docker build command  
 
 - #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
+    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
@@ -94,13 +94,13 @@ singularity build rochpcg.sif  docker-daemon://mycontainer/rochpcg:latest
 #### Singularity Interactive
 To launch a Singularity image build locally.
 ```
-singularity shell --no-home --writable-tmpfs -pwd /benchmark rochpcg.sif
+singularity shell --no-home --writable-tmpfs --pwd /benchmark rochpcg.sif
 ```
 
 #### Singularity Single Command
 To launch a Singularity image build locally.
 ```
-singularity run --no-home --writable-tmpfs -pwd /benchmark rochpcg.sif <rocHPCG Command>
+singularity run --no-home --writable-tmpfs --pwd /benchmark rochpcg.sif <rocHPCG Command>
 ```
 
 ## Licensing Information

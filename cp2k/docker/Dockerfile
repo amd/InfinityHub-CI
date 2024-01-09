@@ -1,8 +1,8 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:6.0-complete"
 
 FROM ${IMAGE}
 
-ARG CP2K_BRANCH="v2023.1"
+ARG CP2K_BRANCH="v2024.1"
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 ARG GPU_VER="Mi250"
@@ -30,12 +30,14 @@ RUN rm /etc/apt/sources.list.d/* \
         initramfs-tools \
         libnuma-dev \
         pkg-config \
-        libtinfo* \
+        libtinfo-dev\
         libelf-dev \
         numactl \
         tmux \  
         libtool \
         hwloc \
+        libstdc++-12-dev \
+        unzip \
       && apt-get clean
 
 RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
@@ -52,12 +54,12 @@ ENV ROCM_PATH=/opt/rocm \
 
 # Adding rocm/cmake to the Environment 
 ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:$PATH \
-    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LIBRARY_PATH \
-    C_INCLUDE_PATH=$ROCM_PATH/include:$C_INCLUDE_PATH \
-    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$CPLUS_INCLUDE_PATH \
-    CPATH=$ROCM_PATH/include:$CPATH \
-    INCLUDE=$ROCM_PATH/include:$INCLUDE
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$ROCM_PATH/lib/hipblas:$ROCM_PATH/lib/hipfft:$ROCM_PATH/lib/rocfft:$ROCM_PATH/lib/rocblas:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/lib/rocfft:$ROCM_PATH/lib/hipblas:$ROCM_PATH/lib/rocblas:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/rocblas:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/rocblas:$CPLUS_INCLUDE_PATH \
+    CPATH=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/rocblas:$CPATH \
+    INCLUDE=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/rocblas:$INCLUDE
 
 WORKDIR /tmp
 
@@ -96,7 +98,7 @@ RUN cd /tmp \
         --enable-mpi-fortran=yes \
         --disable-man-pages \
         --disable-debug \
-    && make -j $(nproc) \
+    && make -j 8 \
     && make install
 
 # Adding OpenMPI and UCX to Environment
@@ -118,7 +120,7 @@ WORKDIR /opt/
 RUN git clone --recursive -b ${CP2K_BRANCH} https://github.com/cp2k/cp2k.git \
       && cd cp2k/tools/toolchain \
       && ./install_cp2k_toolchain.sh \
-            -j8 \
+            -j $(nproc) \
             --install-all \
             --mpi-mode=openmpi \
             --math-mode=openblas \
@@ -142,21 +144,23 @@ RUN git clone --recursive -b ${CP2K_BRANCH} https://github.com/cp2k/cp2k.git \
             --with-libvori=no \
             --with-libtorch=no \
             --with-elpa=no \
-      && cp ${CP2K_DIR}/tools/toolchain/install/arch/* ${CP2K_DIR}/arch \
-      && echo "DFLAGS      = -D__LIBXSMM  -D__parallel -D__FFTW3  -D__LIBINT -D__LIBXC -D__SCALAPACK -D__COSMA -D__OFFLOAD_GEMM   -D__SPLA   -D__HIP_PLATFORM_AMD__ -D__OFFLOAD_HIP" >> ${CP2K_DIR}/arch/local_hip.psmp \
-      && source ${CP2K_DIR}/tools/toolchain/install/setup \
-      && cd ${CP2K_DIR}    \
-      && make realclean ARCH=local_hip VERSION=psmp \
-      && make -j 8 ARCH=local_hip VERSION=psmp \
-      && cp ${CP2K_DIR}/exe/local_hip/cp2k.psmp ${CP2K_DIR}/exe/local_hip/cp2k.psmp.no_dbcsr_gpu \
-      && cp ${CP2K_DIR}/tools/toolchain/install/arch/* ${CP2K_DIR}/arch \
-      && echo "DFLAGS      = -D__LIBXSMM  -D__parallel -D__FFTW3  -D__LIBINT -D__LIBXC -D__SCALAPACK -D__COSMA -D__OFFLOAD_GEMM   -D__SPLA   -D__HIP_PLATFORM_AMD__ -D__OFFLOAD_HIP -D__DBCSR_ACC -D__NO_OFFLOAD_PW" >> ${CP2K_DIR}/arch/local_hip.psmp \
-      && make realclean ARCH=local_hip VERSION=psmp \
-      && make -j 8 ARCH=local_hip VERSION=psmp \
-      && cp ${CP2K_DIR}/exe/local_hip/cp2k.psmp ${CP2K_DIR}/exe/local_hip/cp2k.psmp.no_pw_gpu \
-      && chmod -R 777 /opt/cp2k \
-      && ln -s /opt/cp2k/exe/local_hip/ /opt/cp2k/bin \
-      && mkdir /tmp/benchmarks 
+        && sed -i 's/hip\/bin/bin/' /opt/cp2k/tools/toolchain/install/arch/local_hip.psmp \
+        && cp ${CP2K_DIR}/tools/toolchain/install/arch/* ${CP2K_DIR}/arch \
+        && sed -i 's/-D__DBCSR_ACC//' ${CP2K_DIR}/arch/local_hip.psmp \
+        && cat ${CP2K_DIR}/arch/local_hip.psmp \
+        && source ${CP2K_DIR}/tools/toolchain/install/setup \
+        && cd ${CP2K_DIR}    \
+        && make realclean ARCH=local_hip VERSION=psmp \
+        && make -j $(nproc) ARCH=local_hip VERSION=psmp \
+        && cp ${CP2K_DIR}/exe/local_hip/cp2k.psmp ${CP2K_DIR}/exe/local_hip/cp2k.psmp.no_dbcsr_gpu \
+        && cp ${CP2K_DIR}/tools/toolchain/install/arch/* ${CP2K_DIR}/arch \
+        && sed -i 's/-D__DBCSR_ACC/-D__DBCSR_ACC -D__NO_OFFLOAD_PW/' ${CP2K_DIR}/arch/local_hip.psmp \
+        && make realclean ARCH=local_hip VERSION=psmp \
+        && make -j $(nproc) ARCH=local_hip VERSION=psmp \
+        && cp ${CP2K_DIR}/exe/local_hip/cp2k.psmp ${CP2K_DIR}/exe/local_hip/cp2k.psmp.no_pw_gpu \
+        && chmod -R 777 /opt/cp2k \
+        && ln -s /opt/cp2k/exe/local_hip/ /opt/cp2k/bin \
+        && mkdir /tmp/benchmarks 
 
 COPY /scripts /scripts
 

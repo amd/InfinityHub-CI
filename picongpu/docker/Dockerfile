@@ -4,7 +4,7 @@ FROM ${IMAGE}
 
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
-ARG PICONGPU_BRANCH="release-0.7.0"
+ARG PICONGPU_BRANCH="0.7.0"
 ARG HDF5_BRANCH="hdf5-1_14_1"
 ARG GPU_TARGET=gfx90a
 
@@ -18,7 +18,7 @@ RUN rm /etc/apt/sources.list.d/* \
     make \
     vim \
     nano \
-    libtinfo* \
+    libtinfo-dev\
     initramfs-tools \
     libelf-dev \
     numactl \
@@ -30,7 +30,7 @@ RUN rm /etc/apt/sources.list.d/* \
     automake \
     libtool \
     pkg-config \
-    libnuma* \
+    libnuma-dev \
     gfortran \
     flex \
     hwloc \
@@ -177,6 +177,8 @@ RUN git clone -b ${PICONGPU_BRANCH} https://github.com/ComputationalRadiationPhy
     && cd khi_fom \
     && pic-build -f -b "hip:${GPU_TARGET}" \
     && chmod -R 777 /opt/picon-examples
+
+ENV PATH=$PATH:/opt/picon-examples/khi_fom/bin
 
 WORKDIR /opt/picon-examples
 

@@ -2,7 +2,7 @@ ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
 
 FROM ${IMAGE}
 
-ARG OPENMM_BRANCH="8.0.0"
+ARG OPENMM_BRANCH="8.1.0"
 ARG OPENMMHIP_BRANCH="master"
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
@@ -21,7 +21,7 @@ RUN rm /etc/apt/sources.list.d/* \
     make \
     vim \
     nano \
-    libtinfo* \
+    libtinfo-dev\
     initramfs-tools \
     libelf-dev \
     numactl \
@@ -32,7 +32,7 @@ RUN rm /etc/apt/sources.list.d/* \
     automake \
     libtool \
     pkg-config \
-    libnuma* \
+    libnuma-dev \
     gfortran \
     flex \
     hwloc \

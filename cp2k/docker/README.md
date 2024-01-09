@@ -11,7 +11,7 @@ This document provides instructions on how to build CP2K into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
+    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
     Docker Hub Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
@@ -19,7 +19,7 @@ Possible `build-arg` for the Docker build command
     > The `*-complete` version has all the components required for building and installation.  
 
 - #### CP2K_BRANCH
-    Default: `v2023.1`  
+    Default: `v2024.1`  
     Branch/Tag found: [CP2K repo](https://github.com/cp2k/cp2k)
 
 - #### UCX_BRANCH

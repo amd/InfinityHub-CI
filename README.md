@@ -54,5 +54,6 @@ For ROCm installation procedures and validation checks, see:
   - [Docker](/quda/docker/)
 - [rocHPL](/rochpl/)
   - [Docker](/rochpl/docker/)
+  - [Docker-Spack](/rochpl/docker-spack/)
   - [Spack](/rochpl/spack/)
 - [Specfem3D- Cartesian](/specfem3d/)

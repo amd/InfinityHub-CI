@@ -1,8 +1,8 @@
-ARG IMAGE=rocm/dev-ubuntu-22.04:5.7-complete
+ARG IMAGE=rocm/dev-ubuntu-22.04:6.0-complete
 
 FROM ${IMAGE}
 
-ARG KOKKOS_VERSION=4.0.01
+ARG KOKKOS_VERSION=4.2.00
 ARG ENABLE_OPENMP=Off
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
@@ -18,7 +18,7 @@ RUN set -ex \
         wget \
         ca-certificates \
         git \
-        libtinfo* \
+        libtinfo-dev\
         numactl \
         wget \
         tmux \
@@ -26,7 +26,7 @@ RUN set -ex \
         automake \
         libtool \
         pkg-config \
-        libnuma* \
+        libnuma-dev \
         gfortran \
         flex \
         hwloc \

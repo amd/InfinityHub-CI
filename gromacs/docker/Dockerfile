@@ -1,8 +1,8 @@
-ARG IMAGE="rocm/dev-ubuntu-22.04:5.7-complete"
+ARG IMAGE="rocm/dev-ubuntu-22.04:6.0-complete"
 
 FROM ${IMAGE}
 
-ARG GROMACS_BRANCH="develop_2022_amd"
+ARG GROMACS_BRANCH="develop_2023_amd_sprint_rocm6"
 ARG MPI_ENABLED="off"
 ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
@@ -17,7 +17,7 @@ RUN rm /etc/apt/sources.list.d/* \
     make \
     vim \
     nano \
-    libtinfo* \
+    libtinfo-dev\
     initramfs-tools \
     libelf-dev \
     numactl \
@@ -28,7 +28,7 @@ RUN rm /etc/apt/sources.list.d/* \
     automake \
     libtool \
     pkg-config \
-    libnuma* \
+    libnuma-dev \
     gfortran \
     flex \
     hwloc \
@@ -42,14 +42,26 @@ RUN rm /etc/apt/sources.list.d/* \
 
 RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
     &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
-    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst
+    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx942"  >> /opt/rocm/bin/target.lst
 
-# Requires cmake > 3.22 
+# Requires cmake > 3.27 
 RUN mkdir -p /opt/cmake  \
   && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
 
+ENV ROCM_PATH=/opt/rocm \
+    UCX_HOME=/opt/ucx \
+    OMPI_HOME=/opt/ompi
+
 # Adding rocm/cmake to the PATH
-ENV PATH=/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:/opt/cmake/bin:$PATH
+ENV PATH=$ROCM_PATH/bin:$ROCM_PATH/profiler/bin:$ROCM_PATH/opencl/bin:/opt/cmake/bin:$PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$ROCM_PATH/libs/hipblas:$ROCM_PATH/libs/hipfft:$ROCM_PATH/libs/rocfft:$ROCM_PATH/libs/rocblas:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/libs/rocfft:$ROCM_PATH/libs/hipblas:$ROCM_PATH/libs/rocblas:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/rocblas:$ROCM_PATH/roctracer/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/rocblas:$ROCM_PATH/roctracer/include:$CPLUS_INCLUDE_PATH \
+    CPATH=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/rocblas:$ROCM_PATH/roctracer/include:$CPATH \
+    INCLUDE=$ROCM_PATH/include:$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/rocblas:$ROCM_PATH/roctracer/include:$INCLUDE \
+    CMAKE_PREFIX_PATH=$ROCM_PATH/lib/cmake:$CMAKE_PREFIX_PATH
 
 WORKDIR /tmp
 
@@ -61,7 +73,7 @@ RUN if [ "$MPI_ENABLED" = "on" ]; then \
       && ./autogen.sh \
       && mkdir build \
       && cd build \
-      && ../contrib/configure-release --prefix=/opt/ucx \
+      && ../contrib/configure-release --prefix=$UCX_PATH \
             --with-rocm=/opt/rocm --without-knem \
             --without-xpmem  --without-cuda \
             --enable-optimizations  \
@@ -84,7 +96,7 @@ RUN if [ "$MPI_ENABLED" = "on" ] ; then \
       && ./autogen.pl \
       && mkdir build \
       && cd build \
-      && ../configure --prefix=/opt/ompi --with-ucx=/opt/ucx \
+      && ../configure --prefix=$OMPI_HOME --with-ucx=$UCX_PATH \
             --enable-mca-no-build=btl-uct  \
             --with-pmix=internal \
             --enable-mpi \
@@ -97,7 +109,7 @@ RUN if [ "$MPI_ENABLED" = "on" ] ; then \
     fi
 
 # Adding OpenMPI and UCX to PATH
-ENV PATH=/opt/ompi/bin:/opt/ucx/bin:$PATH \
+ENV PATH=$OMPI_HOME/bin:$UCX_PATH/bin:$PATH \
   LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROCM_PATH/lib
 
 # Installing Gromnacs - HIP
@@ -107,8 +119,8 @@ RUN git clone -b ${GROMACS_BRANCH} https://github.com/ROCmSoftwarePlatform/Groma
   && cd build   \
   && cmake -DBUILD_SHARED_LIBS=off \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_C_FLAGS="-Ofast" \
-        -DCMAKE_CXX_FLAGS="-Ofast" \
+        -DCMAKE_C_FLAGS="-Ofast -ggdb " \
+        -DCMAKE_CXX_FLAGS="-Ofast -ggdb " \
         -DGMX_BUILD_OWN_FFTW=ON \
         -DGMX_BUILD_FOR_COVERAGE=off \
         -DCMAKE_C_COMPILER=gcc \
@@ -116,14 +128,14 @@ RUN git clone -b ${GROMACS_BRANCH} https://github.com/ROCmSoftwarePlatform/Groma
         -DGMX_MPI=${OMPI_ENABLED} \
         -DGMX_GPU=HIP \
         -DGMX_OPENMP=on \
-        -DCMAKE_HIP_ARCHITECTURES="gfx900,gfx906,gfx908,gfx90a" \
+        -DCMAKE_HIP_ARCHITECTURES="gfx900,gfx906,gfx908,gfx90a,gfx942" \
         -DGMX_SIMD=AVX2_256 \
         -DREGRESSIONTEST_DOWNLOAD=OFF \
         -DBUILD_TESTING=ON \
         -DGMXBUILD_UNITTESTS=ON \
         -DGMX_GPU_USE_VKFFT=on \
-        -DHIP_HIPCC_FLAGS="-O3 --amdgpu-target=gfx900,gfx906,gfx908,gfx90a" \
-        -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
+        -DHIP_HIPCC_FLAGS="-O3 -ggdb --amdgpu-target=gfx900,gfx906,gfx908,gfx90a,gfx942" \
+        -DCMAKE_EXE_LINKER_FLAGS=" -fopenmp" \
       .. \
   && make -j $(nproc) \
   && make install \

@@ -9,7 +9,7 @@ Instructions on how to build a Docker Container with AMD's implementation of Gro
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
+    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
     Docker Tags found: 
     - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
     - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
@@ -17,7 +17,7 @@ Possible `build-arg` for the Docker build command
     > The `*-complete` version has all the components required for building and installation. 
 
 - ### GROMACS_BRANCH
-    Default: `develop_2022_amd`  
+    Default: `develop_2023_amd_sprint_rocm6`  
     Branch/Tag found: [AMD's implementation of Gromacs with HIP repo](https://github.com/ROCmSoftwarePlatform/Gromacs).
 
 - ### MPI_ENABLED
@@ -87,13 +87,13 @@ singularity build gromacs.sif docker-daemon://mycontainer/gromacs-hip:latest
 #### Singularity Interactive
 To launch a Singularity image build locally.
 ```
-singularity shell --no-home --writable-tmpfs -pwd /benchmark gromacs.sif
+singularity shell --no-home --writable-tmpfs --pwd /benchmark gromacs.sif
 ```
 
 #### Singularity Non-Interactive
 To launch a Singularity image build locally.
 ```
-singularity run --no-home --writable-tmpfs -pwd /benchmark gromacs.sif <Gromacs Command>
+singularity run --no-home --writable-tmpfs --pwd /benchmark gromacs.sif <Gromacs Command>
 `
 
 ## Licensing Information
