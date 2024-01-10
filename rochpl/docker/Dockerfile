@@ -39,6 +39,11 @@ RUN rm /etc/apt/sources.list.d/* \
 RUN mkdir -p /opt/cmake  \
   && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
 
+RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
+    &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx942"  >> /opt/rocm/bin/target.lst
+
 ENV ROCM_PATH=/opt/rocm \
     UCX_PATH=/opt/ucx \
     OMPI_PATH=/opt/ompi

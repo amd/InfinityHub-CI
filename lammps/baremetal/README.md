@@ -11,7 +11,7 @@ For more details on how to build LAMMPS, the user is referred to [the official L
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver |
 | ---- | ---- | ----------------- | ------------ |
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 |  <br> ROCm v6.x compatibility |
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)

@@ -36,7 +36,8 @@ RUN rm /etc/apt/sources.list.d/* \
 
 RUN echo "gfx906"  > /opt/rocm/bin/target.lst \
     &&  echo "gfx908"  >> /opt/rocm/bin/target.lst \
-    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst
+    &&  echo "gfx90a"  >> /opt/rocm/bin/target.lst \
+    &&  echo "gfx942"  >> /opt/rocm/bin/target.lst
 
 # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \
