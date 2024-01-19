@@ -153,11 +153,6 @@ The  **rocHPL**  benchmark is typically weak scaled so that the global matrix fi
 8 GCD:  `mpirun_rochpl -P 2 -Q 4 -N 256000 --NB 512`  
 16 GCD:  `mpirun_rochpl -P 4 -Q 4 -N 360448 --NB 512`
 
-#### MI300A
-1 APU: `mpirun_rochpl -P 1 -Q 1 -N 125952 --NB 512`
-2 APU: `mpirun_rochpl -P 2 -Q 1 -N 178176 --NB 512` / `mpirun_rochpl -P 1 -Q 2 -N 178176 --NB 512`
-4 APU: `mpirun_rochpl -P 2 -Q 2 -N 246784 --NB 512`
-
 >Note:
 > These are example command lines and optimal values may vary depending on system characteristics.
 

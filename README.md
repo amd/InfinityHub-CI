@@ -40,6 +40,8 @@ For ROCm installation procedures and validation checks, see:
   - [Docker](/milc/docker/)
 - [MPAS](/mpas/)
   - [Bare Metal](/mpas/)
+- [NEKO](/neko/)
+  - [Bare Metal](/neko/docker)
 - [OpenFOAM](/openfoam/)
   - [Docker](/openfoam/docker/)
 - [OpenMM](/openmm/)
