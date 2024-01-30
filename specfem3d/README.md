@@ -34,11 +34,11 @@ The Dependencies for the build are:
 
 - ### UCX 
     Location: [UXC repo](https://github.com/openucx/ucx)  
-    Branch: `v1.14.1`  
+    Branch: `v1.14.1`   
 
 - ### Open MPI
     Location: [OpenMPI repo](https://github.com/open-mpi/ompi)  
-    Branch: `v4.1.4`
+    Branch: `v4.1.4`  
 
 ## Building SPECFEM3D
 

@@ -44,7 +44,8 @@ There are different inputs files provided for 1/2/4/8 GPUs.
 
 
 <details>
-<summary>su3_rhmc_hisq</summary?>
+<summary>su3_rhmc_hisq</summary?>  
+
 - 1 GPU 
 ```
 QUDA_RESOURCE_PATH=/path/to/tuning GEOM="1 1 1 1" mpirun -n 1 su3_rhmc_hisq apex_medium_1.in
@@ -53,18 +54,19 @@ QUDA_RESOURCE_PATH=/path/to/tuning GEOM="1 1 1 1" mpirun -n 1 su3_rhmc_hisq apex
 ```
 GEOM="1 1 1 2" mpirun -x QUDA_RESOURCE_PATH -n 2 su3_rhmc_hisq apex_medium_2.in
 ```
--4 GPU
+- 4 GPU
 ```
 GEOM="1 1 2 2" mpirun -x QUDA_RESOURCE_PATH -n 4 su3_rhmc_hisq apex_medium_4.in
 ```
--8 GPU
+- 8 GPU
 ```
 GEOM="1 1 2 4" mpirun -x QUDA_RESOURCE_PATH -n 8 su3_rhmc_hisq apex_medium_8.in
 ```
 </details>
 
 <details>
-<summary>su3_rhmd_hisq</summary?>
+<summary>su3_rhmd_hisq</summary?>  
+
 - 1 GPU 
 ```
 QUDA_RESOURCE_PATH=/path/to/tuning GEOM="1 1 1 1" mpirun -n 1 su3_rhmd_hisq apex_medium_1.in
@@ -73,11 +75,11 @@ QUDA_RESOURCE_PATH=/path/to/tuning GEOM="1 1 1 1" mpirun -n 1 su3_rhmd_hisq apex
 ```
 GEOM="1 1 1 2" mpirun -x QUDA_RESOURCE_PATH -n 2 su3_rhmd_hisq apex_medium_2.in
 ```
--4 GPU
+- 4 GPU
 ```
 GEOM="1 1 2 2" mpirun -x QUDA_RESOURCE_PATH -n 4 su3_rhmd_hisq apex_medium_4.in
 ```
--8 GPU
+- 8 GPU
 ```
 GEOM="1 1 2 4" mpirun -x QUDA_RESOURCE_PATH -n 8 su3_rhmd_hisq apex_medium_8.in
 ```

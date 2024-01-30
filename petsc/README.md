@@ -14,7 +14,7 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-### Building Recipes
+## Building Recipes
 [Docker/Singularity Build](/petsc/docker/)
 
 ## Running PETSc Benchmark
@@ -103,7 +103,7 @@ PETSc examples in general have nearly infinite combinations of parameters (e.g.,
 1. Use the same cube dimension when comparing across different hardware.
 1. Error norm should be the same for a given dimension and concurrency.
  
-### Cube Dimension Guidance
+## Cube Dimension Guidance
 Regarding the dimension to use to "saturate" hardware utilization, PETSc developers recommend using a "work-time spectrum" analysis to identify the range of optimal problem sizes for a particular solver.  In other words, with a fixed concurrency (e.g., _X_ GPUs) you incrementally increase the cube dimension (using `-n <cube_dim>`) until you see the DOF/Sec remain consistent. A dimension too small you'll likely see a small FoM because of low GPU utilization; a dimension too large you'll also see a small FoM either because of hardware limitations (e.g., cache misses) or suboptimal algorithmic convergence of the solver.
  
 For example, for a single MI210 GPU a cube dimension around 200 will typically "saturate" hardware utilization, so testing with a range of 100 to 500 should confirm a value that is optimal for a test system with 1 MI210.  Ensure that the global cube size is large enough so that multiple GPUs and/or nodes still process an optimal subset of the cube.

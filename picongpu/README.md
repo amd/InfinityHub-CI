@@ -16,7 +16,7 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-### Building Recipes
+## Building Recipes
 [Docker/Singularity Build](/picongpu/docker/)
 
 ## Running PIconGPU Benchmark

@@ -19,6 +19,6 @@ OMP_NUM_THREADS   = 8
 HDF5_ROOT         = /opt/hdf5
 MPI_ROOT          = /opt/ompi
 
-GPUFLAGS          = --offload-arch=gfx906,gfx908,gfx90a -Wno-unused-result -fPIE
+GPUFLAGS          = --offload-arch=GPU_TARGET -Wno-unused-result -fPIE
 
 HIPCONFIG	      = -I $(ROCM_PATH)/include $(shell hipconfig -C) 

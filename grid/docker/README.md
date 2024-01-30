@@ -1,26 +1,18 @@
 # Grid Docker Build Instructions 
+This document provides instructions on how to build GRID into a Docker container that is portable between environments.  
 
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
 
 ## Inputs
 Possible `build-arg` for the Docker build command  
 
-- ## IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
     > ***Note:***  
-    > The `*-complete` version has all the components required for building and installation.  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- ## UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- ## OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-- ## GRID_BRANCH
+- ### GRID_BRANCH
     Default: `develop`  
     Branch/Tag found: [Grid repo](https://github.com/paboyle/Grid)
 
@@ -35,7 +27,7 @@ docker build -t mycontainer/grid -f /path/to/Dockerfile .
 > Notes:  
 >- `mycontainer` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 To run a custom configuration, include one or more customized build-arg  
 
@@ -45,9 +37,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/grid \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-22.04:5.5-complete \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main 
+    --build-arg GRID_BRANCH="v0.8.0"
     . 
 ```
 
@@ -56,7 +46,7 @@ Both Docker and Singularity can be run interactively or as a single command.
 
 To run the [Grid Benchmarks](/grid/README.md#running-grid-benchmarks),  replace the `<Grid Command>` the examples in [Running Grid Benchmarks](/grid/README.md#running-grid-benchmarks) section of the Grid readme. The commands can be run directly in an interactive session as well. 
 
-### Docker
+### Docker  
 If you want to save files generated during the run, add `-v $(pwd):/host` before `mycontainer/grid` in the following commands.  Files may then be copied or saved between the container /host directory and the users working directory.
 
 #### Docker Interactive
@@ -64,14 +54,14 @@ If you want to save files generated during the run, add `-v $(pwd):/host` before
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined \
           mycontainer/grid /bin/bash
 ```
-#### Docker Non-Interactive
+### Docker Non-Interactive
 ```
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined \
           mycontainer/grid <Grid Command>
 ```
 
-### Singularity 
-If you want to save files generated during the run, add `--binf $(pwd):/host` before `mycontainer/grid` in the following commands.  Files may then be copied or saved between the container /host directory and the users working directory.
+### Singularity  
+If you want to save files generated during the run, add `--bind $(pwd):/host` before `mycontainer/grid` in the following commands.  Files may then be copied or saved between the container /host directory and the users working directory.
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:
 ```
@@ -84,7 +74,7 @@ To launch a Singularity image build locally.
 singularity shell --no-home --writable-tmpfs --pwd /benchmark grid.sif
 ```
 
-#### Singularity Non-Interactive
+#### Singularity Single Command
 To launch a Singularity image build locally.
 ```
 singularity run --no-home --writable-tmpfs --pwd /benchmark grid.sif <Grid Command>

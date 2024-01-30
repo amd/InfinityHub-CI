@@ -1,5 +1,8 @@
-## OpenFOAM Docker Build
+# OpenFOAM Docker Build
 Instructions on how to build a Docker Container with OpenFOAM.
+
+## Recommended ROCm Version
+[ROCm 5.7](https://repo.radeon.com/amdgpu-install/5.7/ubuntu/)
 
 ## Build System Requirements
 - Git
@@ -9,13 +12,10 @@ Instructions on how to build a Docker Container with OpenFOAM.
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
+    Default: `rocm_gpu:5.7`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/).
     
-
 - ### OPENFOAM_VERSION
     Default: `v2212`  
     Branch/Tag found: [OpenFOAM repo](https://develop.openfoam.com/Development/openfoam)
@@ -30,14 +30,6 @@ Possible `build-arg` for the Docker build command
     >NOTE:  
     >Initial HIP support was added in v3.18.0 with further optimizations included in minor releases. We recommend using v3.19 or newer for performance runs on AMD hardware
 
-- ### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- ### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
 ## Building OpenFOAM Container
 - Download the everything in [OpenFOAM/docker](/openfoam/docker/)  
 
@@ -49,7 +41,7 @@ docker build -t mycontainer/openfoam -f /path/to/Dockerfile .
 > NOTES:  
 > - `mycontainer/openfoam` is an example container name.
 > - the `.` at the end of the build line is important! It tells Docker where your build context is located!
-> - `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+> - `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 > - The `scripts` directory is required within the build context directory, and the contents will be copied into the container.
 
 To run a custom configuration, include one or more customized build-arg  
@@ -58,12 +50,9 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/openfoam \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-22.04:5.3.3-complete \
     --build-arg OPENFOAM_VERSION=master \
     --build-arg SCOTCH_VER=master \
-    --build-arg PETSC_VER=main \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
+    --build-arg PETSC_VER=main
     . 
 ```
 ## Running OpenFOAM in a Container
@@ -89,14 +78,14 @@ docker run --device=/dev/kfd \
            <OpenFOAM Command> 
 ```
 
-### Singularity
+### Singularity  
 
 To build a Singularity image from the locally created docker file do the following:
 ```
 singularity build openfoam.sif docker-daemon://mycontainer/openfoam:latest
 ```
 
-### Singularity Interactive 
+#### Singularity Interactive 
 Launch a Singularity Image
 ```
 singularity shell --writable-tmpfs \

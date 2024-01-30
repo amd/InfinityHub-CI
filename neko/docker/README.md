@@ -1,43 +1,25 @@
 # NEKO Docker Build Instructions
-
-
-## Overview 
 This document provides instructions on how to build NEKO into a Docker container that is portable between environments.
 
-### Build System Requierments
+## Build System Requierments
 - Git
 - Docker
 
 ## Inputs
 Possible arguments for the Docker build command  
 
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- #### NEKO_BRANCH
+- ### NEKO_BRANCH
     Default: `v0.7.2`  
     Branch/Tag found: [NEKO repo](https://github.com/ExtremeFLOW/neko)
 
-- #### JSON_FORTRAN_BRANCH
+- ### JSON_FORTRAN_BRANCH
     Default: `master`  
     Branch/Tag found: [JSON Fortran repo](https://github.com/jacobwilliams/json-fortran.git)
-
-- #### GPU_ARCH
-    default: `gfx908,gfx90a`
-
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
 
 ## Building Container
 Download the [Dockerfile](/neko/docker/Dockerfile)  
@@ -49,7 +31,7 @@ docker build -t mycontainer/neko -f /path/to/Dockerfile .
 >Notes:  
 >- `mycontainer/neko` is an example container name.
 >- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 
 To run a custom configuration, include one or more customized build-arg  
@@ -58,10 +40,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/neko \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.7-complete \
     --build-arg NEKO_BRANCH=develop \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
     . 
 ```
 
@@ -71,7 +50,7 @@ If needed, please consult with your system administrator or view official docume
 
 To run the [NEKO Benchmarks](/neko/README.md#running-neko-benchmark), just replace the `<NEKO Command>` the examples in [Running NEKO Benchmarks](/neko/README.md#running-neko-benchmark) section of the NEKO readme. The commands can be run directly in an interactive session as well. 
 
-### Docker
+### Docker  
 
 #### Docker Interactive
 ```
@@ -82,7 +61,7 @@ docker run --device=/dev/kfd \
 ```
 
 
-### Docker Single Command 
+#### Docker Single Command 
 ```
 docker run --device=/dev/kfd \
            --device=/dev/dri \
@@ -91,7 +70,7 @@ docker run --device=/dev/kfd \
            <NEKO Command>
 ```
 
-### Singularity 
+### Singularity  
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:
 ```

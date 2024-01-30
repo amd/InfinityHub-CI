@@ -1,55 +1,36 @@
 # MILC Docker Build Instructions 
-
-## Overview
 This document provides instructions on how to build MILC into a Docker container that is portable between environments.
 
-### Build System Requirements
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
+
+## Build System Requirements
 - Git
 - Docker
 
 ## Inputs
 Possible `build-arg` for the Docker build command  
 
-- ## IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.6-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
+- ### IMAGE
+    Default: `rocm_gpu:5.6`  
     > ***Note:***  
-    > The `*-complete` version has all the components required for building and installation.  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- ## UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- ## OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-- ## MILC_BRANCH
+- ### MILC_BRANCH
     Default: `develop`  
     Branch/Tag found: [MILC repo](https://github.com/milc-qcd/milc_qcd/)
 
-- ## QMP_BRANCH
+- ### QMP_BRANCH
     Default: `devel`  
     Branch/Tag found: [QMP repo](https://github.com/usqcd-software/qmp.git)
 
-- ## QIO_BRANCH
+- ### QIO_BRANCH
     Default: `master`  
     Branch/Tag found: [QIO repo](https://github.com/usqcd-software/qio.git)
 
-- ## QUDA_BRANCH
+- ### QUDA_BRANCH
     Default: `develop`  
     Branch/Tag found: [QUDA repo](https://github.com/lattice/quda.git)
-
-- ## GPU_TARGET
-    Default: `gfx90a`  
-    Only one GPU architecture needs to be provided.  
-    A comma separated list can be provided for multiple GPU build.
-    - gfx90a (MI210, MI250)
-    - gfx908 (MI100)
-    - gfx906 (MI50)
-    
 
 ## Building Container
 Download the [Dockerfile](/milc/docker/Dockerfile)
@@ -61,7 +42,7 @@ docker build -t mycontainer/milc -f /path/to/Dockerfile .
 > Notes:  
 >- `mycontainer` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 To run a custom configuration, include one or more customized build-arg  
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
@@ -70,14 +51,11 @@ docker build \
     -t mycontainer/milc \
     -f /path/to/Dockerfile \
     --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5-complete \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
     --build-arg QMP_BRANCH=master
     --build-arg QIO_BRANCH=master
     --build-arg QDPXX_BRANCH=master
     --build-arg QUDA_BRANCH=master
     --build-arg MILC_BRANCH=master
-    --build-arg GPU_TARGET="gfx908,gfx90a"
     . 
 ```
 
@@ -86,7 +64,7 @@ Both Docker and Singularity can be run interactively or as a single command.
 
 To run the [MILC Benchmarks](/milc/README.md#running-milc-benchmarks), just replace the `<MILC Command>` the examples in [Running MILC Benchmarks](/milc/README.md#running-milc-benchmarks) section of the MILC readme. The commands can be run directly in an interactive session as well. 
 
-### Docker
+### Docker  
 For access to the tuning files, please add `-v $(pwd):/tmp/tuning` before `mycontainer/milc` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
 To run a single command docker, it will be necessary to mount the tuning files in for better performance. 
 
@@ -99,7 +77,7 @@ docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=u
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/milc <MILC Command>
 ```
 
-### Singularity 
+### Singularity  
 For access to the tuning files, please add `--bind $(pwd):/tmp/tuning` before `milc.sif` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
 To run a single command singularity, it will be necessary to mount the tuning files in for better performance. 
 

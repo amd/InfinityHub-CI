@@ -1,36 +1,26 @@
 # Cholla Docker Build Instructions 
-
-## Overview
 This document provides instructions on how to build Cholla into a Docker container that is portable between environments.
 
-### Build System Requirements
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
+
+## Build System Requirements
 - Git
 - Docker
 
 ## Inputs
 Possible `build-arg` for the Docker build command  
 
-- ## IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
     > ***Note:***  
-    > The `*-complete` version has all the components required for building and installation.  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- ## UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- ## OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-- ## CHOLLA_BRANCH
+- ### CHOLLA_BRANCH
     Default: `CAAR`  
     Branch/Tag found: [Cholla repo](https://github.com/cholla-hydro/cholla.git)
 
-- ## HDF5_BRANCH
+- ### HDF5_BRANCH
     Default: `hdf5-1_14_1`  
     Branch/Tag found: [HDF5 repo](https://github.com/HDFGroup/hdf5.git)
 
@@ -44,7 +34,7 @@ docker build -t mycontainer/cholla -f /path/to/Dockerfile .
 > Notes:  
 >- `mycontainer` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 To run a custom configuration, include one or more customized build-arg  
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
@@ -53,9 +43,6 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/cholla \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5-complete \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
     --build-arg CHOLLA_BRANCH=main \
     --build-arg HDF5_BRANCH=develop
     . 
@@ -66,7 +53,7 @@ Both Docker and Singularity can be run interactively or as a single command.
 
 To run the [Cholla Benchmarks](/cholla/README.md#running-cholla-benchmarks), just replace the `<Cholla Command>` the examples in [Running Cholla Benchmarks](/cholla/README.md#running-cholla-benchmarks) section of the Cholla readme. The commands can be run directly in an interactive session as well. 
 
-### Docker
+### Docker  
 If you want access to the HDF5 files generated during the run, please add `-v $(pwd):/benchmark` before `mycontainer/cholla` in the following commands. 
 
 #### Docker Interactive
@@ -78,7 +65,7 @@ docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=u
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/cholla <Cholla Command>
 ```
 
-### Singularity 
+### Singularity  
 If you want access to the HDF5 files generated during the run, please add `--bind $(pwd):/benchmark` before `cholla.sif` in the following run commands.
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:

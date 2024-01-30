@@ -56,7 +56,7 @@ Three example benchmarks have been provided in this repository:
 <details>
 <summary> ADH DODEC Benchmark Instructions </summary>
 
-### ADH DODEC
+#### ADH DODEC
 Extract the binary system topology, parameter, coordinates, and velocity file. 
 
 ```
@@ -150,7 +150,7 @@ gmx mdrun -pin on \
 <details>
 <summary>CELLULOSE NVE Benchmark Instructions</summary>
 
-### CELLULOSE NVE
+#### CELLULOSE NVE
 Extract the binary system topology, parameter, coordinates, and velocity file.
 
 ```
@@ -242,7 +242,7 @@ gmx mdrun -pin on \
 <details> 
 <summary>STMV Benchmark Instructions</summary>
 
-### STMV
+#### STMV
 Extract the binary system topology, parameter, coordinates, and velocity file. 
 
 ```
@@ -336,7 +336,7 @@ gmx mdrun -pin on \
 <details>
 <summary> ADH DODEC OpenMPI Benchmark Instructions </summary>
 
-### ADH DODEC OpenMPI
+#### ADH DODEC OpenMPI
 Extract the binary system topology, parameter, coordinates, and velocity file. 
 
 ```
@@ -430,7 +430,7 @@ mpirun -np 8 \
 <details>
 <summary>CELLULOSE NVE OpenMPI Benchmark Instructions </summary>
 
-### CELLULOSE NVE OpenMPI
+#### CELLULOSE NVE OpenMPI
 Extract the binary system topology, parameter, coordinates, and velocity file.
 
 ```
@@ -522,7 +522,7 @@ mpirun -np 8 \
 <details> 
 <summary>STMV OpenMPI Benchmark Instructions </summary>
 
-### STMV OpenMPI
+## STMV OpenMPI
 Extract the binary system topology, parameter, coordinates, and velocity file. 
 
 ```

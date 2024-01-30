@@ -144,11 +144,6 @@ WORKDIR /home/user/benchmark
 
 ENV PATH=/home/user/benchmark:/home/user/benchmark/bin:$PATH 
 
-ENV  OMPI_ALLOW_RUN_AS_ROOT=1 \
-     OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
-
-# Basic UCX configuration. User should verify / update these parms.
-
 ENV  OMPI_MCA_pml=ucx \
      OMPI_MCA_osc=ucx \
      OMPI_MCA_pml_ucx_tls=any \

@@ -1,36 +1,24 @@
 # rocHPCG Docker Build Instructions
-
-
-## Overview 
 This document provides instructions on how to build rocHPCG into a Docker container that is portable between environments.
 
-### Build System Requierments
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
+
+## Build System Requierments
 - Git
 - Docker
 
 ## Inputs
 Possible arguments for the Docker build command  
 
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- #### ROCHPCG_BRANCH
+- ### ROCHPCG_BRANCH
     Default: `master`  
     Branch/Tag found: [rocHPCG repo](https://github.com/ROCmSoftwarePlatform/rocHPCG)
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
 
 ## Building Container
 Download the [Dockerfile](/hpcg/docker/Dockerfile)  
@@ -42,7 +30,7 @@ docker build -t mycontainer/rochpcg -f /path/to/Dockerfile .
 >Notes:  
 >- `mycontainer/rochpcg` is an example container name.
 >- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 
 To run a custom configuration, include one or more customized build-arg  
@@ -51,10 +39,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/rochpcg \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
-    --build-arg ROCHPCG_BRANCH=devel \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
+    --build-arg ROCHPCG_BRANCH=devel
     . 
 ```
 
@@ -64,7 +49,7 @@ If needed, please consult with your system administrator or view official docume
 
 To run the [rocHPCG Benchmarks](/hpcg/README.md#running-rochpcg-benchmark), just replace the `<rocHPCG Command>` the examples in [Running rocHPCG Benchmarks](/hpcg/README.md#running-rochpcg-benchmark) section of the rocHPCG readme. The commands can be run directly in an interactive session as well. 
 
-### Docker
+### Docker  
 
 #### Docker Interactive
 ```
@@ -75,7 +60,7 @@ docker run --device=/dev/kfd \
 ```
 
 
-### Docker Single Command 
+#### Docker Single Command 
 ```
 docker run --device=/dev/kfd \
            --device=/dev/dri \
@@ -84,7 +69,7 @@ docker run --device=/dev/kfd \
            <rocHPCG Command>
 ```
 
-### Singularity 
+### Singularity  
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:
 ```

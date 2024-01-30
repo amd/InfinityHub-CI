@@ -1,6 +1,9 @@
 # PIconGPU Docker Build Instructions
 Instructions on how to build a Docker Container with PIconGPU.
 
+## Recommended ROCm Version
+[ROCm 5.7](https://repo.radeon.com/amdgpu-install/5.7/ubuntu/)
+
 ## System Requirements
 - Git
 - Docker
@@ -9,11 +12,10 @@ Instructions on how to build a Docker Container with PIconGPU.
 Possible `build-arg` for the Docker build command    
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:5.7-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
+    Default: `rocm_gpu:5.7`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
+
 
 - ### PICONGPU_BRANCH
     Default: default: `release-0.7.0`  
@@ -21,23 +23,9 @@ Possible `build-arg` for the Docker build command
     >NOTE:  
     >master branch and release-0.7.0 branches have different tests, benchmarks, examples. The test build into this container is not available the master branch at this time.
 
-- ### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- ### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-- ## HDF5_BRANCH
+- ### HDF5_BRANCH
     Default: `hdf5-1_14_1`  
     Branch/Tag found: [HDF5 repo](https://github.com/HDFGroup/hdf5.git)
-
-- ## GPU_TARGET
-    Default: `gfx90a`  
-    Only one GPU architecture needs to be provided.  
-    - gfx908 (MI100)
-    - gfx90a (MI210, MI250)
 
 ## Building PIconGPU Container:
 To run the default configuration:
@@ -47,7 +35,7 @@ docker build -t mycontainer/picongpu -f /path/to/Dockerfile .
 >Notes:  
 >- `mycontainer/picongpu` will be the name of your local container.
 >- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 
 
@@ -57,11 +45,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/PIconGPU \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
     --build-arg PICONGPU_BRANCH=dev \
-    --build-arg MPI_ENABLED=on \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
     . 
 ```
 
@@ -73,7 +57,7 @@ PNGwriter and HDF-5 have been provided inside this container to help generate vi
 
 To run the [PIconGPU Benchmarks](/picongpu/README.md#running-picongpu-benchmark), just replace the `<PIconGPU Command>` the examples in [Running PIconGPU Benchmarks](/picongpu/README.md#running-picongpu-benchmark) section of the PIconGPU readme. The commands can be run directly in an interactive session as well. 
 
-### Docker
+### Docker  
 
 #### Docker Interactive
 To run the container and build the benchmark interactively 
@@ -98,7 +82,7 @@ docker run --rm -it \
     <PIconGPU Command> 
 ```
 
-### Singularity
+### Singularity  
 This section assumes that an up-to-date version of Singularity is installed on your system and properly configured for your system. Please consult with your system administrator or view official Singularity documentation.
 To build a Singularity container from your local Docker container, run the following command:
 ```

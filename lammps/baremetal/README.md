@@ -19,7 +19,7 @@ For ROCm installation procedures and validation checks, see:
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
 
-### System Dependencies
+## System Dependencies
 |Application|Minimum|Recommended|
 |---|---|---|
 |Git|Latest|Latest|
@@ -28,7 +28,7 @@ For ROCm installation procedures and validation checks, see:
 |UCX|1.8.0|1.14.1|
 |CMAKE|3.22.2|Latest|
 
-### Installing LAMMPS
+## Installing LAMMPS
 The below is an example of a simple build from the latest stable version of LAMMPS (the recommended code-source).
 
 1. Validate the Cluster/System has all of the above applications, with system path, library, and include environments set correctly. If you are unsure, the [Dockerfile](/lammps/docker/Dockerfile) has examples of all useful configurations listed after the `ENV` commands. 
@@ -71,10 +71,10 @@ make -j$(nproc) install
 
 4. (Optional) Adding LAMMPS to PATH:
 ```
-export PATH=<path/to/lamps_install>/bin):$PATH
+export PATH=<path/to/lamps_install>/bin:$PATH
 ```
 
-### In this build example uses:
+## In this build example uses:
   - Turn on the Kokkos backend via [`DPKG_KOKKOS`](https://docs.lammps.org/Packages_details.html#pkg-kokkos), and select `HIP` for the device (`Kokkos_ENABLE_HIP`).
     - We could optionally choose to enable `OpenMP` support for the host via `Kokkos_ENABLE_OPENMP`.
   - Turn on a handful of commonly used packages: [`REAXFF`](https://docs.lammps.org/Packages_details.html#pkg-reaxff), [`MANYBODY`](https://docs.lammps.org/Packages_details.html#pkg-manybody), [`ML-SNAP`](https://docs.lammps.org/Packages_details.html#pkg-ml-snap), for various benchmarks.
@@ -87,7 +87,7 @@ export PATH=<path/to/lamps_install>/bin):$PATH
     - Optionally, compilation flags for specific CPU archictures can be specified as [detailed by Kokkos](https://kokkos.github.io/kokkos-core-wiki/keywords.html#architecture-keywords)
   - Enabling a handful of key optimization flags (`HIP_MULTIPLE_KERNEL_INSTANTIATIONS` and `munsafe-fp-atomics`) 
 
-### Alternate build methods
+## Alternate build methods
 
 In addition, we note that `LAMMPS` provides `CMake` presets for `Kokkos-HIP` compilation, supplied in [cmake/presets](https://github.com/lammps/lammps/blob/develop/cmake/presets/kokkos-hip.cmake).
 LAMMPS provides instructions on the [use of these presets](https://docs.lammps.org/Build_extras.html#kokkos-package) in the Kokkos build section of the documentation.

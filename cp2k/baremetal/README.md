@@ -13,7 +13,7 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-### System Dependencies
+## System Dependencies
 |Application|Minimum|Recommended|
 |---|---|---|
 |Git|Latest|Latest|
@@ -22,7 +22,7 @@ For ROCm installation procedures and validation checks, see:
 |UCX|1.8.0|1.14.1|
 
 
-### Installing CP2K using CP2K toolchain
+## Installing CP2K using CP2K toolchain
 
 1. Validate the Cluster/System has all of the above applications, with system path, library, and include environments set correctly. If you are unsure, the [Dockerfile](/cp2k/docker/Dockerfile) has examples of all useful configurations listed after the `ENV` commands. 
 2. Clone the [CP2K GIT repo](https://github.com/cp2k/cp2k.git) into your workspace. 

@@ -1,36 +1,28 @@
 # rocHPL Docker Build Instructions
-
-## Overview
 These instructions use Docker to create an HPC Application Container.  
 If you are not familiar with creating Docker builds, please see the available [Docker manuals and references](https://docs.docker.com/).
 
-### Build System Requirements
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
+
+## Build System Requirements
 - Git
 - Docker
 
-### Inputs
+## Inputs
 Possible `build-arg` for the Docker build command  
 
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation. 
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- #### HPL_BRANCH
-    Default: `main`
+
+- ### HPL_BRANCH
+    Default: `main`  
     Branch/Tag found: [rocHPL](https://github.com/ROCmSoftwarePlatform/rocHPL)
 
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-### Building Container
+## Building Container
 Download the contents of the [rocHPL Docker directory](/rochpl/docker/)  
 
 To run the default configuration:
@@ -40,13 +32,7 @@ docker build -t mycontainer/rochpl -f /path/to/Dockerfile .
 > Notes:  
 >- `mycontainer/rochpl` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
-
-#### APU vs GPU
-Currently the rocHPL has a separate branch for MI50, MI100, MI200  vs MI300A. 
-It is recommended when building for a GPU using the `main` branch.
-While building for MI300A we recommend using the `apu` branch. 
-
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 To run a custom configuration, include one or more customized build-arg  
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
@@ -55,10 +41,8 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/rochpl \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.7-complete \
+    --build-arg IMAGE=rocm_gpu:6.0 \
     --build-arg HPL_BRANCH=apu \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main
     . 
 ```
 
@@ -100,7 +84,7 @@ singularity build rochpl.sif  docker-daemon://mycontainer/rochpl:latest
 ```
 
 
-#### Singularity Interactive 
+#### Singularity Interactive   
 To launch a Singularity image build locally into an interactive session.
 ```
 singularity shell \

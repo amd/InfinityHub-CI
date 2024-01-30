@@ -1,6 +1,9 @@
 # AMD's Implementation of Gromacs with HIP Docker Build
 Instructions on how to build a Docker Container with AMD's implementation of Gromacs.
 
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
+
 ## Build System Requirements
 - Git
 - Docker
@@ -9,12 +12,9 @@ Instructions on how to build a Docker Container with AMD's implementation of Gro
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation. 
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 - ### GROMACS_BRANCH
     Default: `develop_2023_amd_sprint_rocm6`  
@@ -22,16 +22,7 @@ Possible `build-arg` for the Docker build command
 
 - ### MPI_ENABLED
     Default: `off`  
-    Options: `off` or `on`
-    If this option is set to off, UCX and Open MPI will not be installed, and the following two options will not be used.
-
-- ### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- ### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
+    Options: `off` or `on`  
 
 ## Building AMD's implementation of Gromacs with HIP Container
 Download the [Dockerfile](/gromacs-docker/docker/Dockerfile)  
@@ -44,7 +35,7 @@ docker build -t mycontainer/gromacs-hip -f /path/to/Dockerfile .
 >Notes:  
 >- `mycontainer/gromacs-hip` is an example container name. 
 >- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 >- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-amd-implementation-of-gromacs-with-hip-container)). If you plan on running AMD's implementation of Gromacs with HIP against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
 
 To run a custom configuration, include one or more customized build-arg  
@@ -53,11 +44,8 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/gromacs-hip \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
     --build-arg GROMACS_BRANCH=develop_stream_2022-09-16 \
-    --build-arg MPI_ENABLED=on \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
+    --build-arg MPI_ENABLED=on
     . 
 ```
 
@@ -65,18 +53,18 @@ docker build \
 Both Docker and Singularity can be run interactively or as a single command.
 To run the [Gromacs Benchmarks](/gromacs/README.md#running-gromacs-benchmarks), just replace the `<Gromacs Command>` the examples in [Running Gromacs Benchmarks](/gromacs/README.md#running-gromacs-benchmarks) section of the Gromacs readme. The commands can be run directly in an interactive session as well. 
 
-### Docker
+### Docker  
 
 #### Docker Interactive
 ```
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/gromacs-hip /bin/bash
 ```
-#### Docker Non-Interactive
+### Docker Non-Interactive
 ```
 docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/gromacs-hip <Gromacs Command>
 ```
 
-### Singularity 
+### Singularity  
 
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:
@@ -90,7 +78,7 @@ To launch a Singularity image build locally.
 singularity shell --no-home --writable-tmpfs --pwd /benchmark gromacs.sif
 ```
 
-#### Singularity Non-Interactive
+#### Singularity Single Command
 To launch a Singularity image build locally.
 ```
 singularity run --no-home --writable-tmpfs --pwd /benchmark gromacs.sif <Gromacs Command>

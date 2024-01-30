@@ -1,42 +1,32 @@
 # CP2K Container Build Instructions
+This document provides instructions on how to build CP2K into a Docker container that is portable between environments.  
 
-## Overview
-This document provides instructions on how to build CP2K into a Docker container that is portable between environments.
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)  
 
-### Build System Requirements
+## Build System Requirements
 - Git
 - Docker
 
-### Inputs
+## Inputs
 Possible `build-arg` for the Docker build command  
 
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Hub Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- #### CP2K_BRANCH
-    Default: `v2024.1`  
-    Branch/Tag found: [CP2K repo](https://github.com/cp2k/cp2k)
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
+- ### OMPI_BRANCH
     Default: `v4.1.5`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
-- #### GPU_VER
+- ### GPU_VER
     Default: `Mi250`   
     Options: `Mi50`, `Mi100`, `Mi250`  
     Specifies the GPU architecture for which DBCSR will be built. Mi250 is used for all MI200 series accelerators.
 
 
-### Build Instructions
+## Build Instructions
 Download the [CP2K Dockerfile](/cp2k-docker/Dockerfile).
 
 To build the default configuration:
@@ -54,10 +44,7 @@ To run a custom configuration, include one or more customized `--build-arg` para
 docker build \
     -t mycontainer/cp2k \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
     --build-arg CP2K_BRANCH=master \
-    --build-arg UCX_BRANCH=v1.8.0 \
-    --build-arg OMPI_BRANCH=v4.0.3 \
     --build-arg GPU_VER=Mi100 \
     . 
 ```
@@ -76,7 +63,7 @@ To run the [CP2K Benchmarks](/cp2k/README.md#running-cp2k-benchmarks), just repl
 > To run this benchmarks you will need to update the command from [Running CP2K Benchmarks](/cp2k/README.md#running-cp2k-benchmarks) to use the binary specified. 
 
 
-### Docker 
+### Docker  
 If you want access any output files generated during the run, please add `-v $(pwd):/tmp` before `mycontainer/cp2k` in the following commands. 
 For interactive, be sure to copy any files to `/tmp` before exiting the container. For Single Command runs, you can set the output to `/tmp` or set your working directory using `--workdir /tmp`.
 #### Docker Interactive
@@ -86,10 +73,10 @@ docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=u
 
 #### Docker Single Command
 ```bash
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined -e PMIX_MCA_gds=^ds21 mycontainer/cp2k bash -c "<cp2k Command>"
+docker run --rm --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined -e PMIX_MCA_gds=^ds21 mycontainer/cp2k bash -c "<cp2k Command>"
 ```
 
-### Singularity 
+### Singularity  
 To build a Singularity image from the locally created docker file do the following:
 ```bash
 singularity build cp2k.sif docker-daemon://mycontainer/cp2k:latest

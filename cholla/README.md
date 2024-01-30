@@ -44,7 +44,7 @@ You can run the examples using the command syntax below, where `#` is the number
 ```
 mpirun -np # cholla.hydro.cholla-container <benchmark-to-run>
 ```
-### Examples: 
+### Examples 
 * 4 GPU 3D sound wave
 ```
 mpirun -np 4 cholla.hydro.cholla-container /opt/cholla/examples/3D/sound_wave.txt

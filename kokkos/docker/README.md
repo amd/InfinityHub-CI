@@ -2,6 +2,9 @@
 Instructions on how to build a Docker Container with Kokkos.  
 This Kokkos Container is a platform for building HPC applications using Kokkos and HIP. 
 
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
+
 ## Build System Requirements
 - Git
 - Docker
@@ -10,11 +13,9 @@ This Kokkos Container is a platform for building HPC applications using Kokkos a
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation. 
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 - ### KOKKOS_BRANCH
     Default: `4.2.00`  
@@ -35,7 +36,7 @@ docker build -t mycontainer/kokkos -f /path/to/Dockerfile .
 >Notes:  
 >- `mycontainer/kokkos` is an example container name. 
 >- the `.` at the end of the build line is important! It tells Docker where your build context is located!
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required.
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required.
 
 To run a custom configuration, include one or more customized build-arg  
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
@@ -43,7 +44,6 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/kokkos \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-22.04:5.5-complete \
     --build-arg KOKKOS_BRANCH=3.7.02 \
     --build-arg ENABLE_OPENMP=ON
     . 
@@ -57,7 +57,7 @@ This provides a clean environment to modify, build, and test any application tha
 > To learn more about mounting directories and files into your container visit [Docker Docs](https://docs.docker.com/storage/volumes/) and [Singularity Docs](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html)
 
 
-### Docker
+### Docker  
 
 #### Docker Interactive
 ```
@@ -70,7 +70,7 @@ docker run --rm -it \
     /bin/bash
 ```
 
-### Singularity 
+### Singularity  
 
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:

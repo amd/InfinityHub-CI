@@ -1,34 +1,25 @@
 # LAMMPS Container Build Instructions
-
-## overview
 This document provides instructions on how to build LAMMPS into a Docker container that is portable between environments. 
 
-### Build System Requirements
+## Recommended ROCm Version
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
+
+## Build System Requirements
 - Git
 - Docker
 
-### Inputs
+## Inputs
 Possible `build-arg` for the Docker build command  
 
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Hub Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > Note:  
-    > The `*-complete` version has all the components required for building and installation.  
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- #### LAMMPS_BRANCH
+
+- ### LAMMPS_BRANCH
     Default: `stable_2Aug2023_update1`  
     Branch/Tag found: [LAMMPS repo](https://github.com/lammps/lammps)
-
-- #### UCX_BRANCH
-    Default: `v1.14.1`  
-    Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
-
-- #### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
 ## Building a Docker container for LAMMPS
 Download the [Dockerfile](/lammps/docker/Dockerfile)  
@@ -40,7 +31,7 @@ docker build -t mycontainer/lammps -f /path/to/Dockerfile .
 >Notes:
 >- `mycontainer/lammps` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
 To run a custom configuration, include one or more customized build-arg  
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
@@ -48,10 +39,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/lammps \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.2.3-complete \
     --build-arg LAMMPS_BRANCH=stable_23Jun2022_update3 \
-    --build-arg UCX_BRANCH=master \
-    --build-arg OMPI_BRANCH=main \
     . 
 ```
 
@@ -60,7 +48,7 @@ Both Docker and Singularity can be run interactively or as a single command.
 To run the [LAMMPS Benchmarks](/lammps/README.md#running-lammps-benchmarks), just replace the `<LAMMPS Command>` the examples in [Running LAMMPS Benchmarks](/lammps/README.md#running-lammps-benchmarks) section of the LAMMPS readme. The commands can be run directly in an interactive session as well. 
 
 
-### Docker
+### Docker  
 
 #### Docker Interactive
 To run the container interactively, run the following command:
@@ -81,7 +69,7 @@ docker run --device=/dev/kfd \
            mycontainer/lammps  \
            <LAMMPS Command>
 ```
-### Singularity
+### Singularity  
 To build a Singularity image from your local Docker image, run the following command:
 ```bash
 singularity build lammps.sif  docker-daemon://mycontainer/lammps:latest

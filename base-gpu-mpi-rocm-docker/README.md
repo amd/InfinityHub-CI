@@ -2,29 +2,13 @@
 
 ## Overview
 This container recipe is a 'boiler-plate' to building a container using ROCm and OpenMPI/UXC that is GPU-Aware MPI.  
-This recipe does not support OpenMP-offloading as is.  
-Please set add the following before installing OpenMPI to allow for OpenMP support:
-
-```
-env CC=$ROCM_PATH/bin/amdclang \
-    CXX=$ROCM_PATH/bin/amdclang++ \
-    FC=$ROCM_PATH/bin/amdflang
-```
-
-This container builds for the GPU attached to the system it is built on. 
-If there is no GPU on the system/node it is build on please update `$(/opt/rocm/bin/offload-arch)` in the following command with the GPU architecture for the cluster. 
-```
-echo "$(/opt/rocm/bin/offload-arch)" > /opt/rocm/bin/target.lst
-```
-- MI100 - gfx908
-- MI200 - gfx90a
-- MI300A - gfx942
+The container is the base upon which all other applications are built.  
 
 ## Single-Node Server Requirements
 
 | CPUs | APUs/GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) |AMD Instinct MI300A APU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility|[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) |AMD Instinct MI300A APU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 | ROCm v6.x compatibility|[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)
@@ -35,19 +19,26 @@ For ROCm installation procedures and validation checks, see:
 These instructions use Docker to create an HPC Application Container.  
 If you are not familiar with creating Docker builds, please see the available [Docker manuals and references](https://docs.docker.com/).
 
-### Build System Requirements
+## Build System Requirements
 - Git
 - Docker
 
-### Updating the Dockerfile
+## Updating the Dockerfile
 
-#### Apt
-The default container does not have every component of ROCm or Ubuntu installed, and additional components may need to be installed depending on your application. If you use the Docker container tag that ends in `*-complete` it will have a more complete ROCm environment, see the [Inputs](#inputs) section for more details. These components can easily be installed using a simple `apt-get install ...` command.
-List of available ROCm libraries that can be installed with apt-get: 
-`hipblas, hipcub, hipfft, hipsolver, hipsparse, miopen, rccl, rocalution, rocblas, rocfft, rocprim, rocrand, rocsolver, rocsparse, roctracer, rocthrust`
+### ROCm Installation Notes
+The default container has ROCm and all of its libraries installed. Additional components may need to be installed depending on your application.
+Environment variables for `PATH`, `LIBRARY_PATH`, `LD_LIBRARY_PATH`, `C_INCLUDE_PATH`, and `CPLUS_INCLUDE_PATH` for the base libraries of ROCm, OMPI and UCX.
 
-#### HPC Application
-Many HPC Applications require components or applications that are not available using `apt-get`. These may be installed, per the applications installation instructions, at the section of the Docker file with the comment `# Install Additional Apps Below`. Add any binary, libraries, or include file paths to the appropriate environment variables similarly to the ROCm, UCX, and OpenMPI examples. After adding any additional applications add the desired HPC Application at the bottom of this section. 
+> - The implementation of MPI on the node must match the implementation in the container for multi-node runs. 
+> - To use OpenMP support add the following after the ROCm install:
+>```
+>env CC=$ROCM_PATH/bin/amdclang \
+>    CXX=$ROCM_PATH/bin/amdclang++ \
+>    FC=$ROCM_PATH/bin/amdflang
+>```
+
+### Application
+Many Applications require components or applications that are not available using `apt-get`. These may be installed, per the applications installation instructions, at the section of the Docker file with the comment `# Install Additional Apps Below`. Add any binary, libraries, or include file paths to the appropriate environment variables similarly to the ROCm, UCX, and OpenMPI examples. After adding any additional applications add the desired application at the bottom of that section. 
 
 There are a few ways to get additional applications into the container. 
 - CURL/wget: download the binary/source and compile, using docker RUN command
@@ -57,80 +48,104 @@ There are a few ways to get additional applications into the container.
 Please consult the [Docker documentation](https://docs.docker.com/engine/reference/builder) for details.
 
 
-### Inputs
+## Inputs
 Possible `build-arg` for the Docker build command  
 
-- #### IMAGE
-    Default: `rocm/dev-ubuntu-22.04:6.0-complete`  
-    Docker Tags found: 
-    - [ROCm Ubuntu 22.04](https://hub.docker.com/r/rocm/dev-ubuntu-22.04)
-    - [ROCm Ubuntu 20.04](https://hub.docker.com/r/rocm/dev-ubuntu-20.04)
-    > ***Note:***  
-    > The `*-complete` version has all the components required for building and installation.  
+- ### ROCM_URL
+    Default: `https://repo.radeon.com/amdgpu-install/6.0/ubuntu/jammy/amdgpu-install_6.0.60000-1_all.deb`
+    - [AMDGPU-installer Directory](https://repo.radeon.com/amdgpu-install/)
+    > ** Note ** 
+    > The UBUNTU_VERSION below must match the same version of Ubuntu chosen for the amdgpu installer deb.
+    > Each App has a recommended ROCm version. 
 
-- #### UCX_BRANCH
+- ### UBUNTU_VERSION
+    Default: `jammy`  
+    Docker Tags found: 
+    - [Docker Ubuntu](https://hub.docker.com/_/ubuntu)
+    > jammy is currently recommended as many apps require newer versions of GNU tools than can be installed with `apt-get`. 
+
+- ### UCX_BRANCH
     Default: `v1.14.1`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
-- #### OMPI_BRANCH
+- ### OMPI_BRANCH
     Default: `v4.1.5`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
-- #### APT_GET_APPS
+- ### APT_GET_APPS
     Default:  `[BLANK]`  
-    This allows a user to add additional applications and libraries through the apt-get interface in Ubuntu. Using a space separate list `git vim nano` 
+    This allows a user to add additional applications and libraries through the apt-get interface in Ubuntu. Use a space separate list.   
+    Example: `git vim nano` 
 
+- ### GPU_TARGET
+    Default: `gfx908,gfx90a,gfx942`  
+    This variable is used to determine the GPU architecture. It is set as an environment variable that can used to pass into `--offload-arch` into your cmake compiler flags. 
+    > |GPUs     | Architectures |
+    > |---      |---            |
+    > | MI100   | gfx908        |
+    > | MI200   | gfx90a        |
+    > | MI300A  | gfx942        |
 
-### Building Container
+## Building Container
 Download the [Dockerfile](/base-gpu-mpi-rocm-docker/Dockerfile)  
 
 To run the default configuration:
 ```
-docker build -t mycontainer -f /path/to/Dockerfile . 
+docker build -t rocm_gpu:6.0 -f /path/to/Dockerfile . 
 ```
 > Notes:  
->- `mycontainer` is an example container name.
+>- `rocm_gpu:6.0` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
->- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context, if you are building in the same directory it is not required. 
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
-To run a custom configuration, include one or more customized build-arg  
+To run a custom configuration, include one or more customized build-arg parameters.   
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
 
 ```
 docker build \
-    -t mycontainer \
+    -t rocm_gpu:6.0 \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5-complete \
+    --build-arg UBUNTU_VERSION=focal \
     --build-arg UCX_BRANCH=master \
     --build-arg OMPI_BRANCH=main \
     --build-arg APT_GET_APPS="vim nano git"
     . 
 ```
 
-## Running an HPC Container:
+## Running an Application Container:
 This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
 If needed, please consult with your system administrator or view official documentation.
 
-### Docker
+### Docker  
 To run the container interactively, run the following command:
 ```
 docker run --device=/dev/kfd \
            --device=/dev/dri \
            --security-opt seccomp=unconfined \
-           -it mycontainer bash
+           -it rocm_gpu:6.0 bash
 ```
+> ** Notes **
+> User running container user must have permissions to `/dev/kfd` and `/dev/dri`. This can be achieved by being a member of `video` and/or `render` group.  
+> Additional Parameters
+> - `-v [system-directory]/[container-directory]` will mount a directory into the container at run time.
+> - `-w [container-directory]` will designate what directory within a container to start in. 
 
-### Singularity 
+### Singularity  
 Singularity, like Docker, can be used for running HPC containers.  
 To create a Singularity container from your local Docker container, run the following command:
 ```
-singularity build mycontainer.sif  docker-daemon://mycontainer:latest
+singularity build rocm_gpu-60.sif  docker-daemon://rocm_gpu:6.0
 ```
 
 Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a interactive run
 ```
-singularity shell mycontainer.sif
+singularity shell --writable-tmpfs rocm_gpu-60.sif
 ```
+> - `--writable-tmpfs` allows for the file system to be writable, many benchmarks/workloads require this.  
+> - `--no-home` will *not* mount the users home directory into the container at run time. 
+> - `--bind [system-directory]/[container-directory]` will mount a directory into the container  at run time. 
+> - `--pwd [container-directory]` will designate what directory within a container to start in. 
+
 *For more details on Singularity please see their [User Guide](https://docs.sylabs.io/guides/3.7/user-guide/)*
 
 

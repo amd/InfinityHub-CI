@@ -45,7 +45,7 @@ The Dependencies for the build are:
 
 
 
-### Building Application
+## Building Application
 
 ----------
 
@@ -129,7 +129,7 @@ Execute the following make command inside  `/path/to/jw_baroclinic`:
 
 This will create a new filed called  `x1.40962.init.nc`  and only needs to be created once.
 
-### Running The Application
+## Running The Application
 
 ----------
 
@@ -177,7 +177,7 @@ Execute the following make command inside  `/path/to/jw_baroclinic_wave`:
 
 
 
-### Troubleshooting
+## Troubleshooting
 
 ----------
 
@@ -186,7 +186,7 @@ If run successfully, you should have a log file called  `log.atmosphere.role01.0
 
 For more information on MPAS, including visualization, please visit the official website:  [https://mpas-dev.github.io/](https://mpas-dev.github.io/)
 
-### Known Issues
+## Known Issues
 
 ----------
 
@@ -194,7 +194,7 @@ This AMD GPU build recipe is only applicable to HPE/Cray systems with CCE 16.
 
 
 
-### Example script to build Pre-reqs
+## Example script to build Pre-reqs
 ----------
 ```
 #!/bin/bash
@@ -291,7 +291,7 @@ fi
 ----------
 ```
 
-### Example Script to build MPAS
+## Example Script to build MPAS
 ----------
 ```
 
@@ -458,7 +458,7 @@ fi
 
 ```
 
-### Licensing Information
+## Licensing Information
 
 ----------
 
@@ -479,7 +479,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-### Additional Licensing Information
+## Additional Licensing Information
 ----------
 Your access and use of the referenced software is subject to the terms of the applicable component-level license identified below. To the extent any subcomponent in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using the referenced, you are agreeing to fully comply with the terms of the respective  licenses. If you do not agree to the terms of this license, do not access or use the referenced software.
 
@@ -497,12 +497,12 @@ The application requires the following separate and independent components:
 
 Additional third-party content may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF SUCH THIRD-PARTY CONTENT IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THIRD-PARTY CONTENT.
 
-### Disclaimer
+## Disclaimer
 ----------
 
 The information contained herein is for informational purposes only, and is subject to change without notice. In addition, any stated support is planned and is also subject to change. While every precaution has been taken in the preparation of this document, it may contain technical inaccuracies, omissions and typographical errors, and AMD is under no obligation to update or otherwise correct this information. Advanced Micro Devices, Inc. makes no representations or warranties with respect to the accuracy or completeness of the contents of this document, and assumes no liability of any kind, including the implied warranties of noninfringement, merchantability or fitness for particular purposes, with respect to the operation or use of AMD hardware, software or other products described herein. No license, including implied or arising by estoppel, to any intellectual property rights is granted by this document. Terms and limitations applicable to the purchase or use of AMD’s products are as set forth in a signed agreement between the parties or in AMD's Standard Terms and Conditions of Sale.
 
-### Notices and Attribution
+## Notices and Attribution
 
 ----------
 

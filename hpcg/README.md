@@ -29,21 +29,21 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-### Building Recipes
+## Building Recipes
 [Bare Metal Build](/hpcg/baremetal/)
 [Docker/Singularity Build](/hpcg/docker/)
 
 ## Running rocHPCG Benchmark
 
-### SYNOPSIS
+## SYNOPSIS
 ```
 mpirun -n <numprocs> hpcg  <nx> <ny> <nz> <sec> 
 ```
 
-### DESCRIPTION
+## DESCRIPTION
 HPCG solves the Poisson differential equation discretized with a 27-point stencil on a regular 3D grid using a multi-grid preconditioned conjugate gradient algorithm with a symmetric Gauss-Seidel smoother. It complements HPL as a high performance benchmark by measuring the execution rate of a Krylov subspace solver on distributed memory hardware to represent computations and data access patterns commonly used when solving scientific problems. HPCG is weakly scaled and takes the dimensions `<nx>`, `<ny>`, and `<nz>` of the local grid as its first three input parameters. HPCG will decide how to construct the global problem based on the number of available MPI processes and the aspect ratio of the local domain. HPCG first determines the residual obtained after 50 iterations when solving the problem with a reference computation on the CPU. This residual is used as a convergence criterion for the accelerated algorithm. The benchmark is solved repeatedly as many times as needed to run for the number of seconds specified by the fourth input parameter `<sec>`. Official benchmark runs must run for at least 1800s to capture sustained performance. 
 
-### BASIC ARGUMENTS
+## BASIC ARGUMENTS
 For basic usage the following HPCG arguments should suffice
 
 **HPCG arguments:**
@@ -56,7 +56,7 @@ For basic usage the following HPCG arguments should suffice
 > Note:
 >- The dimensions of the grid (`<nx>`,`<ny>`,`<nz>`) must all be multiples of **8** to accommodate three multi-grid coarsening levels.
 
-### EXAMPLE 
+## EXAMPLE 
 An example of running the HPCG application using 8 GPUs and 8 MPI processes, with local grid size of 280&times;280&times;280:
 ```
 mpirun -n 8 hpcg 280 280 280 1800 
@@ -78,13 +78,13 @@ Final  =  1949.0 GFlop/s (14771.6 GB/s)     243.6 GFlop/s per process ( 1846.5 G
 
 
 ## Performance Considerations
-### Understanding Benchmark Results
+## Understanding Benchmark Results
 HPCG is implemented with GPU-aware communication and should run well out of the box without additional performance tuning.
 The main source of performance variation is the iteration count required for convergence which may negatively impact the Figure of Merit (FoM).
 The number of iterations required for convergence may be affected by problem size (determined by the dimensions of the grid) and the number of MPI ranks.
 If the iteration count exceeds 50, HPCG scales back the FoM (throughput) accordingly.
 
-### Adjusting problem size for device memory
+## Adjusting problem size for device memory
 As noted in **BASIC ARGUMENTS**, the grid dimensions must be multiples of **8**.  The total problem size should be large enough to exceed the device cache and can be increased relative to the device memory.  Examples of command line arguments to use for 16 GB of memory on the GPU device:
 ```
 mpirun -n <numprocs> hpcg 280 280 280 1800 

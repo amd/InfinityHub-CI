@@ -28,7 +28,7 @@ Once Chroma has been installed with all of the components,  and the benchmark fi
 ```
 QUDA_ENABLE_P2P=0
 QUDA_ENABLE_GDR=0
-QUDA_RESOURCE_PATH=/tmp/tuning
+QUDA_RESOURCE_PATH=/tmp/
 ```
 
 `QUDA_RESOURCE_PATH` is where several tuning files will be generated on the first run. This can be stored anywhere with read/write permissions are available. They are used on all subsequent runs for that system. 

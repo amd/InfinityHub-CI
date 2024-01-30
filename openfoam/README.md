@@ -17,7 +17,7 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-### Building Recipes
+## Building Recipes
 [Docker/Singularity Build](/openfoam/docker/)
 
 ## Running OpenFOAM
@@ -26,7 +26,7 @@ This section describes how to launch two HPC Benchmarks approved by the [OpenFOA
 > All benchmarks available from the [OpenFOAM HPC Technical Committee](https://develop.openfoam.com/committees/hpc) are available in the [OpenFOAM Docker Image](/openfoam/docker/Dockerfile) in the `/benchmark/HPC_Benchmark` directory and can be run by following the instructions provided in the repository. Follow a similar procedure for your customized workloads/benchmarks to use PETSc solvers and enable GPU offloading.
 
 
-#### Run OpenFOAM Benchmarks
+### Run OpenFOAM Benchmarks
 There are a few options that can be applied to both benchmarks. 
 
 ```

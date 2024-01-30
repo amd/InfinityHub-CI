@@ -32,7 +32,7 @@ git clone -b CAAR --recursive https://github.com/cholla-hydro/cholla.git
 3. Customize the host file for the Cluster. An example [make.host](/cholla/docker/make.host.cholla-container) file is available. The build will use the host name of the system or environment variable `CHOLLA_MACHINE` for build details. 
     - Save a copy of the [make.host](/cholla/docker/make.host.cholla-container) in `/path/to/cholla/builds` to build and/or run benchmarks. 
     - Rename it appropriately for the cluster/system to be built/run on. 
-    - Update `OMPI_ROOT`, `HDF5_ROOT` and `ROCM_PATH` in the make.host file to match your cluster. 
+    - Update `GPU_TARGET`, `OMPI_ROOT`, `HDF5_ROOT` and `ROCM_PATH` in the make.host file to match your cluster. 
 4. Building Cholla
 ```bash
 cd /path/to/cholla

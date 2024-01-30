@@ -40,7 +40,7 @@ The  `./benchmark/gpu_bind.sh` command may need to be updated for your specific 
 
 A combination of values for the MPI configuration, number of threads, gpus and other input parameters should be tested to achieve the highest throughput for your specific system.
 
-### Examples: 
+### Examples 
 
 * 1 GPU using Benchmark_ITT  
 ```
