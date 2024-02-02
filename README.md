@@ -18,6 +18,7 @@ For ROCm installation procedures and validation checks, see:
 - [AMD's Implementation of Gromacs with HIP](/gromacs/)
   - [Bare Metal](/gromacs/baremetal/)
   - [Docker](/gromacs/docker/)
+- [Amber](/amber/)
 - [BabelStream](/babelstream/)
   - [BabelStream Docker Container](/babelstream/)
 - [Cholla](/cholla)
