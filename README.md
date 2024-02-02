@@ -42,6 +42,8 @@ For ROCm installation procedures and validation checks, see:
   - [Docker](/milc/docker/)
 - [MPAS](/mpas/)
   - [Bare Metal](/mpas/)
+- [NAMD](/namd/)
+  - [Container Instructions](/namd/)
 - [NEKO](/neko/)
   - [Bare Metal](/neko/docker)
 - [OpenFOAM](/openfoam/)
