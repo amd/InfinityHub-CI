@@ -64,3 +64,4 @@ For ROCm installation procedures and validation checks, see:
   - [Docker-Spack](/rochpl/docker-spack/)
   - [Spack](/rochpl/spack/)
 - [Specfem3D- Cartesian](/specfem3d/)
+- [Trilinos](/trilinos/)
