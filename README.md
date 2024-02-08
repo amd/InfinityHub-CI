@@ -47,6 +47,7 @@ For ROCm installation procedures and validation checks, see:
   - [Container Instructions](/namd/)
 - [NEKO](/neko/)
   - [Bare Metal](/neko/docker)
+- [NWChem](/nwchem/)
 - [OpenFOAM](/openfoam/)
   - [Docker](/openfoam/docker/)
 - [OpenMM](/openmm/)
