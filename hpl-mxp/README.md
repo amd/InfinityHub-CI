@@ -12,32 +12,34 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## Running rocHPL-MxP
+### Running rocHPL-MxP Container
 
-### Using Docker
+## Using Docker
 
 Pull the docker container using
 
-```docker pull amdih/hpl-ai:1.0.0```
+```docker pull amdih/hpl-ai:1.0.0 ```
 
 To run the container interactively, run 
-
-```docker run --device=/dev/kfd \
+```
+docker run --device=/dev/kfd \
 --device=/dev/dri \
 --security-opt seccomp=unconfined \
 --net=host \
--it amdih/hpl-ai:1.0.0 bash```
+-it amdih/hpl-ai:1.0.0 bash
+```
 
 and launch any hpl-ai run command from the prompt. For non-interactive runs, simply replace bash with the hpl-ai run command
-
-```docker run \
+```
+docker run \
 --device=/dev/kfd \
 --device=/dev/dri \
 --net=host \
 -it amdih/hpl-ai:1.0.0 \
-<hpl-ai run command>```
+<hpl-ai run command>
+```
 
-### Using Singularity
+## Using Singularity
 
 Download and save singularity image locally:
 
@@ -49,7 +51,7 @@ Using singularity is similar to launching an interactive Docker run
 
 Examples of hpl-ai run commands are described in the following section.
 
-### Performance Evaluation
+## Running hpl-mxp
 HPL-MxP reports the apparent FLOPS associated with the direct solve of a dense linear system.
 
 `FLOPS = (2/3N^3 + 3/2N^2)/runtime`
@@ -60,61 +62,62 @@ In general, HPL-MxP performance will increase with matrix size and the benchmark
 
 ### MI100
 
+```
 4 GCD: mpirun -np 4 --map-by node:PE=1 hpl-ai -P 2 -B 2560 -N 168960
+```
+```
 8 GCD: mpirun -np 8 --map-by node:PE=1 hpl-ai -P 4 -B 2560 -N 235520
+```
 
 ### MI210/MI250/MI250X
 
+```
 4 GCD: mpirun -np 4 --map-by node:PE=1 hpl-ai -P 2 -B 2560 -N 235520
+```
+```
 8 GCD: mpirun -np 8 --map-by node:PE=1 hpl-ai -P 4 -B 2560 -N 332800
+```
 
 
 
 ### Synopsis
- `'` mpirun -n <numprocs> [mpiarguments] hpl-ai -P <numprocrows> -B <block_size> -N <matrix_size> [arguments]'``
- ### MPI arguments:
- --map-by numa:PE=1
- 
- ### HPL-MxP arguments:
- -P The first dimension of the process grid. Requires mod(numprocs,P) = 0.
- -B The block size. Requires mod(N,B) = 0, otherwise code will adjust N automatically.
- -N The matrix size.
+ ` mpirun -n <numprocs> [mpiarguments] hpl-ai -P <numprocrows> -B <block_size> -N <matrix_size> [arguments]`
 
-2) MPI Environment Variables
+1) MPI Environment Variables
 MPI environment variables have been set inside the container for ease of use while executing using Docker and/or multiple GPUs.
-
+```
 OMPI_MCA_pml=ucx
 OMPI_ALLOW_RUN_AS_ROOT=1
 OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
-3) Example Command
+```
+2) Example Command
 For reference, the following is an example command line and output for a run of the HPL-MxP command on a node with 4 MI210 GPUs. The results on any given system will vary and this output is provided only to demonstrate the information presented on a successful run of the benchmark.
 
 ` mpirun -np 4 --map-by numa:PE=1 hpl-ai -N 235520 -B 2560 -maxits 3 -numa 2 -pmap cont2d `
 
 The Figure of Merit (FoM) is the overall performance in Flops.
 
-
-## Running Containers
-This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system. If needed, please consult with your system administrator or view official documentation.
-
-
 ### Advanced performance tuning
 While the above limited set of arguments give decent performance across systems with Infinity Fabric, additional tuning may give even better results. HPL-MxP provides several command line options which combined with MPI arguments and UCX environment variables can have significant impact on performance. This is particularly true when high-speed intra-GPU communication is not available. The following lists a combination of settings that have worked well on systems limited to communication across PCIe.
 
 MPI/UCX arguments:
+```
 --mca pml ucx
 --map-by numa:PE=1
 -x UCX_RNDV_PIPELINE_SEND_THRESH=256k
 -x UCX_RNDV_FRAG_SIZE=rocm:4m
 -x UCX_RNDV_THRESH=128
 -x UCX_TLS=sm,self,rocm_copy,rocm_ipc
+```
 
 HPL-MxP arguments:
+```
 -P The first dimension of the process grid. Requires mod(numprocs,P) = 0.
 -B The block size. Requires mod(N,B) = 0, otherwise code will adjust N automatically.
 -N The matrix size.
 -numa 2 Set the number of numa processes
 -pmap CONT2D How to allocate numa-processes on the processor grid
+```
 
 For a complete list of hpl-ai arguments, see hpl-ai -hidden_help.
 
@@ -129,7 +132,7 @@ The application is provided in a container image format that includes the follow
 |OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
 |OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
-|Trilinos|BSD 3-Clause, LGPL|[hpl-mxp](https://github.com/wu-kan/HPL-AI)<br >[hpl-ai License]([https://github.com/wu-kan/HPL-AI](https://github.com/wu-kan/HPL-AI))|
+|hpl-mxp|BSD 3-Clause, LGPL|[hpl-mxp](https://github.com/wu-kan/HPL-AI)<br >[hpl-ai License]([https://github.com/wu-kan/HPL-AI](https://github.com/wu-kan/HPL-AI))|
 
 
 
