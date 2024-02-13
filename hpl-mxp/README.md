@@ -12,48 +12,40 @@ For ROCm installation procedures and validation checks, see:
 * [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
-## Running rocHPL
-### Docker
-Download the [rocHPL Docker script and other build code](/hpl-mxp/docker) if you want build a Docker Container version of the code.
-
-The Docker image can be built using the provided Dockerfile source file. Starting in the directory that contains the `docker` directory, issue the command:
-```
-docker build -t hpl-mxp.6.0 -f Dockerfile .
-```
-Please note that the period (dot) at the end of the command is actually part of the docker build syntax and must be included in your command.
-
-This will build a Docker image named (tagged) hpl-mxp.6.0, from the input file Docker/dockerfile, starting in the current directory (".").
-
 ## Running rocHPL-MxP
 
 ### Using Docker
 
+Pull the docker container using
+
+```docker pull amdih/hpl-ai:1.0.0```
+
 To run the container interactively, run 
 
-`docker run --device=/dev/kfd \
+```docker run --device=/dev/kfd \
 --device=/dev/dri \
 --security-opt seccomp=unconfined \
 --net=host \
--it amdih/hpl-ai:1.0.0 bash`
+-it amdih/hpl-ai:1.0.0 bash```
 
 and launch any hpl-ai run command from the prompt. For non-interactive runs, simply replace bash with the hpl-ai run command
 
-`docker run \
+```docker run \
 --device=/dev/kfd \
 --device=/dev/dri \
 --net=host \
 -it amdih/hpl-ai:1.0.0 \
-<hpl-ai run command> `
+<hpl-ai run command>```
 
 ### Using Singularity
 
 Download and save singularity image locally:
 
-singularity pull hpl-ai.sif docker://amdih/hpl-ai:1.0.0
+``` singularity pull hpl-ai.sif docker://amdih/hpl-ai:1.0.0 ```
 
 Using singularity is similar to launching an interactive Docker run
 
-singularity run --pwd /benchmark hpl-ai.sif <hpl-ai run command>
+``` singularity run --pwd /benchmark hpl-ai.sif <hpl-ai run command> ```
 
 Examples of hpl-ai run commands are described in the following section.
 
@@ -78,8 +70,8 @@ In general, HPL-MxP performance will increase with matrix size and the benchmark
 
 
 
-# Synopsis
- ` mpirun -n <numprocs> [mpiarguments] hpl-ai -P <numprocrows> -B <block_size> -N <matrix_size> [arguments]`
+### Synopsis
+ `'` mpirun -n <numprocs> [mpiarguments] hpl-ai -P <numprocrows> -B <block_size> -N <matrix_size> [arguments]'``
  ### MPI arguments:
  --map-by numa:PE=1
  
@@ -137,7 +129,7 @@ The application is provided in a container image format that includes the follow
 |OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
 |OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
-|Trilinos|BSD 3-Clause, LGPL|[hpl-mxp](https://github.com/trilinos/Trilinos)<br >[hpl-ai License]([https://trilinos.github.io/license.html](https://github.com/wu-kan/HPL-AI))|
+|Trilinos|BSD 3-Clause, LGPL|[hpl-mxp](https://github.com/wu-kan/HPL-AI)<br >[hpl-ai License]([https://github.com/wu-kan/HPL-AI](https://github.com/wu-kan/HPL-AI))|
 
 
 
