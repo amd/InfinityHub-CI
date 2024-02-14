@@ -14,55 +14,32 @@ For ROCm installation procedures and validation checks, see:
 * [ROCm Examples](https://github.com/amd/rocm-examples)
 
 ## Applications:
-- [AMD Base Docker Container for GPU-Aware MPI in ROCm applications](/base-gpu-mpi-rocm-docker/)
-- [AMD's Implementation of Gromacs with HIP](/gromacs/)
-  - [Bare Metal](/gromacs/baremetal/)
-  - [Docker](/gromacs/docker/)
-- [Amber](/amber/)
-- [BabelStream](/babelstream/)
-  - [BabelStream Docker Container](/babelstream/)
-- [Cholla](/cholla)
-  - [Bare Metal](/cholla/baremetal/)
-  - [Docker](/cholla/docker/)
-- [Chroma](/chroma/)
-  - [Docker](/chroma/docker/)
-- [CP2K](/cp2k/)
-  - [Bare Metal](/cp2k/baremetal/)
-  - [Docker](/cp2k/docker/)
-- [Grid](/grid/)
-  - [Docker](/grid/docker/)
-- [HPCG](/hpcg/)
-  - [Bare Metal](/hpcg/baremetal/)
-  - [Docker](/hpcg/docker/)
-- [Kokkos](/kokkos/)
-  - [Docker](/kokkos/docker/)
-- [LAMMPS](/lammps/)
-  - [Bare Metal](/lammps/baremetal/)
-  - [Docker](/lammps/docker/)
-- [MILC](/milc/)
-  - [Docker](/milc/docker/)
-- [MPAS](/mpas/)
-  - [Bare Metal](/mpas/)
-- [NAMD](/namd/)
-  - [Container Instructions](/namd/)
-- [NEKO](/neko/)
-  - [Bare Metal](/neko/docker)
-- [NWChem](/nwchem/)
-- [OpenFOAM](/openfoam/)
-  - [Docker](/openfoam/docker/)
-- [OpenMM](/openmm/)
-  - [Docker](/openmm/docker/)
-- [PETSc](/petsc/)
-  - [Docker](/petsc/docker/)
-- [PIconGPU](/picongpu/)
-  - [Docker](/picongpu/docker/)
-- [PyFR](/pyfr/)
-  - [Docker](/pyfr/docker/)
-- [QUDA](/quda/)
-  - [Docker](/quda/docker/)
-- [rocHPL](/rochpl/)
-  - [Docker](/rochpl/docker/)
-  - [Docker-Spack](/rochpl/docker-spack/)
-  - [Spack](/rochpl/spack/)
-- [Specfem3D- Cartesian](/specfem3d/)
-- [Trilinos](/trilinos/)
+|Application|Builds|ROCm Version|Domains|
+|---|---|---|---|
+|[AMD ROCm with GPU-Aware MPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.0|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD's implementation of Gromacs with HIP](/gromacs/)|<ul><li>[Baremetal](/gromacs/baremetal/)</li><li>[Docker](/gromacs/docker/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
+|[Amber](/amber/)|<ul><li>[Amber Details](/amber/)</li></ul>|4.5|<ul><li>Molecular Dynamics</li></ul>|
+|[BabelStream](/babelstream/)|<ul><li>[Container Instructions](/babelstream/)|5.3|<ul><li>Benchmark</li></ul>|
+|[Cholla](/cholla/)|<ul><li>[Baremetal](/cholla/baremetal/)</li><li>[Docker](/cholla/docker/)</li></ul>|latest|<ul><li>Astrophysics</li></ul>|
+|[Chroma](/chroma/)|<ul><li>[Docker](/chroma/docker/)</li></ul>|latest|<ul><li>Physics</li></ul>|
+|[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|latest|<ul><li>Electronic Structure</li></ul>|
+|[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|latest|<ul><li>Physics</ul>|
+|[HPCG](/hpcg/)|<ul><li>[Baremetal](/hpcg/baremetal/)</li><li>[Docker](/hpcg/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
+|[HPL-MxP](/hpl-mxp/)|<ul><li>[Container Instructions](/hpl-mxp/)</li></ul>|5.3|<ul><li>Benchmark</li></ul>|
+|[Kokkos](/kokkos/)|<ul><li>[Docker](/kokkos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
+|[LAMMPS](/lammps/)|<ul><li>[Baremetal](/lammps/baremetal/)</li><li>[Docker](/lammps/baremetal/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
+|[MILC](/milc/)|<ul><li>[Docker](/milc/docker/)</li></ul>|5.6|<ul><li>Physics</li></ul>|
+|[MPAS](/mpas/)|<ul><li>[Baremetal](/mpas/)</li></ul>|latest|<ul><li>Climate</li><li>Weather</li></ul>|
+|[NAMD](/namd/)|<ul><li>[Container Instructions](/namd/)</li></ul>|4.3/4.5|<ul><li>Molecular Dynamics</li></ul>|
+|[NEKO](/neko/)|<ul><li>[Docker](/neko/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[NWChem](/nwchem/)|<ul><li>[Container Instructions](/nwchem/)</li></ul>|5.3|<ul><li>Computational Chemistry</li></ul>|
+|[OpenFOAM](/openfoam/)|<ul><li>[Docker](/openfoam/docker/)</li></ul>|5.7|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[OpenMM](/openmm/)|<ul><li>[Docker](/openmm/docker/)</li></ul>|5.7|<ul><li>Molecular Dynamics</li></ul>|
+|[PETSc](/petsc/)|<ul><li>[Docker](/petsc/docker/)</li></ul>|5.7|<ul><li>Tools</li><li>Libraries</li></ul>|
+|[PIconGPU](/picongpu/)|<ul><li>[Docker](/picongpu/docker/)</li></ul>|5.7|<ul><li>Physics</li></ul>|
+|[PyFR](/pyfr/)|<ul><li>[Docker](/pyfr/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
+|[QUDA](/quda/)|<ul><li>[Docker](/quda/docker/)</li></ul>|latest|<ul><li>Computational Chemistry</li></ul>|
+|[RELION](/relion/)|<ul><li>[Container Instructions](/relion/)</li></ul>|5.3|<ul><li>Electronic Structure</li></ul>|
+|[rocHPL](/rochpl/)|<ul><li>[Docker](/rochpl/docker/)</li><li>[Spack Docker](/rochpl/docker-spack/)</li><li>[Docker](/rochpl/spack/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
+|[Specfem3D- Cartesian](/specfem3d/)|<ul><li>[Spack Docker](/specfem3d/docker/)</li></ul>|latest|<ul><li>Geophysics</li></ul>|
+|[Trilinos](/trilinos/)|<ul><li>[Container Instructions](/trilinos/)</li></ul>|5.3|<ul><li>Tools</li><li>Libraries</li></ul>|
