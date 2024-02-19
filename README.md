@@ -29,6 +29,7 @@ For ROCm installation procedures and validation checks, see:
 |[Kokkos](/kokkos/)|<ul><li>[Docker](/kokkos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[LAMMPS](/lammps/)|<ul><li>[Baremetal](/lammps/baremetal/)</li><li>[Docker](/lammps/baremetal/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[MILC](/milc/)|<ul><li>[Docker](/milc/docker/)</li></ul>|5.6|<ul><li>Physics</li></ul>|
+|[Mini-HACC](/minihacc/)|<ul><li>[Container Instructions](/minihacc/)|4.5|<ul><li>Astrophysics</li></ul>|
 |[MPAS](/mpas/)|<ul><li>[Baremetal](/mpas/)</li></ul>|latest|<ul><li>Climate</li><li>Weather</li></ul>|
 |[NAMD](/namd/)|<ul><li>[Container Instructions](/namd/)</li></ul>|4.3/4.5|<ul><li>Molecular Dynamics</li></ul>|
 |[NEKO](/neko/)|<ul><li>[Docker](/neko/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
