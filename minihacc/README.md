@@ -20,7 +20,7 @@ For ROCm installation procedures and validation checks, see:
 
 ### Docker Pull
 ```
-docker pull amdih/minihacc:1.0.0
+docker pull amdih/minihacc:1.0.amd3_129
 ```
 #### Docker Interactive
 ```
@@ -28,7 +28,7 @@ docker run --rm -it \
     --device=/dev/kfd \
     --device=/dev/dri \
     --security-opt seccomp=unconfined \
-    amdih/minihacc:1.0.0 /bin/bash
+    amdih/minihacc:1.0.amd3_129 /bin/bash
 ```
 
 #### Docker Single Command
@@ -37,7 +37,7 @@ docker run --rm -it \
     --device=/dev/kfd \
     --device=/dev/dri \
     --security-opt seccomp=unconfined \
-    amdih/minihacc:1.0.0 <Mini-HACC Command>
+    amdih/minihacc:1.0.amd3_129 <Mini-HACC Command>
 ```
 
 ### Singularity  
@@ -45,7 +45,7 @@ docker run --rm -it \
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:
 ```
-singularity pull minihacc.sif docker://amdih/minihacc:1.0.0
+singularity pull minihacc.sif docker://amdih/minihacc:1.0.amd3_129
 ```
 
 #### Singularity Interactive
