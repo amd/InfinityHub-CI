@@ -21,7 +21,7 @@ Possible `build-arg` for the Docker build command
     Branch/Tag found: [MILC repo](https://github.com/milc-qcd/milc_qcd/)
 
 - ### QMP_BRANCH
-    Default: `devel`  
+    Default: `master`  
     Branch/Tag found: [QMP repo](https://github.com/usqcd-software/qmp.git)
 
 - ### QIO_BRANCH
@@ -50,10 +50,9 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/milc \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm/dev-ubuntu-20.04:5.5-complete \
+    --build-arg IMAGE=rocm_gpu:6.0.2 \
     --build-arg QMP_BRANCH=master
     --build-arg QIO_BRANCH=master
-    --build-arg QDPXX_BRANCH=master
     --build-arg QUDA_BRANCH=master
     --build-arg MILC_BRANCH=master
     . 
@@ -65,21 +64,28 @@ Both Docker and Singularity can be run interactively or as a single command.
 To run the [MILC Benchmarks](/milc/README.md#running-milc-benchmarks), just replace the `<MILC Command>` the examples in [Running MILC Benchmarks](/milc/README.md#running-milc-benchmarks) section of the MILC readme. The commands can be run directly in an interactive session as well. 
 
 ### Docker  
-For access to the tuning files, please add `-v $(pwd):/tmp/tuning` before `mycontainer/milc` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
-To run a single command docker, it will be necessary to mount the tuning files in for better performance. 
 
 #### Docker Interactive
 ```
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/milc /bin/bash
+docker run --rm -it \
+    --device=/dev/kfd \
+    --device=/dev/dri \
+    --security-opt seccomp=unconfined \
+    -w /benchmark/ \
+    mycontainer/milc /bin/bash
 ```
 #### Docker Single Command
 ```
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/milc <MILC Command>
+docker run --rm -it \
+    --device=/dev/kfd \
+    --device=/dev/dri \
+    --security-opt seccomp=unconfined \
+    -w /benchmark/benchmarks/tiny/generation/ \
+    -v $(pwd):/benchmark/benchmarks/tiny/generation/lattices  
+    mycontainer/milc <MILC Command>
 ```
 
 ### Singularity  
-For access to the tuning files, please add `--bind $(pwd):/tmp/tuning` before `milc.sif` in the following commands. This is the default location for the tuning files. To change this, add `--env QUDA_RESOURCE_PATH=/path/to/location/`
-To run a single command singularity, it will be necessary to mount the tuning files in for better performance. 
 
 #### Build Singularity image from Docker
 To build a Singularity image from the locally created docker file do the following:
@@ -90,14 +96,34 @@ singularity build milc.sif docker-daemon://mycontainer/milc:latest
 #### Singularity Interactive
 To launch a Singularity image build locally.
 ```
-singularity shell --no-home --writable-tmpfs --pwd /benchmark milc.sif
+singularity shell \
+    --no-home \
+    --writable-tmpfs \
+    --pwd /benchmark/ \
+    milc.sif
 ```
 
 #### Singularity Single Command
 To launch a Singularity image build locally.
 ```
-singularity run --no-home --writable-tmpfs --pwd /benchmark milc.sif <MILC Command>
+singularity run \
+    --no-home \
+    --writable-tmpfs \
+    --pwd /benchmark/benchmarks/tiny/generation \
+    --bind $(pwd):/benchmark/benchmarks/tiny/generation/lattices  
+    milc.sif <MILC Command>
 ```
+
+> **NOTES**  
+> 1. To run a single command singularity, it will be necessary to mount the tuning files in for better performance.  
+> 2. Due  to the size of the lattice available, they have not been included in this container. The repo that has the scripts to download them have been.  
+> They can be downloaded using the instructions under [MILC Benchmarks](/milc/README.md#running-milc-benchmarks).   
+> The lattices can be downloaded before hand, and mounted in similar to the following for the `tiny` sized `generation` benchmark. 
+> - - Docker  
+>    `-v $(pwd):/benchmark/benchmarks/tiny/generation/lattices`
+> - -  Singularity   
+> `--bind $(pwd):/benchmark/benchmarks/tiny/generation/lattices`  
+
 
 
 ## Licensing Information

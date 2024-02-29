@@ -21,69 +21,60 @@ For ROCm installation procedures and validation checks, see:
 
 
 ## Running MILC Benchmarks
-The benchmark used for MILC has been provided within the [MILC Docker Build](/milc/docker/benchmarks/) and the lattice can be downloaded at [MILC Lattice ](https://portal.nersc.gov/project/m888/apex/MILC_lattices/36x36x36x72.chklat).  
-This benchmark is created for build targets`su3_rhmd_hisq` and `su3_rhmd_hisq` details about these options can be found at [MILC/ks_imp_rhmc](https://github.com/milc-qcd/milc_qcd/blob/master/ks_imp_rhmc/).
+The latest MILC benchmark details can be found on [NERSC GitLab N10-benchmarks/lattice-gcd-workflow](https://gitlab.com/NERSC/N10-benchmarks/lattice-qcd-workflow).
 
-Once MILC has been installed with all of the components, and the benchmark files have been extracted to a working directory there are a few environment variables that are recommended to pass in or set on the system. 
-
-```
-QUDA_ENABLE_P2P=0
-QUDA_ENABLE_GDR=1
-QUDA_MILC_HISQ_RECONSTRUCT=13
-QUDA_MILC_HISQ_RECONSTRUCT_SLOPPY=9
-QUDA_RESOURCE_PATH=/tmp/tuning
-```
-
-`QUDA_RESOURCE_PATH` is where several tuning files will be generated on the first run. This can be stored anywhere with read/write permissions are available. They are used on all subsequent runs for that system. 
-The first run on each system/configuration can take up to 2-3x longer due to generating these tuning files. It is recommended to run the provided MILC benchmark once, to generate these tuning files, before processing a workload. 
-
-### Example:
-`QUDA_RESOUCE_PATH` should be provided similar to examples below. If not set as an environment variable or at run time, it will create the tuning files in the directory the command is executed from.  
-
-There are different inputs files provided for 1/2/4/8 GPUs. 
+There are 2 benchmarks within the repo, `generation` and `spectrum` and 4 size lattice that can be downloaded, based on the size of the system. 
+|Size| GPUs/GCDs|input_file| File Size |
+|---|---|---|---|
+|`tiny`|4|input_4864|1.9GB x2|
+|`small`|16|input_6496|6.8GB x2|
+|`medium`|128|input_96192|46GB x2|
+|`reference`|512|input_144288|231GB x2|
+|`target`|1152|input_192384|730GB|
 
 
-<details>
-<summary>su3_rhmc_hisq</summary?>  
+The benchmark input files for each size can be be found here:
+```
+.../lattice-qcd-workflow/benchmarks/$SIZE/$BENCHMARK/
+```
+The default location defined in the input files is:
+```
+.../lattice-qcd-workflow/benchmarks/$SIZE/$BENCHMARK/lattices
+``` 
+The input file can be updated, to where ever the lattices are.
+Update the line in the input file `reload_parallel .../path/to/lattice/$LATTICE_FILE` 
+To Download the lattices
+```
+.../lattice-qcd-workflow/lattices/wgetlattice.sh $SIZE
+```
+> `QUDA_RESOURCE_PATH` is where several tuning files will be generated on the first run. This can be stored anywhere with read/write permissions are available.  
+> Within provided image recipe this has been set to `/tmp`.  
+> The first run on each system/configuration can take up to 2-3x longer due to generating these tuning files. 
+> These tuning files are used on all subsequent runs for that system. 
+> It is recommended to run the provided MILC benchmark once, to generate these tuning files, before processing a workload.  
 
-- 1 GPU 
+### Example
+#### Generation
 ```
-QUDA_RESOURCE_PATH=/path/to/tuning GEOM="1 1 1 1" mpirun -n 1 su3_rhmc_hisq apex_medium_1.in
-```
-- 2 GPU
-```
-GEOM="1 1 1 2" mpirun -x QUDA_RESOURCE_PATH -n 2 su3_rhmc_hisq apex_medium_2.in
-```
-- 4 GPU
-```
-GEOM="1 1 2 2" mpirun -x QUDA_RESOURCE_PATH -n 4 su3_rhmc_hisq apex_medium_4.in
-```
-- 8 GPU
-```
-GEOM="1 1 2 4" mpirun -x QUDA_RESOURCE_PATH -n 8 su3_rhmc_hisq apex_medium_8.in
-```
-</details>
+cd .../lattice-qcd-workflow/benchmarks/$SIZE/generation/ 
 
-<details>
-<summary>su3_rhmd_hisq</summary?>  
+mpirun -n #GPUs  su3_rhmd_hisq $INPUT_FILE
+```
 
-- 1 GPU 
+#### Spectrum
 ```
-QUDA_RESOURCE_PATH=/path/to/tuning GEOM="1 1 1 1" mpirun -n 1 su3_rhmd_hisq apex_medium_1.in
+cd .../lattice-qcd-workflow/benchmarks/$SIZE/spectrum/ 
+
+mpirun -n #GPUs  ks_spectrum_hisq $INPUT_FILE
 ```
-- 2 GPU
-```
-GEOM="1 1 1 2" mpirun -x QUDA_RESOURCE_PATH -n 2 su3_rhmd_hisq apex_medium_2.in
-```
-- 4 GPU
-```
-GEOM="1 1 2 2" mpirun -x QUDA_RESOURCE_PATH -n 4 su3_rhmd_hisq apex_medium_4.in
-```
-- 8 GPU
-```
-GEOM="1 1 2 4" mpirun -x QUDA_RESOURCE_PATH -n 8 su3_rhmd_hisq apex_medium_8.in
-```
-</details>
+
+
+
+
+### Previous MILC Benchmarks
+For running the previous NERSC MILC benchmark, please see the instructions for [Running the NERSC MILC Benchmarks](https://github.com/lattice/quda/wiki/Running-the-NERSC-MILC-Benchmarks). This benchmark has not been provided in the [MILC Docker](/milc/docker/). The full instructions are provided on github.  
+To run these benchmarks within a container, use the `-v` for docker or `--bind` for singularity to mount the datasets into the container. 
+
 #### Known Issues
 Multi-GPU runs with MI100 GPUs using ROCm 5.x GPU driver, MILC benchmarks may freeze and not return with an exit code upon completion of the benchmark.
 
