@@ -2,7 +2,7 @@ ARG IMAGE="rocm_gpu:6.0"
 
 FROM ${IMAGE}
 
-ARG PYFR_BRANCH="v2.0.0"
+ARG PYFR_BRANCH="v1.15.0"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
