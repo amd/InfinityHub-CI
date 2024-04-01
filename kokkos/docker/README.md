@@ -18,7 +18,7 @@ Possible `build-arg` for the Docker build command
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 - ### KOKKOS_BRANCH
-    Default: `4.2.00`  
+    Default: `4.2.01`  
     Branch/Tag found: [Kokkos](https://github.com/kokkos/kokkos.git).
 
 - ### ENABLE_OPENMP
@@ -99,6 +99,7 @@ The application is provided in a container image format that includes the follow
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
 |Google Benchmark|Apache v2.0|[Google Benchmark](https://github.com/google/benchmark) <br/> [Google Benchmark License](https://github.com/google/benchmark/blob/main/LICENSE)|
 |Kokkos|Apache v2.0|[Kokkos](https://kokkos.org/)<br /> [Kokkos License](https://github.com/kokkos/kokkos/blob/master/LICENSE)|
+|Kokkos-Kernels|Apache v2.0|[Kokkos-Kernels](https://kokkos.org/)<br /> [Kokkos-Kernels License](https://github.com/kokkos/kokkos-kernels?tab=License-1-ov-file#readme)|
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER.
 

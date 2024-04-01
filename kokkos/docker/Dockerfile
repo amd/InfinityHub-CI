@@ -2,7 +2,7 @@ ARG IMAGE=rocm_gpu:6.0
 
 FROM ${IMAGE}
 
-ARG KOKKOS_VERSION=4.2.00
+ARG KOKKOS_VERSION=4.2.01
 ARG ENABLE_OPENMP=Off
 
 # Adding rocm/cmake to the Environment 
@@ -28,11 +28,12 @@ RUN git clone -b ${KOKKOS_VERSION} https://github.com/kokkos/kokkos.git \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_CXX_COMPILER=amdclang++ \
                 -DCMAKE_INSTALL_PREFIX=/opt/kokkos \
-                -DCMAKE_INSTALL_PREFIX=/opt/kokkos \
                 -DKokkos_ENABLE_BENCHMARKS=On \
                 -DKokkos_ENABLE_HIP=On \
                 -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=On \
-                -DKokkos_ENABLE_TESTS=On \
+                -DKokkos_ENABLE_SERIAL=on \
+                -DKokkos_ENABLE_TESTS=on \
+                -DKokkos_ENABLE_HIP_RELOCATABLE_DEVICE_CODE=off \
                 -DKokkos_ARCH_VEGA90A=On; \
                 -DKokkos_ENABLE_OPENMP=${ENABLE_OPENMP} \
                 -DKokkos_ENABLE_OPENMPTARGET=${ENABLE_OPENMP}; \
@@ -44,14 +45,14 @@ RUN git clone -b ${KOKKOS_VERSION} https://github.com/kokkos/kokkos.git \
                 -DKokkos_ENABLE_BENCHMARKS=On \
                 -DKokkos_ENABLE_HIP=On \
                 -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=On \
-                -DKokkos_ENABLE_TESTS=On \
+                -DKokkos_ENABLE_SERIAL=on \
+                -DKokkos_ENABLE_TESTS=on \
+                -DKokkos_ENABLE_HIP_RELOCATABLE_DEVICE_CODE=off \
                 -DKokkos_ARCH_VEGA90A=On; \
         fi \
         && make -j $(nproc)\
         && make install \
         && chmod -R a+rwx /kokkos
-
-WORKDIR /kokkos/build
 
 #Adding Kokkos, libs, and headers to Environment
 ENV PATH=$PATH:/opt/kokkos/bin \
@@ -59,6 +60,44 @@ ENV PATH=$PATH:/opt/kokkos/bin \
     LIBRARY_PATH=/opt/kokkos/lib:$LIBRARY_PATH \
     C_INCLUDE_PATH=/opt/kokkos/include:$C_INCLUDE_PATH \
     CPLUS_INCLUDE_PATH=/opt/kokkos/include:$CPLUS_INCLUDE_PATH
+
+RUN  git clone --recursive -b ${KOKKOS_VERSION} https://github.com/kokkos/kokkos-kernels.git kokkoskernels \
+    && cd kokkoskernels \
+    && mkdir build \
+    && cd build \
+    && if [ "$ENABLE_OPENMP" = "On" ]; then \
+            export COMPILER=amdclang++; \
+        else \
+            export COMPILER=hipcc; \
+        fi \
+    && cmake .. \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CXX_COMPILER=$COMPILER \
+        -DCMAKE_INSTALL_PREFIX=/opt/kokkoskernels \
+        -DCMAKE_PREFIX_PATH="/opt/kokkos;$ROCM_PATH" \
+        -DKokkosKernels_ENABLE_TESTS=ON \
+        -DKokkosKernels_ENABLE_EXAMPLES=ON \
+        -DKokkosKernels_INST_ORDINAL_INT=ON \
+        -DKokkosKernels_INST_ORDINAL_INT64_T=ON \
+        -DKokkosKernels_INST_OFFSET_INT=ON \
+        -DKokkosKernels_INST_FLOAT=ON \
+        -DKokkosKernels_INST_COMPLEX_FLOAT=ON \
+        -DKokkosKernels_INST_COMPLEX_DOUBLE=ON \
+        -DKokkosKernels_ENABLE_TPL_ROCSPARSE=ON \
+        -DKokkosKernels_ENABLE_TPL_ROCBLAS=ON \
+        -DKokkosKernels_ENABLE_TPL_ROCSOLVER=ON \
+    && make -j $(nproc)\
+    && make install \
+    && chmod -R a+rwx /kokkoskernels
+
+
+WORKDIR /kokkos/build
+
+#Adding Kokkos, libs, and headers to Environment
+ENV LD_LIBRARY_PATH=/opt/kokkoskernels/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=/opt/kokkoskernels/lib:$LIBRARY_PATH \
+    C_INCLUDE_PATH=/opt/kokkoskernels/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=/opt/kokkoskernels/include:$CPLUS_INCLUDE_PATH
 
 # Add any Build instructions that uses Kokkos Below. 
 

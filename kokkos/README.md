@@ -4,12 +4,14 @@
 Kokkos is a C++ library and programming model designed to help with the development of HPC applications.
 It provides a framework for writing code that can runs on various hardware platforms, including CPUs, GPUS, and accelerators.
 Kokkos allows code to be written that targets complex architectures with multiple memory hierarchies and execution resources. 
+Kokkos-Kernels is a utility library affiliated with Kokkos that implements common computational kernels for linear algebra and graph operations. 
+The Kokkos-Kernels library also supports ROCm tools libraries such as rocBLAS and rocSPARSE.
 
 
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 | ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) <br> | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+| X86_64 CPU(s) | AMD Instinct MI200 <br>  AMD Instinct MI100<br> | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)
@@ -23,20 +25,23 @@ For ROCm installation procedures and validation checks, see:
 ## Getting started with Kokkos
 The build recipe provided here is to provide a clean environment to work with Kokkos and to help facilitate creating a Kokkos-Enabled application. 
 In the docker container, the environment has been setup so that the headers and libraries have been included in the environment and are ready to build on top of.  
-Popular projects that use Kokkos: [LAMMPS](/lammps/), [Trillnos](https://trilinos.github.io/), [BableStream](https://github.com/UoB-HPC/BabelStream)
+Popular projects that use Kokkos: [LAMMPS](/lammps/), [Trillnos](https://trilinos.github.io/), [BabelStream](https://github.com/UoB-HPC/BabelStream)
 
 There are many more options that can be added, they are listed on [Kokkos Wiki](https://kokkos.github.io/kokkos-core-wiki/keywords.html). Each project is unique with different requirements, the build provided here is very basic with the tests enabled. With these tests Kokkos can be tuned for any environment.
 
 To run the tests in the provided container instructions, [start up the image](/kokkos/docker/README.md#running-kokkos-container).  
-To run Kokkos standard suite of tests, do the following. 
-
+To run Kokkos' suite of tests, use: 
 ```
 cd /kokkos/build
 ctest
 ```
+To run the Kokkos-Kernels tests:
+```
+cd /kokkoskernels/build
+ctest
+```
 
-This runs unit, profiling, performance, and benchmark tests. 
-For more details on Kokkos and how to use it, check out the [Kokkos Documentation](https://kokkos.github.io/kokkos-core-wiki/index.html).
+For more details on Kokkos and Kokkos-Kernels, see [Kokkos Documentation](https://kokkos.github.io/kokkos-core-wiki/index.html) and [Kokkos-Kernels Documentation](https://github.com/kokkos/kokkos-kernels/wiki).
 
 
 ## Licensing Information
@@ -50,6 +55,7 @@ The application is provided in a container image format that includes the follow
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
 |Google Benchmark|Apache v2.0|[Google Benchmark](https://github.com/google/benchmark) <br/> [Google Benchmark License](https://github.com/google/benchmark/blob/main/LICENSE)|
 |Kokkos|Apache v2.0|[Kokkos](https://kokkos.org/)<br /> [Kokkos License](https://github.com/kokkos/kokkos/blob/master/LICENSE)|
+|Kokkos-Kernels|Apache v2.0|[Kokkos-Kernels](https://kokkos.org/)<br /> [Kokkos-Kernels License](https://github.com/kokkos/kokkos-kernels?tab=License-1-ov-file#readme)|
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER.
 
