@@ -41,6 +41,7 @@ For ROCm installation procedures and validation checks, see:
 |[PyFR](/pyfr/)|<ul><li>[Docker](/pyfr/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[QUDA](/quda/)|<ul><li>[Docker](/quda/docker/)</li></ul>|latest|<ul><li>Computational Chemistry</li></ul>|
 |[QMCPACK](/qmcpack/)|<ul><li>[Docker](/qmcpack/docker/)</li></ul>|latest|<ul><li>Quantom Monte Carlo Simulation</li></ul>|
+|[RAJA](/raja/)|<ul><li>[Docker](/raja/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[RELION](/relion/)|<ul><li>[Container Instructions](/relion/)</li></ul>|5.3|<ul><li>Electronic Structure</li></ul>|
 |[rocHPL](/rochpl/)|<ul><li>[Docker](/rochpl/docker/)</li><li>[Spack Docker](/rochpl/docker-spack/)</li><li>[Docker](/rochpl/spack/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[Specfem3D- Cartesian](/specfem3d/)|<ul><li>[Spack Docker](/specfem3d/docker/)</li></ul>|latest|<ul><li>Geophysics</li></ul>|
