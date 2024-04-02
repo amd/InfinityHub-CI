@@ -1,31 +1,111 @@
-# Trilinos
+# Trilinos Docker Build Instructions 
+This document provides instructions on how to build Trilinos into a Docker container that is portable between environments.
 
-## Overview
-Trilinos is a portable toolkit for scientific computing developed at Sandia National Laboratory. Trilinos is built on top of the Kokkos portability layer, which means it has support for all manner of architectures using a MPI+X methodology where MPI handles communication between distributed memory spaces, and local compute can be handled using a variety of CPU/GPU parallelization APIs such as OpenMP, CUDA, and HIP, as well as experimental backends including HPX and SYCL, all of which is hidden under the Kokkos abstraction layer.
+## Build System Requirements
+- Git
+- Docker
 
-## Single-Node Server Requirements
+## Inputs
+Possible `build-arg` for the Docker build command  
 
-| CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
-| ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI300 APU(s) <br> AMD Instinct MI200 GPU(s) <br> AMD Instinct MI100 GPU(s)| Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+- ### IMAGE
+    Default: `rocm_gpu:6.0`  
+    > ***Note:***  
+    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://rocm.docs.amd.com)
-* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [ROCm Examples](https://github.com/amd/rocm-examples)
+- ### TRILINOS_BRANCH
+    Default: `develop`  
+    Branch/Tag found: [Trilinos repo](https://github.com/trilinos/trilinos.git)
 
-## Build Recipes
-- [Docker/Singularity Build](/trilinos/docker/)
+- ### ZLIB_BRANCH
+    Default: `v1.2.13`  
+    Branch/Tag found: [zlib repo](https://github.com/madler/zlib.git)
 
-### Running Trilinos Benchmark
-The benchmark provided in this container uses the MiniEM mini-app which is an unstructured electromagnetics solver built around an exact sequence discretization (edge/face basis functions) that uses Trilinos' algebraic multigrid (AMG) preconditioned conjugant gradient (CG) solver through MueLu. The default configuration defined by this container is to run a 25&times;25&times;25 hexahedral mesh over 100 time steps. The benchmark will report a figure-of-merit (FOM) in terms of the cell updates per second. The reported FOM will ignore initialization and setup time.
+- ### HDF5_BRANCH
+    Default: `hdf5-1_14_3`  
+    Branch/Tag found: [HDF5 repo](https://github.com/HDFGroup/hdf5.git)
 
-The benchmark can be found in the `/opt/trilinos/example/PanzerMiniEM/` directory. The executable `PanzerMiniEM_BlockPrec.exe` can be queried with `-h` for more information on the benchmark. The `maxwell.xml` file located in the executable directory contains various parameters that can be used to tune the benchmark.
+- ### PNETCDF_BRANCH
+    Default: `checkpoint.1.12.3`  
+    Branch/Tag found: [PNetCDF repo](https://github.com/Parallel-NetCDF/pnetcdf.git)
 
-The following command is an example of running the MiniEM benchmark in interactive mode (see: [docker build instructions](/trilinos/docker/README.md)):
+- ### NETCDF_BRANCH
+    Default: `v4.9.0`  
+    Branch/Tag found: [netcdf-c repo](https://github.com/Unidata/netcdf-c.git )
+
+- ### MATIO_BRANCH
+    Default: `v1.5.23`  
+    Branch/Tag found: [Matio repo](https://github.com/tbeu/matio.git)
+
+- ### BOOST_BRANCH
+    Default: `boost-1.80.0`  
+    Branch/Tag found: [Boost repo](https://github.com/boostorg/boost.git)
+
+- ### NUM_BUILD_THREADS
+    Default: `32`  
+    Description: Number of threads to build each app with.
+    
+
+
+## Building Container
+Download the [Dockerfile](/trilinos/docker/Dockerfile) 
+
+To run the default configuration:
 ```
-cd /opt/trilinos/example/PanzerMiniEM/
-mpirun -n <NumGPU> ./PanzerMiniEM_BlockPrec.exe --x-elements=25 --y-elements=25 --z-elements=25 --numTimeSteps=100 --workset-size=20000 --kokkos-map-device-id-by=mpi_rank
+docker build -t mycontainer/trilinos -f /path/to/Dockerfile . 
+```
+> Notes:  
+>- `mycontainer` is an example container name.
+>- the `.` at the end of the build line is important. It tells Docker where your build context is located.
+>- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
+
+To run a custom configuration, include one or more customized build-arg  
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
+
+```
+docker build \
+    -t mycontainer/trilinos \
+    -f /path/to/Dockerfile \
+    --build-arg TRILINOS_BRANCH=trilinos-release-15-0-0 \
+    --build-arg HDF5_BRANCH=develop
+    . 
+```
+
+## Running an Trilinos Container
+Both Docker and Singularity can be run interactively or as a single command.
+
+To run the [Trilinos Benchmarks](/trilinos/README.md#running-trilinos-benchmarks), just replace the `<Trilinos Command>` the examples in [Running Trilinos Benchmarks](/trilinos/README.md#running-trilinos-benchmarks) section of the Trilinos readme. The commands can be run directly in an interactive session as well. 
+
+### Docker  
+If you want access to the HDF5 files generated during the run, please add `-v $(pwd):/benchmark` before `mycontainer/trilinos` in the following commands. 
+
+#### Docker Interactive
+```
+docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/trilinos /bin/bash
+```
+#### Docker Single Command
+```
+docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/trilinos <Trilinos Command>
+```
+
+### Singularity  
+If you want access to the HDF5 files generated during the run, please add `--bind $(pwd):/benchmark` before `trilinos.sif` in the following run commands.
+#### Build Singularity image from Docker
+To build a Singularity image from the locally created docker file do the following:
+```
+singularity build trilinos.sif docker-daemon://mycontainer/trilinos:latest
+```
+
+#### Singularity Interactive
+To launch a Singularity image build locally.
+```
+singularity shell --no-home --writable-tmpfs --pwd /benchmark trilinos.sif
+```
+
+#### Singularity Single Command
+To launch a Singularity image build locally.
+```
+singularity run --no-home --writable-tmpfs --pwd /benchmark trilinos.sif <Trilinos Command>
 ```
 
 ## Licensing Information
@@ -46,6 +126,7 @@ The application is provided in a container image format that includes the follow
 |NetCDF-c|BSD-3-Clause|[NEtCDF-c License](https://github.com/Unidata/netcdf-c?tab=BSD-3-Clause-1-ov-file#readme)|
 |Matio|BSD-2-Clause|[Matio License](https://github.com/tbeu/matio?tab=BSD-2-Clause-1-ov-file#readme)|
 |Boost|BSL-1 License|[Boost License](https://github.com/boostorg/boost?tab=BSL-1.0-1-ov-file#readme)|
+
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF SUCH THIRD-PARTY CONTENT IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THIRD-PARTY CONTENT.
 
