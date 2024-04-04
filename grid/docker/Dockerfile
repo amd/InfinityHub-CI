@@ -25,18 +25,18 @@ RUN git clone -b ${GRID_BRANCH} https://github.com/paboyle/Grid.git \
         --prefix=$GRID_PATH \
         --enable-unified=no \
         --enable-accelerator=hip \
+        --enable-accelerator-aware-mpi=yes \
         --enable-setdevice \
         --enable-alloc-cache \
         --enable-shm=nvlink \
         --enable-comms=mpi3-auto \
         --enable-simd=GPU \
         --enable-gen-simd-width=64 \
-        --disable-accelerator-cshift \
         --disable-fermion-reps \
         CXX=hipcc \
         MPICXX=mpicxx \
         CPPFLAGS="-I${ROCM_PATH}/include -I${ROCM_PATH}/include/roctracer -std=c++17 " \
-        LDFLAGS="-L${ROCM_PATH}/lib -L${ROCM_PATH}/lib/roctracer -lroctracer64 -lroctx64 -std=c++17" \
+        LDFLAGS="-L${ROCM_PATH}/lib -lhipblas -L${ROCM_PATH}/lib/roctracer -lroctracer64 -lroctx64 -std=c++17" \
    && make -j 8 \
    && make install \
    && cd /tmp \
