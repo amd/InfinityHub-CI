@@ -1,4 +1,4 @@
-# PETSc
+# PIConGPU
 
 ## Overview
 The particle-in-cell (PIC) algorithm is a central tool in plasma physics. It describes the dynamics of a plasma by computing the motion of electrons and ions in the plasma based on the Vlasov-Maxwell system of equations.
@@ -19,9 +19,9 @@ For ROCm installation procedures and validation checks, see:
 ## Building Recipes
 [Docker/Singularity Build](/picongpu/docker/)
 
-## Running PIconGPU Benchmark
-PIconGPU has many [benchmarks](https://github.com/ComputationalRadiationPhysics/picongpu/tree/dev/share/picongpu/benchmarks), [examples](https://github.com/ComputationalRadiationPhysics/picongpu/tree/dev/share/picongpu/examples), and [tests](https://github.com/ComputationalRadiationPhysics/picongpu/tree/dev/share/picongpu/tests).
-Building each one is straight forward, see the [PIconGPU Dockerfile](/picongpu/docker/Dockerfile) for how this is done.  
+## Running PIConGPU Benchmark
+PIConGPU has many [benchmarks](https://github.com/ComputationalRadiationPhysics/picongpu/tree/dev/share/picongpu/benchmarks), [examples](https://github.com/ComputationalRadiationPhysics/picongpu/tree/dev/share/picongpu/examples), and [tests](https://github.com/ComputationalRadiationPhysics/picongpu/tree/dev/share/picongpu/tests).
+Building each one is straight forward, see the [PIConGPU Dockerfile](/picongpu/docker/Dockerfile) for how this is done.  
 The example here are from the Docker Build, KHI Growth Rate. 
 >NOTE: After building any of the examples run `bin/picongpu --help` to get any additional parameters for the given example 
 
@@ -47,7 +47,7 @@ The application is provided in a container image format that includes the follow
 |OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
 |OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
-|PIconGPU|GPLv3+ license | [PIconGPU](http://picongpu.hzdr.de/) <br/> [PIconGPU License](https://github.com/ComputationalRadiationPhysics/picongpu/blob/master/LICENSE.md)|
+|PIConGPU|GPLv3+ license | [PIConGPU](http://picongpu.hzdr.de/) <br/> [PIConGPU License](https://github.com/ComputationalRadiationPhysics/picongpu/blob/master/LICENSE.md)|
 |HDF5|BSD-like(CUSTOM)|[HDF5 License](https://github.com/HDFGroup/hdf5/blob/develop/COPYING)|
 |PNGwriterGPLv2+|[PNGwriter License](https://github.com/pngwriter/pngwriter/)|
 
