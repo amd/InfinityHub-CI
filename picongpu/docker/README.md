@@ -2,7 +2,7 @@
 Instructions on how to build a Docker Container with PIconGPU.
 
 ## Recommended ROCm Version
-[ROCm 5.7](https://repo.radeon.com/amdgpu-install/5.7/ubuntu/)
+[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
 
 ## System Requirements
 - Git
@@ -12,20 +12,25 @@ Instructions on how to build a Docker Container with PIconGPU.
 Possible `build-arg` for the Docker build command    
 
 - ### IMAGE
-    Default: `rocm_gpu:5.7`  
+    Default: `rocm_gpu:6.0`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 
 - ### PICONGPU_BRANCH
-    Default: default: `release-0.7.0`  
+    Default: default: `dev`  
     Branch/Tag found: [ PIconGPU repo](https://github.com/ComputationalRadiationPhysics/picongpu).
     >NOTE:  
-    >master branch and release-0.7.0 branches have different tests, benchmarks, examples. The test build into this container is not available the master branch at this time.
+    >master branch branch has different tests, benchmarks, examples. The test build into this container is not available the master branch at this time.
 
 - ### HDF5_BRANCH
     Default: `hdf5-1_14_1`  
     Branch/Tag found: [HDF5 repo](https://github.com/HDFGroup/hdf5.git)
+
+- ### ALPAKA_BRANCH
+    Default:  `develop`
+    Branch/Tag found: [Alpaka repo](https://github.com/alpaka-group/alpaka.git)
+
 
 ## Building PIconGPU Container:
 To run the default configuration:
@@ -126,8 +131,8 @@ The application is provided in a container image format that includes the follow
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
 |PIconGPU|GPLv3+ license | [PIconGPU](https://picongpu.readthedocs.io/en/latest/) <br/> [PIconGPU License](https://github.com/ComputationalRadiationPhysics/picongpu/blob/master/LICENSE.md)|
 |HDF5|BSD-like(CUSTOM)|[HDF5 License](https://github.com/HDFGroup/hdf5/blob/develop/COPYING)|
-|PNGwriterGPLv2+|[PNGwriter License](https://github.com/pngwriter/pngwriter/)|
-
+|PNGwriter|GPLv2+|[PNGwriter License](https://github.com/pngwriter/pngwriter/)|
+|Alpaka|MPL-2.0|[Alpaka Repo](https://github.com/alpaka-group/alpaka)<br/>[Alpaka License](https://github.com/alpaka-group/alpaka?tab=MPL-2.0-1-ov-file#readme)|
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER. 
 

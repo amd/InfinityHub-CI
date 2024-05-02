@@ -1,9 +1,10 @@
-ARG IMAGE="rocm_gpu:5.7"
+ARG IMAGE="rocm_gpu:6.0"
 
 FROM ${IMAGE}
 
-ARG PICONGPU_BRANCH="0.7.0"
+ARG PICONGPU_BRANCH="dev"
 ARG HDF5_BRANCH="hdf5-1_14_1"
+ARG ALPAKA_BRANCH="develop"
 
 # Update and Install basic Linux development tools
 RUN apt-get update \
@@ -75,8 +76,11 @@ WORKDIR /opt
 
 #Build Picongpu
 RUN git clone -b ${PICONGPU_BRANCH} https://github.com/ComputationalRadiationPhysics/picongpu.git \
-    && mkdir -p picon-examples \
-    && cd picon-examples \
+    && cd $PICSRC/thirdParty \
+    && rm -rf alpaka \
+    && git clone -b ${ALPAKA_BRANCH} https://github.com/alpaka-group/alpaka.git \
+    && mkdir -p /opt/picon-examples \
+    && cd /opt/picon-examples \
     && pic-create $PICSRC/share/picongpu/tests/KHI_growthRate/ khi_fom \
     && cd khi_fom \
     && pic-build -f -b "hip:${GPU_TARGET}" \

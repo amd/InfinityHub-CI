@@ -49,7 +49,8 @@ The application is provided in a container image format that includes the follow
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
 |PIConGPU|GPLv3+ license | [PIConGPU](http://picongpu.hzdr.de/) <br/> [PIConGPU License](https://github.com/ComputationalRadiationPhysics/picongpu/blob/master/LICENSE.md)|
 |HDF5|BSD-like(CUSTOM)|[HDF5 License](https://github.com/HDFGroup/hdf5/blob/develop/COPYING)|
-|PNGwriterGPLv2+|[PNGwriter License](https://github.com/pngwriter/pngwriter/)|
+|PNGwriter|GPLv2+|[PNGwriter License](https://github.com/pngwriter/pngwriter/)|
+|Alpaka|MPL-2.0|[Alpaka Repo](https://github.com/alpaka-group/alpaka)<br/>[Alpaka License](https://github.com/alpaka-group/alpaka?tab=MPL-2.0-1-ov-file#readme)|
 
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER. 
