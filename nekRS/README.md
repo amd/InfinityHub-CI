@@ -19,7 +19,7 @@ For ROCm installation procedures and validation checks, see:
 ## Building Recipes
 [Docker/Singularity Build](/nekRS/docker/)
 
-## Running neKRS Benchmark
+## Running nekRS Benchmark
 There are several [examples](https://github.com/Nek5000/nekRS/tree/master/examples) available within the nekRS repo.
 
 This document will show how to run the turbPipePeriodic benchmark which is provided in this repo.
