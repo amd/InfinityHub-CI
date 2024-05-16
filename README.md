@@ -33,6 +33,7 @@ For ROCm installation procedures and validation checks, see:
 |[MPAS](/mpas/)|<ul><li>[Baremetal](/mpas/)</li></ul>|latest|<ul><li>Climate</li><li>Weather</li></ul>|
 |[NAMD](/namd/)|<ul><li>[Container Instructions](/namd/)</li></ul>|4.3/4.5|<ul><li>Molecular Dynamics</li></ul>|
 |[NEKO](/neko/)|<ul><li>[Docker](/neko/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[nekRS](/nekRS/)|<ul><li>[Docker](/nekRS/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[NWChem](/nwchem/)|<ul><li>[Container Instructions](/nwchem/)</li></ul>|5.3|<ul><li>Computational Chemistry</li></ul>|
 |[OpenFOAM](/openfoam/)|<ul><li>[Docker](/openfoam/docker/)</li></ul>|5.7|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[OpenMM](/openmm/)|<ul><li>[Docker](/openmm/docker/)</li></ul>|5.7|<ul><li>Molecular Dynamics</li></ul>|
