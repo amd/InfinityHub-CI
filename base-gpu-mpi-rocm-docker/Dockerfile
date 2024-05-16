@@ -3,7 +3,7 @@ ARG UBUNTU_VERSION="jammy"
 FROM ubuntu:${UBUNTU_VERSION}
 
 ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.0/ubuntu/jammy/amdgpu-install_6.0.60000-1_all.deb"
-ARG UCX_BRANCH="v1.16.0"
+ARG UCX_BRANCH="v1.14.1"
 ARG OMPI_BRANCH="v4.1.5"
 ARG APT_GET_APPS=""
 ARG GPU_TARGET="gfx908,gfx90a,gfx942"
