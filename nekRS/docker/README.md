@@ -17,8 +17,8 @@ Possible arguments for the Docker build command
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 - ### NEKRS_BRANCH
-    Default: `master`  
-    Branch/Tag found: [nekRS repo](https://github.com/Nek5000/nekRS/tree/master)
+    Default: `v23.0`  
+    Branch/Tag found: [nekRS repo](https://github.com/Nek5000/nekRS/tree/v23.0)
 
 
 ## Building Container
