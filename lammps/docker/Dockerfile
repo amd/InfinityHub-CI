@@ -2,7 +2,7 @@ ARG IMAGE="rocm_gpu:6.0"
 
 FROM ${IMAGE}
 
-ARG LAMMPS_BRANCH="stable_2Aug2023_update1"
+ARG LAMMPS_BRANCH="patch_17Apr2024"
 
 WORKDIR /tmp
 
@@ -30,7 +30,7 @@ RUN git clone https://github.com/lammps/lammps.git \
         -DCMAKE_CXX_COMPILER=$(which hipcc) \
         -DKokkos_ARCH_VEGA90A=ON \
         -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON \
-        -DCMAKE_CXX_FLAGS=-munsafe-fp-atomics \
+        -DCMAKE_CXX_FLAGS="-munsafe-fp-atomics --offload-arch=$GPU_TARGET" \
         ../lammps/cmake \
     &&   make -j$(nproc) install \
     && cd /tmp/lammps \  
