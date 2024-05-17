@@ -8,7 +8,7 @@ This document provides instructions on how to build GRID into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.0`  
+    Default: `rocm_gpu:6.1.1`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 

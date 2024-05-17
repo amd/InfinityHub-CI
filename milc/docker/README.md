@@ -50,7 +50,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/milc \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm_gpu:6.0.2 \
+    --build-arg IMAGE=rocm_gpu:6.1.1 \
     --build-arg QMP_BRANCH=master
     --build-arg QIO_BRANCH=master
     --build-arg QUDA_BRANCH=master

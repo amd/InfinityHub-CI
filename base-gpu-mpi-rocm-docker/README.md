@@ -52,7 +52,7 @@ Please consult the [Docker documentation](https://docs.docker.com/engine/referen
 Possible `build-arg` for the Docker build command  
 
 - ### ROCM_URL
-    Default: `https://repo.radeon.com/amdgpu-install/6.0/ubuntu/jammy/amdgpu-install_6.0.60000-1_all.deb`
+    Default: `https://repo.radeon.com/amdgpu-install/6.1.1/ubuntu/jammy/amdgpu-install_6.1.60101-1_all.deb`
     - [AMDGPU-installer Directory](https://repo.radeon.com/amdgpu-install/)
     > ** Note ** 
     > The UBUNTU_VERSION below must match the same version of Ubuntu chosen for the amdgpu installer deb.
@@ -65,11 +65,11 @@ Possible `build-arg` for the Docker build command
     > jammy is currently recommended as many apps require newer versions of GNU tools than can be installed with `apt-get`. 
 
 - ### UCX_BRANCH
-    Default: `v1.14.1`  
+    Default: `v1.16.0`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
 - ### OMPI_BRANCH
-    Default: `v4.1.5`  
+    Default: `v5.0.3`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
 - ### APT_GET_APPS
@@ -91,10 +91,10 @@ Download the [Dockerfile](/base-gpu-mpi-rocm-docker/Dockerfile)
 
 To run the default configuration:
 ```
-docker build -t rocm_gpu:6.0 -f /path/to/Dockerfile . 
+docker build -t rocm_gpu:6.1.1 -f /path/to/Dockerfile . 
 ```
 > Notes:  
->- `rocm_gpu:6.0` is an example container name.
+>- `rocm_gpu:6.1.1` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
 >- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
@@ -103,7 +103,7 @@ To run a custom configuration, include one or more customized build-arg paramete
 
 ```
 docker build \
-    -t rocm_gpu:6.0 \
+    -t rocm_gpu:6.1.1 \
     -f /path/to/Dockerfile \
     --build-arg UBUNTU_VERSION=focal \
     --build-arg UCX_BRANCH=master \
@@ -122,7 +122,7 @@ To run the container interactively, run the following command:
 docker run --device=/dev/kfd \
            --device=/dev/dri \
            --security-opt seccomp=unconfined \
-           -it rocm_gpu:6.0 bash
+           -it rocm_gpu:6.1.1 bash
 ```
 > ** Notes **
 > User running container user must have permissions to `/dev/kfd` and `/dev/dri`. This can be achieved by being a member of `video` and/or `render` group.  
@@ -134,7 +134,7 @@ docker run --device=/dev/kfd \
 Singularity, like Docker, can be used for running HPC containers.  
 To create a Singularity container from your local Docker container, run the following command:
 ```
-singularity build rocm_gpu-60.sif  docker-daemon://rocm_gpu:6.0
+singularity build rocm_gpu-60.sif  docker-daemon://rocm_gpu:6.1.1
 ```
 
 Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a interactive run

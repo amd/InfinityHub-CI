@@ -11,7 +11,7 @@ This document provides instructions on how to build RAJA into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.0`  
+    Default: `rocm_gpu:6.1.1`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
@@ -49,7 +49,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/raja \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm_gpu:6.0 \
+    --build-arg IMAGE=rocm_gpu:6.1.1 \
     --build-arg RAJA_BRANCH=master \
     --build-arg RAJAPerf_BRANCH=master
     . 
