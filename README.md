@@ -25,7 +25,6 @@ For ROCm installation procedures and validation checks, see:
 |[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|latest|<ul><li>Electronic Structure</li></ul>|
 |[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|latest|<ul><li>Physics</ul>|
 |[HPCG](/hpcg/)|<ul><li>[Baremetal](/hpcg/baremetal/)</li><li>[Docker](/hpcg/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
-|[HPL-MxP](/hpl-mxp/)|<ul><li>[Container Instructions](/hpl-mxp/)</li></ul>|5.3|<ul><li>Benchmark</li></ul>|
 |[Kokkos](/kokkos/)|<ul><li>[Docker](/kokkos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[LAMMPS](/lammps/)|<ul><li>[Baremetal](/lammps/baremetal/)</li><li>[Docker](/lammps/baremetal/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[MILC](/milc/)|<ul><li>[Docker](/milc/docker/)</li></ul>|latest|<ul><li>Physics</li></ul>|
@@ -45,5 +44,6 @@ For ROCm installation procedures and validation checks, see:
 |[RAJA](/raja/)|<ul><li>[Docker](/raja/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[RELION](/relion/)|<ul><li>[Container Instructions](/relion/)</li></ul>|5.3|<ul><li>Electronic Structure</li></ul>|
 |[rocHPL](/rochpl/)|<ul><li>[Docker](/rochpl/docker/)</li><li>[Spack Docker](/rochpl/docker-spack/)</li><li>[Docker](/rochpl/spack/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
+|[rocHPL-MxP](/hpl-mxp/)|<ul><li>[Docker](/hpl-mxp/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[Specfem3D- Cartesian](/specfem3d/)|<ul><li>[Spack Docker](/specfem3d/docker/)</li></ul>|latest|<ul><li>Geophysics</li></ul>|
 |[Trilinos](/trilinos/)|<ul><li>[Docker](/trilinos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
