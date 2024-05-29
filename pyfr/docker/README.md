@@ -49,7 +49,7 @@ docker build \
 This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
 If needed, please consult with your system administrator or view official documentation.
 
-To run the [PyFR Benchmarks](/hpcg/README.md#running-pyfr-benchmark), just replace the `<PyFR Command>` the examples in [Running PyFR Benchmarks](/hpcg/README.md#running-pyfr-benchmark) section of the PyFR readme. The commands can be run directly in an interactive session as well. 
+To run the [PyFR Benchmarks](/pyfr/README.md#running-pyfr-benchmark), just replace the `<PyFR Command>` the examples in [Running PyFR Benchmarks](/pyfr/README.md#running-pyfr-benchmark) section of the PyFR readme. The commands can be run directly in an interactive session as well. 
 
 
 

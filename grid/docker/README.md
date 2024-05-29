@@ -1,8 +1,6 @@
 # Grid Docker Build Instructions 
 This document provides instructions on how to build GRID into a Docker container that is portable between environments.  
 
-## Recommended ROCm Version
-[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
 
 ## Inputs
 Possible `build-arg` for the Docker build command  

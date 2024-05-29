@@ -2,8 +2,6 @@
 Instructions on how to build a Docker Container with Kokkos.  
 This Kokkos Container is a platform for building HPC applications using Kokkos and HIP. 
 
-## Recommended ROCm Version
-[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
 
 ## Build System Requirements
 - Git

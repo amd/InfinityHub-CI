@@ -1,8 +1,6 @@
 # AMD's Implementation of Gromacs with HIP Docker Build
 Instructions on how to build a Docker Container with AMD's implementation of Gromacs.
 
-## Recommended ROCm Version
-[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
 
 ## Build System Requirements
 - Git

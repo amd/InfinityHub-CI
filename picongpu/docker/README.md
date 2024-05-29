@@ -1,8 +1,6 @@
 # PIconGPU Docker Build Instructions
 Instructions on how to build a Docker Container with PIconGPU.
 
-## Recommended ROCm Version
-[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
 
 ## System Requirements
 - Git

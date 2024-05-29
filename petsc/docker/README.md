@@ -1,8 +1,6 @@
 # PETSc Docker Build Instructions
 Instructions on how to build a Docker Container with PETSc.
 
-## Recommended ROCm Version
-[ROCm 5.7](https://repo.radeon.com/amdgpu-install/5.7/ubuntu/)
 
 ## System Requirements
 - Git

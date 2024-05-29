@@ -2,8 +2,6 @@
 These instructions use Docker to create an HPC Application Container.  
 If you are not familiar with creating Docker builds, please see the available [Docker manuals and references](https://docs.docker.com/).
 
-## Recommended ROCm Version
-[ROCm 6.0](https://repo.radeon.com/amdgpu-install/6.0/ubuntu/)
 
 ## Build System Requirements
 - Git
@@ -51,7 +49,7 @@ docker build \
 This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
 If needed, please consult with your system administrator or view official documentation.
 
-To run the [rocHPL Benchmarks](/hpcg/README.md#running-rochpl-benchmark), just replace the `<rocHPL Command>` the examples in [Running rocHPL Benchmarks](/rochpl/README.md#performance-evaluation) section of the rocHPL readme. The commands can be run directly in an interactive session as well. 
+To run the [rocHPL Benchmarks](/rochpl/README.md#running-rochpl-benchmark), just replace the `<rocHPL Command>` the examples in [Running rocHPL Benchmarks](/rochpl/README.md#performance-evaluation) section of the rocHPL readme. The commands can be run directly in an interactive session as well. 
 
 
 

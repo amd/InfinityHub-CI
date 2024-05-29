@@ -1,9 +1,6 @@
 # OpenFOAM Docker Build
 Instructions on how to build a Docker Container with OpenFOAM.
 
-## Recommended ROCm Version
-[ROCm 5.7](https://repo.radeon.com/amdgpu-install/5.7/ubuntu/)
-
 ## Build System Requirements
 - Git
 - Docker
