@@ -1,0 +1,11 @@
+--- nekRS/3rd_party/occa/cmake/FindHIP.cmake	2024-05-31 14:03:19.046667852 -0500
++++ files/FindHIP.cmake	2024-05-31 14:01:36.339235732 -0500
+@@ -109,7 +109,7 @@
+       elseif(${HIP_COMPILER} STREQUAL "clang")
+         set(HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include")
+         set(HIP_LIBRARIES "${HIP_ROOT_DIR}/lib/libamdhip64.so")
+-        set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_HCC__")
++	set(HIP_RUNTIME_DEFINE "__HIP_PLATFORM_AMD__")
+         set(HIP_PLATFORM "hip-clang")
+       endif()
+     elseif(${HIP_PLATFORM} STREQUAL "nvcc")
