@@ -1,0 +1,9 @@
+55c55
+<       hipDeviceProp_t hipProps;
+---
+> 	    hipDeviceProp_t hipProps;
+59a60,61
+>       return hipProps.gcnArchName;
+> #if 0
+66a69
+> #endif

@@ -23,8 +23,8 @@ WORKDIR /workspace
 
 RUN git clone -b ${NEKRS_BRANCH} https://github.com/Nek5000/nekRS.git && \
     cd /workspace/nekRS && \
-    patch 3rd_party/occa/cmake/FindHIP.cmake /workspace/files/FindHIP.cmake && \
-    patch 3rd_party/occa/src/occa/internal/modes/hip/utils.cpp /workspace/files/utils.cpp  && \
+    patch 3rd_party/occa/cmake/FindHIP.cmake /workspace/files/FindHIP.patch && \
+    patch 3rd_party/occa/src/occa/internal/modes/hip/utils.cpp /workspace/files/utils.patch  && \
     yes '' | CC=mpicc CXX=mpic++ FC=mpif77 ./nrsconfig -DCMAKE_INSTALL_PREFIX=/opt/nekrs && \
     rm -rf /workspace/*
     
