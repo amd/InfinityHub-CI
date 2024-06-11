@@ -20,7 +20,7 @@ Possible arguments for the Docker build command
 
 
 ## Building Container
-Download the [Dockerfile](/nekRS/docker/Dockerfile)  
+Download the [Dockerfile](/nekrs/docker/Dockerfile)  
 
 To run the default configuration:
 ```
@@ -36,7 +36,7 @@ docker build -t mycontainer/nekrs -f /path/to/Dockerfile .
 This section describes how to launch the containers. It is assumed that up-to-versions of Docker and/or Singularity is installed on your system.
 If needed, please consult with your system administrator or view official documentation.
 
-To run the [nekRS Benchmarks](/nekRS/README.md#running-nekRS-benchmark), just replace the `<nekRS Command>` the examples in [Running nekRS Benchmarks](/nekRS/README.md#running-nekRS-benchmark) section of the nekRS readme. The commands can be run directly in an interactive session as well. 
+To run the [nekRS Benchmarks](/nekrs/README.md#running-nekRS-benchmark), just replace the `<nekRS Command>` the examples in [Running nekRS Benchmarks](/nekrs/README.md#running-nekRS-benchmark) section of the nekRS readme. The commands can be run directly in an interactive session as well. 
 
 ### Docker  
 
