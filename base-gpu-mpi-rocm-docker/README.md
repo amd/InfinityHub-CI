@@ -68,6 +68,10 @@ Possible `build-arg` for the Docker build command
     Default: `v1.16.0`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
+- ### UCC_BRANCH
+    Default: `v1.3.0`  
+    Branch/Tag found: [UXC repo](https://github.com/openucx/ucc)
+
 - ### OMPI_BRANCH
     Default: `v5.0.3`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
@@ -84,7 +88,7 @@ Possible `build-arg` for the Docker build command
     > |---      |---            |
     > | MI100   | gfx908        |
     > | MI200   | gfx90a        |
-    > | MI300A  | gfx942        |
+    > | MI300   | gfx942        |
 
 ## Building Container
 Download the [Dockerfile](/base-gpu-mpi-rocm-docker/Dockerfile)  

@@ -4,6 +4,7 @@ FROM ubuntu:${UBUNTU_VERSION}
 
 ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.1.1/ubuntu/jammy/amdgpu-install_6.1.60101-1_all.deb"
 ARG UCX_BRANCH="v1.16.0"
+ARG UCC_BRANCH="v1.3.0"
 ARG OMPI_BRANCH="v5.0.3"
 ARG APT_GET_APPS=""
 ARG GPU_TARGET="gfx908,gfx90a,gfx942"
@@ -58,6 +59,7 @@ RUN mkdir -p /opt/cmake  \
 
 ENV ROCM_PATH=/opt/rocm \
     UCX_PATH=/opt/ucx \
+    UCC_PATH=/opt/ucc \
     OMPI_PATH=/opt/ompi \
     GPU_TARGET=${GPU_TARGET}
 
@@ -72,8 +74,7 @@ ENV PATH=$ROCM_PATH/bin:/opt/cmake/bin:$PATH \
 WORKDIR /tmp
 
 # Install UCX
-RUN cd /tmp/ \
-    && git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
+RUN git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
     && cd ucx \
     && ./autogen.sh \
     && mkdir build \
@@ -90,14 +91,28 @@ RUN cd /tmp/ \
     && make -j $(nproc)  \
     && make install
 
+# Install UCC
+RUN git clone -b ${UCC_BRANCH} https://github.com/openucx/ucc \
+    && cd ucc \
+    && ./autogen.sh \
+    && sed -i 's/memoryType/type/g' ./src/components/mc/rocm/mc_rocm.c \
+    # offload-arch=native builds the local architecutre, which may not be present at build time for a container. 
+    && sed -i 's/--offload-arch=native//g' ./cuda_lt.sh \
+    && mkdir build \
+    && cd build \
+    && ../configure --prefix=$PATH_UCC --with-rocm=${ROCM_PATH} --with-ucx=${PATH_UCX} --with-rccl=no  \
+    && make -j $(nproc) \
+    && make install
+
+
 # Install OpenMPI
-RUN cd /tmp \
-    && git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
+RUN git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
     && cd ompi \
     && ./autogen.pl \
     && mkdir build \
     && cd build \
     && ../configure --prefix=$OMPI_PATH --with-ucx=$UCX_PATH \
+        --with-ucc=$UCC_PATH \
         --enable-mca-no-build=btl-uct  \
         --without-verbs \
         --with-pmix=internal \
@@ -108,14 +123,14 @@ RUN cd /tmp \
     && make -j $(nproc) \
     && make install
 
-# Adding OpenMPI and UCX to Environment
-ENV PATH=$OMPI_PATH/bin:$UCX_PATH/bin:$PATH \
-    LD_LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$LIBRARY_PATH \
-    C_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$C_INCLUDE_PATH \
-    CPLUS_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$CPLUS_INCLUDE_PATH \
-    PKG_CONFIG_PATH=$OMPI_PATH/lib/pkgconfig:$UCX_PATH/lib/pkgconfig:$PKG_CONFIG_PATH \
-    OMPI_ALLOW_RUN_AS_ROOT=1  \
+# Adding OpenMPI, UCX, and UCC to Environment
+ENV PATH=$OMPI_PATH/bin:$PATH_UCX/bin:$PATH_UCC/bin:$PATH \
+    LD_LIBRARY_PATH=$OMPI_PATH/lib:$PATH_UCX/lib:$PATH_UCC/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$OMPI_PATH/lib:$PATH_UCX/lib:$PATH_UCC/lib:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$OMPI_PATH/include:$PATH_UCX/include:$PATH_UCC/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$OMPI_PATH/include:$PATH_UCX/include:$PATH_UCC/include:$CPLUS_INCLUDE_PATH \
+    PKG_CONFIG_PATH=$OMPI_PATH/lib/pkgconfig:$PATH_UCX/lib/pkgconfig/:$PKG_CONFIG_PATH  \
+    OMPI_ALLOW_RUN_AS_ROOT=1 \
     OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 \
     UCX_WARN_UNUSED_ENV_VARS=n
 
