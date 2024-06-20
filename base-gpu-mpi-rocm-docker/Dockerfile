@@ -73,6 +73,7 @@ ENV PATH=$ROCM_PATH/bin:/opt/cmake/bin:$PATH \
 
 WORKDIR /tmp
 
+
 # Install UCX
 RUN git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
     && cd ucx \
@@ -100,7 +101,7 @@ RUN git clone -b ${UCC_BRANCH} https://github.com/openucx/ucc \
     && sed -i 's/--offload-arch=native//g' ./cuda_lt.sh \
     && mkdir build \
     && cd build \
-    && ../configure --prefix=$PATH_UCC --with-rocm=${ROCM_PATH} --with-ucx=${PATH_UCX} --with-rccl=no  \
+    && ../configure --prefix=${UCC_PATH} --with-rocm=${ROCM_PATH} --with-ucx=${UCX_PATH} --with-rccl=no  \
     && make -j $(nproc) \
     && make install
 
@@ -112,7 +113,7 @@ RUN git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH}
     && mkdir build \
     && cd build \
     && ../configure --prefix=$OMPI_PATH --with-ucx=$UCX_PATH \
-        --with-ucc=$UCC_PATH \
+        --with-ucc=${UCC_PATH} \
         --enable-mca-no-build=btl-uct  \
         --without-verbs \
         --with-pmix=internal \
@@ -124,12 +125,12 @@ RUN git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH}
     && make install
 
 # Adding OpenMPI, UCX, and UCC to Environment
-ENV PATH=$OMPI_PATH/bin:$PATH_UCX/bin:$PATH_UCC/bin:$PATH \
-    LD_LIBRARY_PATH=$OMPI_PATH/lib:$PATH_UCX/lib:$PATH_UCC/lib:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=$OMPI_PATH/lib:$PATH_UCX/lib:$PATH_UCC/lib:$LIBRARY_PATH \
-    C_INCLUDE_PATH=$OMPI_PATH/include:$PATH_UCX/include:$PATH_UCC/include:$C_INCLUDE_PATH \
-    CPLUS_INCLUDE_PATH=$OMPI_PATH/include:$PATH_UCX/include:$PATH_UCC/include:$CPLUS_INCLUDE_PATH \
-    PKG_CONFIG_PATH=$OMPI_PATH/lib/pkgconfig:$PATH_UCX/lib/pkgconfig/:$PKG_CONFIG_PATH  \
+ENV PATH=$OMPI_PATH/bin:$UCX_PATH/bin:$UCC_PATH/bin:$PATH \
+    LD_LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$UCC_PATH/lib:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$UCC_PATH/lib:$LIBRARY_PATH \
+    C_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$UCC_PATH/include:$C_INCLUDE_PATH \
+    CPLUS_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$UCC_PATH/include:$CPLUS_INCLUDE_PATH \
+    PKG_CONFIG_PATH=$OMPI_PATH/lib/pkgconfig:$UCX_PATH/lib/pkgconfig/:$PKG_CONFIG_PATH  \
     OMPI_ALLOW_RUN_AS_ROOT=1 \
     OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 \
     UCX_WARN_UNUSED_ENV_VARS=n
