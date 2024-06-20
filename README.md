@@ -36,6 +36,7 @@ For ROCm installation procedures and validation checks, see:
 |[NWChem](/nwchem/)|<ul><li>[Container Instructions](/nwchem/)</li></ul>|5.3|<ul><li>Computational Chemistry</li></ul>|
 |[OpenFOAM](/openfoam/)|<ul><li>[Docker](/openfoam/docker/)</li></ul>|5.7|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[OpenMM](/openmm/)|<ul><li>[Docker](/openmm/docker/)</li></ul>|5.7|<ul><li>Molecular Dynamics</li></ul>|
+|[PeleC](/pelec/)|<ul><li>[Docker](/pelec/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[PETSc](/petsc/)|<ul><li>[Docker](/petsc/docker/)</li></ul>|5.7|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[PIConGPU](/picongpu/)|<ul><li>[Docker](/picongpu/docker/)</li></ul>|latest|<ul><li>Physics</li></ul>|
 |[PyFR](/pyfr/)|<ul><li>[Docker](/pyfr/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
