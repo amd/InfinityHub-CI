@@ -6,7 +6,7 @@ This document provides instructions on how to do a bare metal install of CP2K in
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver |
 | ---- | ---- | ----------------- | ------------ |
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |
+| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v6.x compatibility<br>ROCm v5.x compatibility |
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)
@@ -17,9 +17,9 @@ For ROCm installation procedures and validation checks, see:
 |Application|Minimum|Recommended|
 |---|---|---|
 |Git|Latest|Latest|
-|ROCm|5.3.0|5.4.2|
-|OpenMPI|4.0.3|4.1.5|
-|UCX|1.8.0|1.14.1|
+|ROCm|5.3.0|latest|
+|OpenMPI|4.0.3|5.0.3|
+|UCX|1.8.0|1.16.0|
 
 
 ## Installing CP2K using CP2K toolchain

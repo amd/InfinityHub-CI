@@ -21,14 +21,18 @@ RUN git clone https://github.com/lammps/lammps.git \
         -DPKG_KSPACE=on \
         -DPKG_RIGID=on \
         -DBUILD_MPI=on \
+        -DMPI_CXX_SKIP_MPICXX=on \
+        -DFFT_KOKKOS=HIPFFT \
         -DCMAKE_INSTALL_PREFIX=/opt/lammps \
         -DMPI_CXX_COMPILER=$(which mpicxx) \
         -DCMAKE_BUILD_TYPE=Release \
         -DKokkos_ENABLE_HIP=on \
         -DKokkos_ENABLE_SERIAL=on \
-        -DCMAKE_CXX_STANDARD=14 \
+        -DCMAKE_CXX_STANDARD=17 \
         -DCMAKE_CXX_COMPILER=$(which hipcc) \
         -DKokkos_ARCH_VEGA90A=ON \
+        -DKokkos_ENABLE_HWLOC=on \
+        -DLAMMPS_SIZES=smallbig \
         -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON \
         -DCMAKE_CXX_FLAGS="-munsafe-fp-atomics --offload-arch=$GPU_TARGET" \
         ../lammps/cmake \

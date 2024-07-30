@@ -6,7 +6,7 @@ source ${OPENFOAM_DIR}/etc/bashrc
 cd ${0%/*} || exit 1    # Run from this directory
 CDIR=`pwd`
 # set the benchmark case
-benchmark_case=Lid_driven_cavity-3d/M
+benchmark_case=incompressible/icoFoam/old/Lid_driven_cavity-3d/M
 
 function setup()
 {

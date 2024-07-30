@@ -19,17 +19,17 @@ For ROCm installation procedures and validation checks, see:
 |Application|Minimum|Recommended|
 |---|---|---|
 |Git|Latest|Latest|
-|ROCm|5.3.0|5.4.2|
+|ROCm|5.3.0|latest|
 |CMAKE|3.22.2|Latest|
-|OpenMPI (Optional)|4.0.3|4.1.5|
-|UCX (Optional)|1.13.0|1.14.1|
+|OpenMPI (Optional)|4.0.3|5.0.3|
+|UCX (Optional)|1.13.0|1.16.0|
 
 
 ## Installing AMD's Implementation of Gromacs with HIP
 1. Validate the Cluster/System has all of the above applications, with system path, library, and include environments set correctly. If you are unsure, the [Dockerfile](/gromacs/docker/Dockerfile) has examples of all useful configurations listed after the `ENV` commands. 
 2. Clone the [ROCm Software Platform repo for Gromacs](https://github.com/ROCmSoftwarePlatform/Gromacs.git) into your workspace. The default branch, `develop_2022_amd`is the recommended branch. 
 ```
-git clone -b develop_2022_amd https://github.com/ROCmSoftwarePlatform/Gromacs.git
+git clone -b develop_2023_amd_sprint_rocm6 https://github.com/ROCmSoftwarePlatform/Gromacs.git
 ```
 3. Navigate to the `gromacs` folder and create a build folder within the workspace to build the code in. 
 ```bash

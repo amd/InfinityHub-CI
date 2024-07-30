@@ -23,9 +23,9 @@ For ROCm installation procedures and validation checks, see:
 |Application|Minimum|Recommended|
 |---|---|---|
 |Git|Latest|Latest|
-|ROCm|5.3.0|5.4.2|
-|OpenMPI|4.0.3|4.1.5|
-|UCX|1.8.0|1.14.1|
+|ROCm|5.3.0|latest|
+|OpenMPI|4.0.3|5.0.2|
+|UCX|1.8.0|1.16.0|
 |CMAKE|3.22.2|Latest|
 
 ## Installing LAMMPS
@@ -34,14 +34,15 @@ The below is an example of a simple build from the latest stable version of LAMM
 1. Validate the Cluster/System has all of the above applications, with system path, library, and include environments set correctly. If you are unsure, the [Dockerfile](/lammps/docker/Dockerfile) has examples of all useful configurations listed after the `ENV` commands. 
 
 2. Clone [LAMMPS GIT repo](https://github.com/lammps/lammps.git) into your workspace. 
-> Recommended Branch: `stable_23Jun2022_update4`
+> Recommended Branch: `patch_17Apr2024`
 ```bash
-git clone -b stable_23Jun2022_update4 https://github.com/lammps/lammps.git
+git clone -b patch_17Apr2024 https://github.com/lammps/lammps.git
 ```
 
 3. Create Build directory
 Create a Build directory where you would like the LAMMPS binaries to be located. 
 > Update  `<path/to/lammps>` and `<path/to/lammps_install>`  to match where you have cloned and install location respectively in the following commands. 
+> Update which GPU Kokkos will build for by adding/removing the `-DKokkos_ARCH_VEGAXXX=on` flag. Currently building for MI200. 
 
 ```
 mkdir -p </path/to/lammps>/build
@@ -50,22 +51,29 @@ cd </path/to/lammps>/build
 
 And run the install command from that directory:
 ```bash
-cmake -DPKG_KOKKOS=on \
-  -DPKG_REAXFF=on \
-  -DPKG_MANYBODY=on \
-  -DPKG_ML-SNAP=on \
-  -DBUILD_MPI=on \
-  -DCMAKE_INSTALL_PREFIX=<path/to/lamps_install> \
-  -DMPI_CXX_COMPILER=$(which mpicxx) \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DKokkos_ENABLE_HIP=on \
-  -DKokkos_ENABLE_SERIAL=on \
-  -DCMAKE_CXX_STANDARD=14 \
-  -DCMAKE_CXX_COMPILER=$(which hipcc) \
-  -DKokkos_ARCH_VEGA90A=ON \
-  -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON \
-  -DCMAKE_CXX_FLAGS=-munsafe-fp-atomics \
-  <path/to/lammps>/cmake
+cmake   -DPKG_KOKKOS=on \
+        -DPKG_REAXFF=on \
+        -DPKG_MANYBODY=on \
+        -DPKG_ML-SNAP=on \
+        -DPKG_MOLECULE=on \
+        -DPKG_KSPACE=on \
+        -DPKG_RIGID=on \
+        -DBUILD_MPI=on \
+        -DMPI_CXX_SKIP_MPICXX=on \
+        -DFFT_KOKKOS=HIPFFT \
+        -DCMAKE_INSTALL_PREFIX=/<path-to-install>/lammps \
+        -DMPI_CXX_COMPILER=$(which mpicxx) \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DKokkos_ENABLE_HIP=on \
+        -DKokkos_ENABLE_SERIAL=on \
+        -DCMAKE_CXX_STANDARD=17 \
+        -DCMAKE_CXX_COMPILER=$(which hipcc) \
+        -DKokkos_ARCH_VEGA90A=ON \
+        -DKokkos_ENABLE_HWLOC=on \
+        -DLAMMPS_SIZES=smallbig \
+        -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON \
+        -DCMAKE_CXX_FLAGS="-munsafe-fp-atomics" \
+        ../lammps/cmake
 make -j$(nproc) install
 ```
 

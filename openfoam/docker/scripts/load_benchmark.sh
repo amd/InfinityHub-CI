@@ -44,9 +44,9 @@ parse_args(){
 function configure_lidCavity()
 {
     # configure and setup Lid_driven cavity
-    cp -r ${SDIR}/data/Lid_driven_cavity/fvSolution HPC_Benchmark/Lid_driven_cavity-3d/M/system/.
-    sed -i -e "s|\/\/libs|libs|g" ${PREFIX}/HPC_Benchmark/Lid_driven_cavity-3d/M/system/controlDict
-    sed -i -e "s|endTime         0.5;|endTime         0.005;|g" ${PREFIX}/HPC_Benchmark/Lid_driven_cavity-3d/M/system/controlDict
+    cp -r ${SDIR}/data/Lid_driven_cavity/fvSolution HPC_Benchmark/incompressible/icoFoam/old/Lid_driven_cavity-3d/M/system/.
+    sed -i -e "s|\/\/libs|libs|g" ${PREFIX}/HPC_Benchmark/incompressible/icoFoam/old/Lid_driven_cavity-3d/M/system/controlDict
+    sed -i -e "s|endTime         0.5;|endTime         0.005;|g" ${PREFIX}/HPC_Benchmark/incompressible/icoFoam/old/Lid_driven_cavity-3d/M/system/controlDict
 }
 
 function configure_hpcMotorbike()

@@ -1,10 +1,20 @@
-ARG IMAGE="rocm_gpu:5.7"
+ARG IMAGE="rocm_gpu:5.7.3"
 
 FROM ${IMAGE}
-ARG OPENFOAM_VERSION="v2312"
-ARG SCOTCH_VER="7.0.3"
-ARG PETSC_VER="3.20.0"
+ARG OPENFOAM_VERSION="v2406"
+ARG SCOTCH_VER="v7.0.4"
+ARG PETSC_VER="main"
 ARG USE_HYPRE=TRUE
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        bison libfl-dev libfftw3-dev libopenblas-dev libboost-all-dev libmpfr-dev libelf1  libomp-dev libgmp-dev
+
+## OpenFOAM creates environment conflicts with OpenMPI Libraries and Headers, removing them from ENV. 
+ENV LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib \
+        LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64 \
+        C_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse \
+        CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$ROCM_PATH/include/hipsparse
 
 WORKDIR /tmp
 # Install Scotch, PETSc, then OpenFOAM
@@ -25,20 +35,22 @@ RUN chmod 777 /home/OpenFOAM/ThirdParty-${OPENFOAM_VERSION}/makePETSC.hip
 
 RUN source ${OPENFOAM_DIR}/etc/bashrc \
     && cd ThirdParty-${OPENFOAM_VERSION} \
-    && git clone -b v${SCOTCH_VER} https://gitlab.inria.fr/scotch/scotch.git scotch_${SCOTCH_VER} \
+    && git clone -b ${SCOTCH_VER} https://gitlab.inria.fr/scotch/scotch.git scotch_${SCOTCH_VER} \
     && sed -i -e "s|.*SCOTCH_VERSION=scotch_.*|SCOTCH_VERSION=scotch_${SCOTCH_VER}|g" ${OPENFOAM_DIR}/etc/config.sh/scotch \
     && ./Allwmake -q
 
 # PETSc 3.18.1 and 3.18.2 have issues with GAMG and CUPM interface, but fixes already included in `main`
 RUN source ${OPENFOAM_DIR}/etc/bashrc \
     && cd ThirdParty-${OPENFOAM_VERSION} \
-    && git clone -b v${PETSC_VER} https://gitlab.com/petsc/petsc.git petsc-${PETSC_VER} \
+    && git clone -b ${PETSC_VER} https://gitlab.com/petsc/petsc.git petsc-${PETSC_VER} \
     && sed -i -e "s|petsc_version=petsc-.*|petsc_version=petsc-${PETSC_VER}|g" ${OPENFOAM_DIR}/etc/config.sh/petsc \
     && if [[ "${USE_HYPRE}" == "TRUE" ]] ; then \
-        && ./makePETSC.hip; \
+        ./makePETSC.hip; \
     else \
-        && ./makePETSC.hip -no-hypre; \
+        ./makePETSC.hip -no-hypre; \
     fi
+
+RUN source ${OPENFOAM_DIR}/etc/bashrc && env
 
 RUN source ${OPENFOAM_DIR}/etc/bashrc \
     && if $SHELL foamSystemCheck | grep -iq 'fail'; then \
@@ -46,10 +58,12 @@ RUN source ${OPENFOAM_DIR}/etc/bashrc \
         && exit 1; \
     fi
 
- RUN source ${OPENFOAM_DIR}/etc/bashrc \
+RUN source ${OPENFOAM_DIR}/etc/bashrc && env
+
+RUN source ${OPENFOAM_DIR}/etc/bashrc \
     && echo ${WM_PROJECT_DIR} \
-     && cd ${OPENFOAM_DIR} \
-     && ./Allwmake -q -l
+    && cd ${OPENFOAM_DIR} \
+    && ./Allwmake -q -l
 
 ENV PATH=${OPENFOAM_DIR}/bin:${OPENFOAM_DIR}/platforms/linux64GccDPInt32Opt/bin:$PATH \
     LD_LIBRARY_PATH=${OPENFOAM_DIR}/platforms/linux64GccDPInt32Opt/lib:$LD_LIBRARY_PATH \
@@ -65,8 +79,8 @@ RUN source ${OPENFOAM_DIR}/etc/bashrc \
     && cp -r $(dirname $(find /root/ -iname libpetscFoam.so)) /openfoam
 
 ENV PATH=${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/bin:${THIRDPARTY_DIR}/scotch_${SCOTCH_VER}/bin:$PATH \
-    LD_LIBRARY_PATH=/openfoam/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/petsc-${PETSC_VER}/lib:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=/openfoam/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/lib:${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/lib:${THIRDPARTY_DIR}/platforms/linux64GccDPInt32/petsc-${PETSC_VER}/lib:$LIBRARY_PATH
+    LD_LIBRARY_PATH=${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:/openfoam/lib/:$LD_LIBRARY_PATH \
+    LIBRARY_PATH=${THIRDPARTY_DIR}/petsc-${PETSC_VER}/DPInt32/lib:/openfoam/lib/:$LIBRARY_PATH
 
 COPY /scripts /benchmark
 

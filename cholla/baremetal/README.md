@@ -17,9 +17,9 @@ For ROCm installation procedures and validation checks, see:
 |Application|Minimum|Recommended|
 |---|---|---|
 |Git|Latest|Latest|
-|ROCm|5.3.0|5.4.2|
-|OpenMPI|4.0.3|4.1.5|
-|UCX|1.13.0|1.14.1|
+|ROCm|5.3.0|latest|
+|OpenMPI|4.0.3|5.0.3|
+|UCX|1.13.0|1.16.0|
 |HDF5|1.12.1|1.14.1|
 
 ## Installing Cholla
