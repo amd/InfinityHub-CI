@@ -16,7 +16,7 @@ Possible `build-arg` for the Docker build command
 
 
 - ### LAMMPS_BRANCH
-    Default: `stable_2Aug2023_update1`  
+    Default: `patch_27Jun2024`  
     Branch/Tag found: [LAMMPS repo](https://github.com/lammps/lammps)
 
 ## Building a Docker container for LAMMPS

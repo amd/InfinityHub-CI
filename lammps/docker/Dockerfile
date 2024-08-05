@@ -2,9 +2,11 @@ ARG IMAGE="rocm_gpu:6.1.1"
 
 FROM ${IMAGE}
 
-ARG LAMMPS_BRANCH="patch_17Apr2024"
+ARG LAMMPS_BRANCH="patch_27Jun2024"
 
 WORKDIR /tmp
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libhwloc-dev
 
 # Installing LAMMPS
 RUN git clone https://github.com/lammps/lammps.git \
@@ -13,7 +15,8 @@ RUN git clone https://github.com/lammps/lammps.git \
   && cd .. \
   && mkdir build \
   && cd build \
-  && cmake   -DPKG_KOKKOS=on \
+  && cmake   \
+        -DPKG_KOKKOS=on \
         -DPKG_REAXFF=on \
         -DPKG_MANYBODY=on \
         -DPKG_ML-SNAP=on \
@@ -34,7 +37,7 @@ RUN git clone https://github.com/lammps/lammps.git \
         -DKokkos_ENABLE_HWLOC=on \
         -DLAMMPS_SIZES=smallbig \
         -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON \
-        -DCMAKE_CXX_FLAGS="-munsafe-fp-atomics --offload-arch=$GPU_TARGET" \
+        -DCMAKE_CXX_FLAGS="--offload-arch=$GPU_TARGET" \
         ../lammps/cmake \
     &&   make -j$(nproc) install \
     && cd /tmp/lammps \  

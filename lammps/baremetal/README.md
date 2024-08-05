@@ -34,9 +34,9 @@ The below is an example of a simple build from the latest stable version of LAMM
 1. Validate the Cluster/System has all of the above applications, with system path, library, and include environments set correctly. If you are unsure, the [Dockerfile](/lammps/docker/Dockerfile) has examples of all useful configurations listed after the `ENV` commands. 
 
 2. Clone [LAMMPS GIT repo](https://github.com/lammps/lammps.git) into your workspace. 
-> Recommended Branch: `patch_17Apr2024`
+> Recommended Branch: `patch_27Jun2024`
 ```bash
-git clone -b patch_17Apr2024 https://github.com/lammps/lammps.git
+git clone -b patch_27Jun2024 https://github.com/lammps/lammps.git
 ```
 
 3. Create Build directory
