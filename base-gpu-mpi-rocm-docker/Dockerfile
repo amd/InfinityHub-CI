@@ -2,7 +2,7 @@ ARG UBUNTU_VERSION="jammy"
 
 FROM ubuntu:${UBUNTU_VERSION}
 
-ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.1.1/ubuntu/jammy/amdgpu-install_6.1.60101-1_all.deb"
+ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.2/ubuntu/jammy/amdgpu-install_6.2.60200-1_all.deb"
 ARG UCX_BRANCH="v1.16.0"
 ARG UCC_BRANCH="v1.3.0"
 ARG OMPI_BRANCH="v5.0.3"

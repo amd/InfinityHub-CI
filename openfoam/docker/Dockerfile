@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:5.7.3"
+ARG IMAGE="rocm_gpu:6.2"
 
 FROM ${IMAGE}
 ARG OPENFOAM_VERSION="v2406"

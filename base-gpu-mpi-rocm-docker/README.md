@@ -5,15 +5,7 @@ This container recipe is a 'boiler-plate' to building a container using ROCm and
 The container is the base upon which all other applications are built.  
 
 ## Single-Node Server Requirements
-
-| CPUs | APUs/GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
-| ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) |AMD Instinct MI300A APU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 | ROCm v6.x compatibility|[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
-
-For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://rocm.docs.amd.com)
-* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [ROCm Examples](https://github.com/amd/rocm-examples)
+[System Requirements](/README.md#single-node-server-requirements) 
 
 ## Docker Container Build
 These instructions use Docker to create an HPC Application Container.  
@@ -95,10 +87,10 @@ Download the [Dockerfile](/base-gpu-mpi-rocm-docker/Dockerfile)
 
 To run the default configuration:
 ```
-docker build -t rocm_gpu:6.1.1 -f /path/to/Dockerfile . 
+docker build -t rocm_gpu:6.2 -f /path/to/Dockerfile . 
 ```
 > Notes:  
->- `rocm_gpu:6.1.1` is an example container name.
+>- `rocm_gpu:6.2` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
 >- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
@@ -107,7 +99,7 @@ To run a custom configuration, include one or more customized build-arg paramete
 
 ```
 docker build \
-    -t rocm_gpu:6.1.1 \
+    -t rocm_gpu:6.2 \
     -f /path/to/Dockerfile \
     --build-arg UBUNTU_VERSION=focal \
     --build-arg UCX_BRANCH=master \
@@ -126,7 +118,7 @@ To run the container interactively, run the following command:
 docker run --device=/dev/kfd \
            --device=/dev/dri \
            --security-opt seccomp=unconfined \
-           -it rocm_gpu:6.1.1 bash
+           -it rocm_gpu:6.2 bash
 ```
 > ** Notes **
 > User running container user must have permissions to `/dev/kfd` and `/dev/dri`. This can be achieved by being a member of `video` and/or `render` group.  
@@ -138,7 +130,7 @@ docker run --device=/dev/kfd \
 Singularity, like Docker, can be used for running HPC containers.  
 To create a Singularity container from your local Docker container, run the following command:
 ```
-singularity build rocm_gpu-60.sif  docker-daemon://rocm_gpu:6.1.1
+singularity build rocm_gpu-60.sif  docker-daemon://rocm_gpu:6.2
 ```
 
 Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a interactive run

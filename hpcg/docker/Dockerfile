@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.1.1"
+ARG IMAGE="rocm_gpu:6.2"
 
 FROM ${IMAGE}
 
@@ -13,9 +13,6 @@ RUN git clone -b ${ROCHPCG_BRANCH} https://github.com/ROCmSoftwarePlatform/rocHP
       --with-mpi=/opt/openmpi  \
       --with-rocm=/opt/rocm \
       --gpu-aware-mpi=ON \
-      --with-openmp=ON \
-      --with-memmgmt=ON \
-      --with-memdefrag=ON \
   && rm -f /opt/rocm/bin/hpcg \
   && ln -s /opt/rocHPCG/build/release/bin/rochpcg /opt/rocm/bin/hpcg
 

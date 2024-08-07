@@ -4,15 +4,7 @@
 RAJA is an open source C++ portability API created by Lawrence Livermore National Laboratory used in HPC software development to provide performant abstraction across a variety of CPU and GPU architectures. More information about RAJA can be found on [github](https://github.com/LLNL/RAJA).
 
 ## Single-Node Server Requirements
-
-| CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
-| ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 <br>  AMD Instinct MI100 <br> Radeon Instinct MI50 | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
-
-For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://rocm.docs.amd.com)
-* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [ROCm Examples](https://github.com/amd/rocm-examples)
+[System Requirements](/README.md#single-node-server-requirements) 
 
 ## Build Recipes
 - [Docker/Singularity Build](/raja/docker/)

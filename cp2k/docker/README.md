@@ -10,7 +10,7 @@ This document provides instructions on how to build CP2K into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.1.1`  
+    Default: `rocm_gpu:6.2`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
@@ -23,6 +23,8 @@ Possible `build-arg` for the Docker build command
     Options: `Mi50`, `Mi100`, `Mi250`  
     Specifies the GPU architecture for which DBCSR will be built. Mi250 is used for all MI200 series accelerators.
 
+> **NOTE**
+> This recipe a script within CP2K to install the all dependencies. This toolchain script does not support MI300. 
 
 ## Build Instructions
 Download the [CP2K Dockerfile](/cp2k-docker/Dockerfile).

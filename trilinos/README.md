@@ -4,15 +4,7 @@
 Trilinos is a portable toolkit for scientific computing developed at Sandia National Laboratory. Trilinos is built on top of the Kokkos portability layer, which means it has support for all manner of architectures using a MPI+X methodology where MPI handles communication between distributed memory spaces, and local compute can be handled using a variety of CPU/GPU parallelization APIs such as OpenMP, CUDA, and HIP, as well as experimental backends including HPX and SYCL, all of which is hidden under the Kokkos abstraction layer.
 
 ## Single-Node Server Requirements
-
-| CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
-| ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI300 APU(s) <br> AMD Instinct MI200 GPU(s) <br> AMD Instinct MI100 GPU(s)| Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
-
-For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://rocm.docs.amd.com)
-* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [ROCm Examples](https://github.com/amd/rocm-examples)
+[System Requirements](/README.md#single-node-server-requirements) 
 
 ## Build Recipes
 - [Docker/Singularity Build](/trilinos/docker/)

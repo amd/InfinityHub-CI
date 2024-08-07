@@ -5,10 +5,14 @@ The Chroma package supports data-parallel programming constructs for lattice fie
 
 
 ## Single-Node Server Requirements
-
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
-| ---- | ---- | ----------------- | ------------ | ------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) | 
+|---- |---- |----------------- |------------ |------------------ | 
+| X86_64 CPU(s) |[AMD Instinct MI300A/X APU/GPU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s)](https://rocm.docs.amd.com/projects/install-on-linux/en/docs-6.1.1/reference/system-requirements.html#supported-gpus) | [Ubuntu <br> RHEL <br>  SLES  <br> Oracel Linux](https://rocm.docs.amd.com/projects/install-on-linux/en/docs-6.1.1/reference/system-requirements.html#supported-operating-systems) | [ROCm 6.1.x](https://rocm.docs.amd.com/en/docs-6.1.1/) | [Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
+
+For ROCm installation procedures and validation checks, see:
+* [ROCm Documentation](https://rocm.docs.amd.com)
+* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
+* [ROCm Examples](https://github.com/amd/rocm-examples)
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)

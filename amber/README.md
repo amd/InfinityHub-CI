@@ -30,16 +30,7 @@ Amber is actively developed with collaboration from:
 Conflex has created an [Introduction to Amber](http://www.conflex.co.jp/prod_amber.html). (in Japanese)
 
 ## Single-Node Server Requirements
-
-| CPUs | GPUs | Operating Systems | ROCm™ Driver | 
-| ---- | ---- | ----------------- | ------------ | 
-| X86_64 CPU(s) |AMD Intrinsic MI300 Series Accelerators <br> AMD Instinct MI200 Series Accelerators <br>  AMD Instinct MI100 Series Accelerators <br> Radeon Instinct MI50(s)| Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v6.x compatibility |
-
-For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://rocm.docs.amd.com)
-* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [ROCm Examples](https://github.com/amd/rocm-examples)
-
+[System Requirements](/README.md#single-node-server-requirements) 
 
 ## Licensing Information
 Your access and use of this application is subject to the terms of the applicable component-level license identified below. AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application.

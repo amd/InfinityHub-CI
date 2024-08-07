@@ -10,15 +10,9 @@ The MPAS framework facilitates the rapid development and prototyping of models b
 More information can be found here:  [https://mpas-dev.github.io/](https://mpas-dev.github.io/)
 
   
-## System Requirements
-| CPUs | GPUs | Operating Systems | ROCm™ Driver | Build/Run Tools | 
-| --- | -------- | --- | --- | --- | 
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br> AMD Instinct MI100 GPU(s) <br> Radeon Instinct MI50(S) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility |HPE<br>CCE 16 <br> | 
 
-For ROCm installation procedures and validation checks, see:
-* [ROCm Documentation](https://rocm.docs.amd.com)
-* [AMD Lab Notes ROCm installation notes](https://github.com/amd/amd-lab-notes/tree/release/rocm-installation).
-* [ROCm Examples](https://github.com/amd/rocm-examples)
+## Single-Node Server Requirements
+[System Requirements](/README.md#single-node-server-requirements) 
 
 ## Dependencies 
 The Dependencies for the build are:

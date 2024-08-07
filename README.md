@@ -6,7 +6,7 @@ Each builds provides parameters to specify different source code branches, relea
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 |---- |---- |----------------- |------------ |------------------ | 
-| X86_64 CPU(s) | AMD Instinct MI300A APU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |[Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
+| X86_64 CPU(s) |[AMD Instinct MI300A/X APU/GPU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s)](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-gpus) | [Ubuntu <br> RHEL <br>  SLES  <br> Oracel Linux](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-operating-systems) | [ROCm Latest](https://rocm.docs.amd.com/en/latest/) | [Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)
@@ -16,19 +16,19 @@ For ROCm installation procedures and validation checks, see:
 ## Applications:
 |Application|Builds|ROCm Version|Domains|
 |---|---|---|---|
-|[AMD ROCm with GPU-Aware MPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.1.1|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD ROCm with GPU-Aware MPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.2|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD's implementation of Gromacs with HIP](/gromacs/)|<ul><li>[Baremetal](/gromacs/baremetal/)</li><li>[Docker](/gromacs/docker/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
-|[Amber](/amber/)|<ul><li>[Amber Details](/amber/)</li></ul>|4.5|<ul><li>Molecular Dynamics</li></ul>|
+|[Amber](/amber/)|<ul><li>[Amber Details](/amber/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[BabelStream](/babelstream/)|<ul><li>[Container Instructions](/babelstream/)|5.3|<ul><li>Benchmark</li></ul>|
 |[Cholla](/cholla/)|<ul><li>[Baremetal](/cholla/baremetal/)</li><li>[Docker](/cholla/docker/)</li></ul>|latest|<ul><li>Astrophysics</li></ul>|
-|[Chroma](/chroma/)|<ul><li>[Docker](/chroma/docker/)</li></ul>|latest|<ul><li>Physics</li></ul>|
+|[Chroma](/chroma/)|<ul><li>[Docker](/chroma/docker/)</li></ul>|6.1.1|<ul><li>Physics</li></ul>|
 |[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|latest|<ul><li>Electronic Structure</li></ul>|
 |[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|latest|<ul><li>Physics</ul>|
 |[HPCG](/hpcg/)|<ul><li>[Baremetal](/hpcg/baremetal/)</li><li>[Docker](/hpcg/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[Kokkos](/kokkos/)|<ul><li>[Docker](/kokkos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[LAMMPS](/lammps/)|<ul><li>[Baremetal](/lammps/baremetal/)</li><li>[Docker](/lammps/baremetal/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[MILC](/milc/)|<ul><li>[Docker](/milc/docker/)</li></ul>|latest|<ul><li>Physics</li></ul>|
-|[Mini-HACC](/minihacc/)|<ul><li>[Container Instructions](/minihacc/)|4.5|<ul><li>Astrophysics</li></ul>|
+|[Mini-HACC](/minihacc/)|<ul><li>[Container Instructions](/minihacc/)|5.3|<ul><li>Astrophysics</li></ul>|
 |[MPAS](/mpas/)|<ul><li>[Baremetal](/mpas/)</li></ul>|latest|<ul><li>Climate</li><li>Weather</li></ul>|
 |[NAMD](/namd/)|<ul><li>[Container Instructions](/namd/)</li></ul>|4.3/4.5|<ul><li>Molecular Dynamics</li></ul>|
 |[NEKO](/neko/)|<ul><li>[Docker](/neko/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
