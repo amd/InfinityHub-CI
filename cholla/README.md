@@ -35,31 +35,31 @@ For ROCm installation procedures and validation checks, see:
 - [Docker/Singularity Build](/cholla/docker/)
 
 ## Running Cholla Benchmarks
-These examples are using the [Cholla Docker Build](/cholla/docker/), which build the binary file cholla.hydro.cholla-container based on environment variable `CHOLLA_MACHINE` set to `cholla-container` and was build/installed into `/opt/cholla`. 
+These examples are using the [Cholla Docker Build](/cholla/docker/), which build the binary file cholla.gravity.cholla-container based on environment variable `CHOLLA_MACHINE` set to `cholla-container` and was build/installed into `/opt/cholla`. 
 
 Cholla has many examples within the project, `/path/to/cholla/examples/`, find the benchmark that you wish to run in there, or provide your own workload.   
 
 You can run the examples using the command syntax below, where `#` is the number of GPUs to use and `<benchmark-to-run>` should be replaced with the full file path to the load details. 
 
 ```
-mpirun -np # cholla.hydro.cholla-container <benchmark-to-run>
+mpirun -np # cholla.gravity.cholla-container <benchmark-to-run>
 ```
 ### Examples 
 * 4 GPU 3D sound wave
 ```
-mpirun -np 4 cholla.hydro.cholla-container /opt/cholla/examples/3D/sound_wave.txt
+mpirun -np 4 cholla.gravity.cholla-container /opt/cholla/examples/3D/sound_wave.txt
 ```
 * 8 GPU 3D Sound wave
 ```
-mpirun -np 8 cholla.hydro.cholla-container /opt/cholla/examples/3D/sound_wave.txt
+mpirun -np 8 cholla.gravity.cholla-container /opt/cholla/examples/3D/sound_wave.txt
 ```
 * 4 GPU 3D sod<br> 
 ```
-mpirun -np 4 cholla.hydro.cholla-container /opt/cholla/examples/3D/sod.txt
+mpirun -np 4 cholla.gravity.cholla-container /opt/cholla/examples/3D/sod.txt
 ```
 * 8 GPU 3D sod<br> 
 ```
-mpirun -np 8 cholla.hydro.cholla-container /opt/cholla/examples/3D/sod.txt
+mpirun -np 8 cholla.gravity.cholla-container /opt/cholla/examples/3D/sod.txt
 ```
 
 Each MPI rank will bind to a particular unique GPU (1 rank per device) and strong-scale the problem accordingly. Please define `HIP_VISIBLE_DEVICES` to control which particular GPUs are available to Cholla. 

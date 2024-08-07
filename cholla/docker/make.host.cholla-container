@@ -3,11 +3,16 @@ CC                = mpicc
 CXX               = mpicxx
 CFLAGS_DEBUG      = -g -O0
 CFLAGS_OPTIMIZE   = -Ofast
-CXXFLAGS_DEBUG    = -g -O0 -std=c++14
-CXXFLAGS_OPTIMIZE = -Ofast -std=c++14
+CXXFLAGS_DEBUG    = -g -O0 -std=c++17
+CXXFLAGS_OPTIMIZE = -Ofast -std=c++17
 
 GPUCXX            = hipcc
 
+# Cholla case types
+TYPE              = gravity
+
+# Add combined time output for use cases
+DFLAGS            = -DCPU_TIME
 
 #-- Use GPU-aware MPI
 MPI_GPU           = -DMPI_GPU
@@ -21,4 +26,4 @@ MPI_ROOT          = /opt/ompi
 
 GPUFLAGS          = --offload-arch=GPU_TARGET -Wno-unused-result -fPIE
 
-HIPCONFIG	      = -I $(ROCM_PATH)/include $(shell hipconfig -C) 
+HIPCONFIG         = -I $(ROCM_PATH)/include $(shell hipconfig -C)
