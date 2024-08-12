@@ -1,12 +1,12 @@
 # Docker Build for LLAMA2
 
-This document is intended to help the reader build a Dockerfile for performance testing of LLAMA2 application. This docker file uses a base install that includes Ubuntu 20.04, ROCm 6.1.2 and Python 3.9.
+This document is intended to help the reader build a Dockerfile for performance testing of the LLAMA2 application. This docker file uses a base install that includes Ubuntu 20.04, ROCm 6.1.2 and Python 3.9.
 
 Please refer to https://docs.vllm.ai/en/latest/getting_started/amd-installation.html for additional details or installation options. For example, the link contains instructions to install vLLM v0.5.3.
 
 The container can host the LLAMA2 application (Large Language Model) and requires some large input files for testing. The input files are in the 150 – 200 GB file size and are not included in the container.
 
-The Dockerfile, used in the current build, is shown in Appendix A.
+The Dockerfile is found in github repo shown below. A variation of the Dockerfile, based on ROCm 6.1.1, is included as a sample file in the current repo.
 
 To create the Docker container, download the VLLM files:
 
