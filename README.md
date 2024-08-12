@@ -48,3 +48,4 @@ For ROCm installation procedures and validation checks, see:
 |[rocHPL-MxP](/hpl-mxp/)|<ul><li>[Docker](/hpl-mxp/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[SPECFEM3D - Cartesian](/specfem3d/)|<ul><li>[Spack Docker](/specfem3d/docker/)</li></ul>|latest|<ul><li>Geophysics</li></ul>|
 |[Trilinos](/trilinos/)|<ul><li>[Docker](/trilinos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
+|[VLLM](/vllm/)|<ul><li>[Docker](/vllm/docker/)</li></ul>|latest|<ul><li>Tools</li><li>LLM</li></ul>|
