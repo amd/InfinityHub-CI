@@ -47,6 +47,7 @@ For ROCm installation procedures and validation checks, see:
 |[RELION](/relion/)|<ul><li>[Container Instructions](/relion/)</li></ul>|5.3|<ul><li>Electronic Structure</li></ul>|
 |[rocHPL](/rochpl/)|<ul><li>[Docker](/rochpl/docker/)</li><li>[Spack Docker](/rochpl/docker-spack/)</li><li>[Spack](/rochpl/spack/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[rocHPL-MxP](/hpl-mxp/)|<ul><li>[Docker](/hpl-mxp/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
+|[Siemens StarCCM+](/siemens-star-ccm/)|<ul><li>[Baremetal](/siemens-star-ccm/baremetal/)</li><li>[Docker](/siemens-star-ccm/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[SPECFEM3D - Cartesian](/specfem3d/)|<ul><li>[Spack Docker](/specfem3d/docker/)</li></ul>|latest|<ul><li>Geophysics</li></ul>|
 |[Trilinos](/trilinos/)|<ul><li>[Docker](/trilinos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[VLLM](/vllm/)|<ul><li>[Docker](/vllm/docker/)</li></ul>|latest|<ul><li>Tools</li><li>LLM</li></ul>|
