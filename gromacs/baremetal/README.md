@@ -27,9 +27,10 @@ For ROCm installation procedures and validation checks, see:
 
 ## Installing AMD's Implementation of Gromacs with HIP
 1. Validate the Cluster/System has all of the above applications, with system path, library, and include environments set correctly. If you are unsure, the [Dockerfile](/gromacs/docker/Dockerfile) has examples of all useful configurations listed after the `ENV` commands. 
-2. Clone the [ROCm Software Platform repo for Gromacs](https://github.com/ROCmSoftwarePlatform/Gromacs.git) into your workspace. The default branch, `develop_2022_amd`is the recommended branch. 
+2. Clone the [GROMACS repository](https://gitlab.com/gromacs/gromacs.git) into your workspace. Use the 4947-hip-feature-enablement feature enablement branch to use the version with all supported features enabled.. 
 ```
-git clone -b develop_2023_amd_sprint_rocm6 https://github.com/ROCmSoftwarePlatform/Gromacs.git
+git clone -b 4947-hip-feature-enablement https://gitlab.com/gromacs/gromacs.git
+
 ```
 3. Navigate to the `gromacs` folder and create a build folder within the workspace to build the code in. 
 ```bash
@@ -38,30 +39,18 @@ mkdir build
 cd build
 ```
 
-4. Run cmake command. The variable `OPEN_MPI_ENABLED` has been included, please set it accordingly. 
+4. Run cmake command. The variable `OPEN_MPI_ENABLED` has been included, please set it accordingly. By default GROMACS will build for a number of current AMD CDNA and RDNA architectures. You can change this by setting the `GMX_HIP_TARGET_ARCH` variable to the exact architecture you want to build for
 >- Threaded MPI (Recommended): `off`
 >- For OpenMPI: `on`
 
 ```bash
-cmake -DBUILD_SHARED_LIBS=off \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_C_FLAGS="-Ofast" \
-        -DCMAKE_CXX_FLAGS="-Ofast" \
+cmake -DCMAKE_BUILD_TYPE=Release \
         -DGMX_BUILD_OWN_FFTW=ON \
-        -DGMX_BUILD_FOR_COVERAGE=off \
         -DCMAKE_C_COMPILER=gcc \
         -DCMAKE_CXX_COMPILER=g++ \
         -DGMX_MPI=${OPEN_MPI_ENABLED} \
         -DGMX_GPU=HIP \
-        -DGMX_OPENMP=on \
-        -DCMAKE_HIP_ARCHITECTURES="gfx900,gfx906,gfx908,gfx90a" \
-        -DGMX_SIMD=AVX2_256 \
         -DREGRESSIONTEST_DOWNLOAD=OFF \
-        -DBUILD_TESTING=ON \
-        -DGMXBUILD_UNITTESTS=ON \
-        -DGMX_GPU_USE_VKFFT=on \
-        -DHIP_HIPCC_FLAGS="-O3 --amdgpu-target=gfx900,gfx906,gfx908,gfx90a" \
-        -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
       ..
 ```
 
@@ -73,8 +62,7 @@ make install
 
 6. Adding Gromacs system environment variables
 ```bash
-export GMX_GPU_DD_COMMS=1
-export GMX_GPU_PME_PP_COMMS=1
+export GMX_ENABLE_DIRECT_GPU_COMM=1
 export GMX_FORCE_UPDATE_DEFAULT_GPU=1
 export ROC_ACTIVE_WAIT_TIMEOUT=0
 export AMD_DIRECT_DISPATCH=1
@@ -107,7 +95,7 @@ The GROMACS source code and selected set of binary packages are available here: 
 The information contained herein is for informational purposes only, and is subject to change without notice. While every precaution has been taken in the preparation of this document, it may contain technical inaccuracies, omissions and typographical errors, and AMD is under no obligation to update or otherwise correct this information. Advanced Micro Devices, Inc. makes no representations or warranties with respect to the accuracy or completeness of the contents of this document, and assumes no liability of any kind, including the implied warranties of noninfringement, merchantability or fitness for particular purposes, with respect to the operation or use of AMD hardware, software or other products described herein. No license, including implied or arising by estoppel, to any intellectual property rights is granted by this document. Terms and limitations applicable to the purchase or use of AMD’s products are as set forth in a signed agreement between the parties or in AMD's Standard Terms and Conditions of Sale. AMD, the AMD Arrow logo and combinations thereof are trademarks of Advanced Micro Devices, Inc. Other product names used in this publication are for identification purposes only and may be trademarks of their respective companies.
 
 ## Notices and Attribution
-© 2021-2023 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
+© 2021-2024 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
 

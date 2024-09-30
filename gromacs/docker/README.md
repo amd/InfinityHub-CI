@@ -15,8 +15,8 @@ Possible `build-arg` for the Docker build command
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 - ### GROMACS_BRANCH
-    Default: `develop_2023_amd_sprint_rocm6`  
-    Branch/Tag found: [AMD's implementation of Gromacs with HIP repo](https://github.com/ROCmSoftwarePlatform/Gromacs).
+    Default: `4947-hip-feature-enablement`  
+    Branch/Tag found: [AMD's implementation of GROMACS with HIP in upstream repository](https://gitlab.com/gromacs/gromacs).
 
 - ### MPI_ENABLED
     Default: `off`  
@@ -42,7 +42,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/gromacs-hip \
     -f /path/to/Dockerfile \
-    --build-arg GROMACS_BRANCH=develop_stream_2022-09-16 \
+    --build-arg GROMACS_BRANCH=4947-hip-feature-enablement \
     --build-arg MPI_ENABLED=on
     . 
 ```
