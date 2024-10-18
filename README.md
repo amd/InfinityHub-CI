@@ -17,6 +17,7 @@ For ROCm installation procedures and validation checks, see:
 |Application|Builds|ROCm Version|Domains|
 |---|---|---|---|
 |[AMD ROCm with GPU-Aware MPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.2|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD ROCm with Conda Environment Container](/conda-rocm-environment/)|<ul><li>[Docker](/conda-rocm-environment/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD's implementation of Gromacs with HIP](/gromacs/)|<ul><li>[Baremetal](/gromacs/baremetal/)</li><li>[Docker](/gromacs/docker/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[Ansys Fluent](/ansys-fluent/)|<ul><li>[Baremetal](/ansys-fluent/baremetal/)</li><li>[Docker](/ansys-fluent/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[Amber](/amber/)|<ul><li>[Amber Details](/amber/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
