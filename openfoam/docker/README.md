@@ -1,5 +1,5 @@
-# OpenFOAM Docker Build
-Instructions on how to build a Docker Container with OpenFOAM.
+# OpenFOAM with PETSc solver Docker Build
+Instructions on how to build a Docker Container with OpenFOAM using the PETSc solver.
 
 ## Build System Requirements
 - Git
@@ -22,7 +22,7 @@ Possible `build-arg` for the Docker build command
     Branch/Tag found: [Scotch repo](https://gitlab.inria.fr/scotch/scotch.git)
 
 - ### PETSC_VER
-    Default: `main`  
+    Default: `v3.22.1`  
     Branch/Tag found: [PETSc repo](https://gitlab.com/petsc/petsc)  
     >NOTE:  
     >Initial HIP support was added in v3.18.0 with further optimizations included in minor releases. We recommend using v3.19 or newer for performance runs on AMD hardware

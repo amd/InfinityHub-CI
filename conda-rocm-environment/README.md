@@ -1,4 +1,4 @@
-# AMD Base Container for Conda base GPU-Aware MPI with ROCm using OpenMPI/UCX Applications
+# AMD Base ROCm Container with Conda
 
 ## Overview
 This container recipe uses the "base-gpu-mpi-rocm-docker" as the base and adds Conda.

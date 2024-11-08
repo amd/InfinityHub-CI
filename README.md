@@ -20,10 +20,13 @@ For ROCm installation procedures and validation checks, see:
 |[AMD ROCm with Conda Environment Container](/conda-rocm-environment/)|<ul><li>[Docker](/conda-rocm-environment/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD's implementation of Gromacs with HIP](/gromacs/)|<ul><li>[Baremetal](/gromacs/baremetal/)</li><li>[Docker](/gromacs/docker/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[Ansys Fluent](/ansys-fluent/)|<ul><li>[Baremetal](/ansys-fluent/baremetal/)</li><li>[Docker](/ansys-fluent/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[Ansys Mechanical](/ansys-mechanical/)|<ul><li>[Application Details](/ansys-mechanical/)</li></ul>|5.x|<ul><li></li></ul>|
 |[Amber](/amber/)|<ul><li>[Amber Details](/amber/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[BabelStream](/babelstream/)|<ul><li>[Container Instructions](/babelstream/)|5.3|<ul><li>Benchmark</li></ul>|
 |[Cholla](/cholla/)|<ul><li>[Baremetal](/cholla/baremetal/)</li><li>[Docker](/cholla/docker/)</li></ul>|latest|<ul><li>Astrophysics</li></ul>|
 |[Chroma](/chroma/)|<ul><li>[Docker](/chroma/docker/)</li></ul>|6.1.1|<ul><li>Physics</li></ul>|
+|[Cadence Fidelity LES](/cadence-fidelity-les/)|<ul><li>[Application Details](/cadence-fidelity-les/)</li></ul>|5.x|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[DevitoPRO](/devitopro/)|<ul><li>[Docker](https://github.com/devitocodes/devito/tree/master/docker#readme)</li><li>[Virtual Environment](http://devitocodes.github.io/devito/download.html#virtual-environment)</li></ul>|latest|<ul><li>Energy</li><li>Oil and Gas</li></ul>|
 |[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|latest|<ul><li>Electronic Structure</li></ul>|
 |[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|latest|<ul><li>Physics</ul>|
 |[HPCG](/hpcg/)|<ul><li>[Baremetal](/hpcg/baremetal/)</li><li>[Docker](/hpcg/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
@@ -36,7 +39,7 @@ For ROCm installation procedures and validation checks, see:
 |[NEKO](/neko/)|<ul><li>[Docker](/neko/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[nekRS](/nekrs/)|<ul><li>[Docker](/nekrs/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[NWChem](/nwchem/)|<ul><li>[Container Instructions](/nwchem/)</li></ul>|5.3|<ul><li>Computational Chemistry</li></ul>|
-|[OpenFOAM](/openfoam/)|<ul><li>[Docker](/openfoam/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[OpenFOAM with PETSc Solver](/openfoam/)|<ul><li>[Docker](/openfoam/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[OpenMM](/openmm/)|<ul><li>[Docker](/openmm/docker/)</li></ul>|5.7|<ul><li>Molecular Dynamics</li></ul>|
 |[PeleC](/pelec/)|<ul><li>[Docker](/pelec/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[PETSc](/petsc/)|<ul><li>[Docker](/petsc/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
@@ -50,5 +53,6 @@ For ROCm installation procedures and validation checks, see:
 |[rocHPL-MxP](/hpl-mxp/)|<ul><li>[Docker](/hpl-mxp/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[Siemens StarCCM+](/siemens-star-ccm/)|<ul><li>[Baremetal](/siemens-star-ccm/baremetal/)</li><li>[Docker](/siemens-star-ccm/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[SPECFEM3D - Cartesian](/specfem3d/)|<ul><li>[Spack Docker](/specfem3d/docker/)</li></ul>|latest|<ul><li>Geophysics</li></ul>|
+|[Stone Ridge ECHELON](/stone-ridge-echelon/)|<ul><li>[Application Details](/stone-ridge-echelon/)</li></ul>|5.x|<ul><li>Energy</li><li>Oil and Gas</li></ul>|
 |[Trilinos](/trilinos/)|<ul><li>[Docker](/trilinos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[VLLM](/vllm/)|<ul><li>[Docker](/vllm/docker/)</li></ul>|latest|<ul><li>Tools</li><li>LLM</li></ul>|

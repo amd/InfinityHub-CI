@@ -1,4 +1,4 @@
-# OpenFOAM
+# OpenFOAM with PETSc Solver
 
 OpenFOAM is the free, open source computational fluid dynamics (CFD) software developed primarily by OpenCFD Ltd since 2004. It has a large user base across most areas of engineering and science, from both commercial and academic organizations. OpenFOAM has an extensive range of features to solve anything from complex fluid flows involving chemical reactions, turbulence and heat transfer, to acoustics, solid mechanics and electro-magnetics.
 
