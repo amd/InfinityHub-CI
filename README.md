@@ -6,7 +6,7 @@ Each builds provides parameters to specify different source code branches, relea
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
 |---- |---- |----------------- |------------ |------------------ | 
-| X86_64 CPU(s) |[AMD Instinct MI300A/X APU/GPU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s)](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-gpus) | [Ubuntu <br> RHEL <br>  SLES  <br> Oracel Linux](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-operating-systems) | [ROCm Latest](https://rocm.docs.amd.com/en/latest/) | [Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
+| X86_64 CPU(s) |[AMD Instinct MI300A/X APU/GPU(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s)](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-gpus) | [Ubuntu <br> RHEL <br>  SLES  <br> Oracle Linux](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-operating-systems) | [ROCm Latest](https://rocm.docs.amd.com/en/latest/) | [Docker Engine](https://docs.docker.com/engine/install/) <br> [Singularity](https://sylabs.io/docs/) |
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)
