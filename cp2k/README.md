@@ -119,8 +119,8 @@ A grep for `"CP2K     "` in the output files `/tmp/32-H2O-RPA-*.txt` will show t
 
 </details>
 <details>
-<summary>MI250 GPUs</summary>
-### MI250 GPUs
+<summary>MI250/MI300 GPUs</summary>
+### MI250/MI300 GPUs
 
 An MI250 GPU contains two Graphics Compute Dies (GCDs) each of which is presented to the application
 as a separate GPU device. When running with MI250 GPUs, the scripts that set up CPU and GPU affinities,
@@ -259,7 +259,7 @@ The information contained herein is for informational purposes only, and is subj
 
  
 ## Notices and Attribution
-© 2022-23 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
+© 2022-24 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
 

@@ -14,17 +14,9 @@ Possible `build-arg` for the Docker build command
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
-- ### OMPI_BRANCH
-    Default: `v4.1.5`  
-    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
-
-- ### GPU_VER
-    Default: `Mi250`   
-    Options: `Mi50`, `Mi100`, `Mi250`  
-    Specifies the GPU architecture for which DBCSR will be built. Mi250 is used for all MI200 series accelerators.
-
 > **NOTE**
-> This recipe a script within CP2K to install the all dependencies. This toolchain script does not support MI300. 
+> This recipe uses a script within the CP2K repo to install the all dependencies. The toolchain script does not directly support Mi300,
+> The recipe has been updated to use the variable `GPU_TARGET`, set in the [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile), to determine what GPU architecture(s) to build for. The [Mi250](/cp2k/docker/Dockerfile#27) in the Dockerfile correctly configures the toolchain for all AMD GPUs, and the recipe updates the necessary details for the GPU(s) to build for. 
 
 ## Build Instructions
 Download the [CP2K Dockerfile](/cp2k-docker/Dockerfile).
@@ -119,7 +111,7 @@ The information contained herein is for informational purposes only, and is subj
 
  
 ## Notices and Attribution
-© 2022-23 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
+© 2022-24 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
 

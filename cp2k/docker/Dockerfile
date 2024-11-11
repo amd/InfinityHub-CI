@@ -2,8 +2,7 @@ ARG IMAGE="rocm_gpu:6.2"
 
 FROM ${IMAGE}
 
-ARG CP2K_BRANCH="v2024.1"
-ARG GPU_VER="Mi250"
+ARG CP2K_BRANCH="v2024.3"
 
 WORKDIR /tmp
 
@@ -25,7 +24,7 @@ RUN git clone --recursive -b ${CP2K_BRANCH} https://github.com/cp2k/cp2k.git \
             --install-all \
             --mpi-mode=openmpi \
             --math-mode=openblas \
-            --gpu-ver=${GPU_VER} \
+            --gpu-ver=Mi250 \
             --enable-hip \
             --with-gcc=system \
             --with-openmpi=system \
@@ -45,7 +44,10 @@ RUN git clone --recursive -b ${CP2K_BRANCH} https://github.com/cp2k/cp2k.git \
             --with-libvori=no \
             --with-libtorch=no \
             --with-elpa=no \
+            --with-deepmd=no \
         && sed -i 's/hip\/bin/bin/' /opt/cp2k/tools/toolchain/install/arch/local_hip.psmp \
+        && sed -i "s/gfx90a/$GPU_TARGET/" ${CP2K_DIR}/tools/toolchain/install/arch/local_hip.psmp \
+        && sed -i "s/gfx90a/$GPU_TARGET/" ${CP2K_DIR}/exts/build_dbcsr/Makefile \
         && cp ${CP2K_DIR}/tools/toolchain/install/arch/* ${CP2K_DIR}/arch \
         && sed -i 's/-D__DBCSR_ACC//' ${CP2K_DIR}/arch/local_hip.psmp \
         && cat ${CP2K_DIR}/arch/local_hip.psmp \

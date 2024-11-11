@@ -30,7 +30,11 @@ For ROCm installation procedures and validation checks, see:
 git clone --recursive https://github.com/cp2k/cp2k.git
 ```
 3. Install CP2K dependencies with CP2Ks toolchains script.  
-More Details for how the toolchain works visit [cp2k/tool/Toolchain](https://github.com/cp2k/cp2k/tree/master/tools/toolchain) the CP2K repo. A variable `GPU_VER` has been provided to set the GPU architecture to be built: `Mi50`, `Mi100`, `Mi250`. This specifies the GPU architecture for which DBCSR will be built. Mi250 is used for all MI200 series accelerators.
+For more Details for how the toolchain works visit [cp2k/tool/Toolchain](https://github.com/cp2k/cp2k/tree/master/tools/toolchain) the CP2K repo.
+
+> NOTE: With the Mi250 below the toolchain will configure the CP2K Dependencies for all AMD GPUs.  
+> To use another GPU follow steps provided for updating the make files. 
+
 ```bash
 cd cp2k/tools/toolchain
 ./install_cp2k_toolchain.sh \
@@ -38,7 +42,7 @@ cd cp2k/tools/toolchain
             --install-all \
             --mpi-mode=openmpi \
             --math-mode=openblas \
-            --gpu-ver=${GPU_VER} \
+            --gpu-ver=Mi250 \
             --enable-hip \
             --with-gcc=system \
             --with-openmpi=system \
@@ -57,15 +61,28 @@ cd cp2k/tools/toolchain
             --with-spfft=no \
             --with-libvori=no \
             --with-libtorch=no \
-            --with-elpa=no
+            --with-elpa=no \
+            --with-deepmd=no \
 ```
 
-4. Copy tool chain build files to `cp2k/arch`
+4. Update generated psmp file.
+The generated psmp file must be modified. The following command can be used to implement the required modification:  
+`sed -i 's/hip\/bin/bin/' ./tools/toolchain/install/arch/local_hip.psmp`  
+> **Optional:**   
+> If building for any GPUs other than MI200 series, update the `GPU_TARGET` variable to the correct architecture and run the following commands.  
+>Example for the MI300 series:  
+>```bash
+>EXPORT $GPU_TARGET=gfx942
+>sed -i "s/gfx90a/$GPU_TARGET/" ./tools/toolchain/install/arch/local_hip.psmp
+>sed -i "s/gfx90a/$GPU_TARGET/" ./exts/build_dbcsr/Makefile
+>```
+
+5. Copy tool chain build files to `cp2k/arch`
 ```bash
 cp cp2k/tools/toolchain/install/arch/* cp2k/arch/.
 ```
 
-5. Tuning for build. (Optional)
+6. Tuning for build. (Optional)
 CP2K will build without inclusion of these tuning flags, but it is recommended for performance to include these depending on what kind of Benchmark/Workload to be run. 
 
 - RPA Benchmarks/Workloads:  
@@ -80,26 +97,26 @@ This executable has been built without the PW GPU backend as it improves the per
 echo "DFLAGS      = -D__LIBXSMM  -D__parallel -D__FFTW3  -D__LIBINT -D__LIBXC -D__SCALAPACK -D__COSMA -D__OFFLOAD_GEMM   -D__SPLA   -D__HIP_PLATFORM_AMD__ -D__OFFLOAD_HIP -D__DBCSR_ACC -D__NO_OFFLOAD_PW" >> cp2k/arch/local_hip.psmp
 ```
 
-6. Build CP2K
+7. Build CP2K
 ```bash
 make realclean ARCH=local_hip VERSION=psmp
 make -j (nproc) ARCH=local_hip VERSION=psmp
 ```
 
-7. Add Binary to PATH
+8. Add Binary to PATH
 The binary gets build in `cp2k/exe/local_hip`
 ```BASH
 ln -s /path/to/cp2k/exe/local_hip /path/to/cp2k/bin 
 export PATH=$PATH:/path/to/cp2k/bin
 ```
 
-8. Build other binary. (Optional)
+9. Build other binary. (Optional)
 You may want both the RPA and DFT tuned binary. 
 You will want to update the binary name to be descriptive of the build. 
 In the container they are `cp2k.psmp.no_dbcsr_gpu` and `cp2k.psmp.no_pw_gpu` to give a descriptive name to the two binaries.
 The best way to achieve that is to repeat steps 4-6 using the other tuned options. 
 
-9. Add affinity scripts that help tune at runtime. 
+10. Add affinity scripts that help tune at runtime. 
 [Two affinity scripts](/cp2k/docker/scripts/) have been provided that will help tune the CPU/GPU usage at runtime.
 Adding these scripts to the location with the binary(s) or any directory in the system's `PATH` will allow a user to take advantage of these scripts that have been provided and how to use them which is provided [Running CP2K Benchmark](/cp2k/README.md#running-cp2k-benchmarks).
 
@@ -129,7 +146,7 @@ The information contained herein is for informational purposes only, and is subj
 
  
 ## Notices and Attribution
-© 2022-23 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
+© 2022-24 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
 
