@@ -56,3 +56,8 @@ For ROCm installation procedures and validation checks, see:
 |[Stone Ridge ECHELON](/stone-ridge-echelon/)|<ul><li>[Application Details](/stone-ridge-echelon/)</li></ul>|5.x|<ul><li>Energy</li><li>Oil and Gas</li></ul>|
 |[Trilinos](/trilinos/)|<ul><li>[Docker](/trilinos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[VLLM](/vllm/)|<ul><li>[Docker](/vllm/docker/)</li></ul>|latest|<ul><li>Tools</li><li>LLM</li></ul>|
+
+## User Guides
+|Guides|Topics|
+|---|---|
+|[AMD Next Gen Fortran](/fortran)  |<ul><li>Compiler</li></ul>|
