@@ -51,13 +51,13 @@ Possible `build-arg` for the Docker build command
     > Each App has a recommended ROCm version. 
 
 - ### UBUNTU_VERSION
-    Default: `jammy`  
+    Default: `noble`  
     Docker Tags found: 
     - [Docker Ubuntu](https://hub.docker.com/_/ubuntu)
-    > jammy is currently recommended as many apps require newer versions of GNU tools than can be installed with `apt-get`. 
+    > noble is currently recommended as many apps require newer versions of GNU tools than can be installed with `apt-get`. 
 
 - ### UCX_BRANCH
-    Default: `v1.16.0`  
+    Default: `v1.17.0`  
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucx)
 
 - ### UCC_BRANCH
@@ -65,7 +65,7 @@ Possible `build-arg` for the Docker build command
     Branch/Tag found: [UXC repo](https://github.com/openucx/ucc)
 
 - ### OMPI_BRANCH
-    Default: `v5.0.3`  
+    Default: `v5.0.5`  
     Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
 - ### APT_GET_APPS
@@ -87,10 +87,10 @@ Download the [Dockerfile](/base-gpu-mpi-rocm-docker/Dockerfile)
 
 To run the default configuration:
 ```
-docker build -t rocm_gpu:6.2 -f /path/to/Dockerfile . 
+docker build -t rocm_gpu:6.2.4 -f /path/to/Dockerfile . 
 ```
 > Notes:  
->- `rocm_gpu:6.2` is an example container name.
+>- `rocm_gpu:6.2.4` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
 >- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
@@ -99,9 +99,9 @@ To run a custom configuration, include one or more customized build-arg paramete
 
 ```
 docker build \
-    -t rocm_gpu:6.2 \
+    -t rocm_gpu:6.2.4 \
     -f /path/to/Dockerfile \
-    --build-arg UBUNTU_VERSION=focal \
+    --build-arg UBUNTU_VERSION=jammy \
     --build-arg UCX_BRANCH=master \
     --build-arg OMPI_BRANCH=main \
     --build-arg APT_GET_APPS="vim nano git"
@@ -118,7 +118,7 @@ To run the container interactively, run the following command:
 docker run --device=/dev/kfd \
            --device=/dev/dri \
            --security-opt seccomp=unconfined \
-           -it rocm_gpu:6.2 bash
+           -it rocm_gpu:6.2.4 bash
 ```
 > ** Notes **
 > User running container user must have permissions to `/dev/kfd` and `/dev/dri`. This can be achieved by being a member of `video` and/or `render` group.  
@@ -130,12 +130,12 @@ docker run --device=/dev/kfd \
 Singularity, like Docker, can be used for running HPC containers.  
 To create a Singularity container from your local Docker container, run the following command:
 ```
-singularity build rocm_gpu-60.sif  docker-daemon://rocm_gpu:6.2
+singularity build rocm_gpu.sif  docker-daemon://rocm_gpu:6.2.4
 ```
 
 Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a interactive run
 ```
-singularity shell --writable-tmpfs rocm_gpu-60.sif
+singularity shell --writable-tmpfs rocm_gpu.sif
 ```
 > - `--writable-tmpfs` allows for the file system to be writable, many benchmarks/workloads require this.  
 > - `--no-home` will *not* mount the users home directory into the container at run time. 
@@ -163,7 +163,7 @@ Additional third-party content in this container may be subject to additional li
 The information contained herein is for informational purposes only, and is subject to change without notice. In addition, any stated support is planned and is also subject to change. While every precaution has been taken in the preparation of this document, it may contain technical inaccuracies, omissions and typographical errors, and AMD is under no obligation to update or otherwise correct this information. Advanced Micro Devices, Inc. makes no representations or warranties with respect to the accuracy or completeness of the contents of this document, and assumes no liability of any kind, including the implied warranties of noninfringement, merchantability or fitness for particular purposes, with respect to the operation or use of AMD hardware, software or other products described herein. No license, including implied or arising by estoppel, to any intellectual property rights is granted by this document. Terms and limitations applicable to the purchase or use of AMD’s products are as set forth in a signed agreement between the parties or in AMD's Standard Terms and Conditions of Sale.
 
 ## Notices and Attribution
-© 2022-2023 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
+© 2022-2024 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
 

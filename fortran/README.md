@@ -13,10 +13,6 @@ the compiler is available through the following link:
 The Fortran compiler drops have similar requirements to the official ROCm releases.
 They can be used on any of the following OS:
 
-- RHEL 8.x
-- SLES 15
-- Ubuntu (version >= 22.04)
-
 | CPUs | Operating Systems | ROCm™ Driver |
 |----  |-----------------  |------------------ | 
 | X86_64 CPU(s) | [Ubuntu (version >= 22.04) <br> RHEL 8.x <br>  SLES 15 ](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-operating-systems) | [ROCm Latest](https://rocm.docs.amd.com/en/latest/) |

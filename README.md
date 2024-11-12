@@ -1,7 +1,10 @@
 # InfinityHub-CI
 
 The purpose of this Repository is to provide a way to build containers similar to what are provided on [AMD's Infinity Hub](https://www.amd.com/en/technologies/infinity-hub).  
-Each builds provides parameters to specify different source code branches, release versions of [ROCm](https://github.com/RadeonOpenCompute/ROCm), [OpenMPI](https://github.com/open-mpi/ompi), [UCX](https://github.com/openucx/ucx), and different versions Ubuntu to be build in. 
+Each builds provides parameters to specify different source code branches, release versions of [ROCm](https://github.com/RadeonOpenCompute/ROCm), [OpenMPI](https://github.com/open-mpi/ompi), [UCX](https://github.com/openucx/ucx), [UCC](https://github.com/openucx/ucc), and different versions Ubuntu to be build in. 
+
+- **[Applications Recipes](#applications)**  
+- **[User Guides](#user-guides)**
 
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | Container Runtimes | 
@@ -16,7 +19,7 @@ For ROCm installation procedures and validation checks, see:
 ## Applications:
 |Application|Builds|ROCm Version|Domains|
 |---|---|---|---|
-|[AMD ROCm with GPU-Aware MPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.2|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD ROCm with GPU-Aware MPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.2.4|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD ROCm with Conda Environment Container](/conda-rocm-environment/)|<ul><li>[Docker](/conda-rocm-environment/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD's implementation of Gromacs with HIP](/gromacs/)|<ul><li>[Baremetal](/gromacs/baremetal/)</li><li>[Docker](/gromacs/docker/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[Ansys Fluent](/ansys-fluent/)|<ul><li>[Baremetal](/ansys-fluent/baremetal/)</li><li>[Docker](/ansys-fluent/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
@@ -24,7 +27,7 @@ For ROCm installation procedures and validation checks, see:
 |[Amber](/amber/)|<ul><li>[Amber Details](/amber/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[BabelStream](/babelstream/)|<ul><li>[Container Instructions](/babelstream/)|5.3|<ul><li>Benchmark</li></ul>|
 |[Cholla](/cholla/)|<ul><li>[Baremetal](/cholla/baremetal/)</li><li>[Docker](/cholla/docker/)</li></ul>|latest|<ul><li>Astrophysics</li></ul>|
-|[Chroma](/chroma/)|<ul><li>[Docker](/chroma/docker/)</li></ul>|6.1.1|<ul><li>Physics</li></ul>|
+|[Chroma](/chroma/)|<ul><li>[Docker](/chroma/docker/)</li></ul>|lastest|<ul><li>Physics</li></ul>|
 |[Cadence Fidelity LES](/cadence-fidelity-les/)|<ul><li>[Application Details](/cadence-fidelity-les/)</li></ul>|5.x|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[DevitoPRO](/devitopro/)|<ul><li>[Docker](https://github.com/devitocodes/devito/tree/master/docker#readme)</li><li>[Virtual Environment](http://devitocodes.github.io/devito/download.html#virtual-environment)</li></ul>|latest|<ul><li>Energy</li><li>Oil and Gas</li></ul>|
 |[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|latest|<ul><li>Electronic Structure</li></ul>|

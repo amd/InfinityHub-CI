@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.2"
+ARG IMAGE="rocm_gpu:6.2.4"
 
 FROM ${IMAGE}
 ARG PETSC_BRANCH="v3.22.1"

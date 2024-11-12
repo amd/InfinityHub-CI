@@ -1,11 +1,11 @@
-ARG UBUNTU_VERSION="jammy"
+ARG UBUNTU_VERSION="noble"
 
 FROM ubuntu:${UBUNTU_VERSION}
 
-ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.2/ubuntu/jammy/amdgpu-install_6.2.60200-1_all.deb"
-ARG UCX_BRANCH="v1.16.0"
+ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.2.4/ubuntu/noble/amdgpu-install_6.2.60204-1_all.deb"
+ARG UCX_BRANCH="v1.17.0"
 ARG UCC_BRANCH="v1.3.0"
-ARG OMPI_BRANCH="v5.0.3"
+ARG OMPI_BRANCH="v5.0.5"
 ARG APT_GET_APPS=""
 ARG GPU_TARGET="gfx908,gfx90a,gfx942"
 
@@ -38,7 +38,6 @@ RUN apt-get update \
         libxml2-dev \
         python3-dev \
         python3-pip \
-        python3-distutils \
         unzip ${APT_GET_APPS}\
     && apt-get clean
 
@@ -55,7 +54,7 @@ RUN bash -c """IFS=',' read -r -a ARCH <<<${GPU_TARGET} \
 
 # # Requires cmake > 3.22 
 RUN mkdir -p /opt/cmake  \
-  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.27/cmake-3.27.7-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
+  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.30/cmake-3.30.5-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
 
 ENV ROCM_PATH=/opt/rocm \
     UCX_PATH=/opt/ucx \
