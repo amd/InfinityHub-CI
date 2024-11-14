@@ -1,4 +1,4 @@
-# Stone Ridge ECHELON
+# Stone Ridge Technology ECHELON
 
 ## Overview
 ECHELON software—the fastest reservoir simulation tool in the world—retaining precise accuracy and preserving legacy simulator results. Faster reservoir simulation enables reservoir engineers to produce many realizations, address larger models, and use advanced physics. It opens new workflows based on ensemble methodologies for history matching and forecasting that yield increased accuracy and more predictive results.
@@ -8,7 +8,7 @@ ECHELON software—the fastest reservoir simulation tool in the world—retainin
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver | 
 |---- |---- |----------------- |------------ |
-| X86_64 CPU(s) |[ AMD Instinct MI200 GPU(s)](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-gpus) | Ubuntu <br> RHEL <br>  SLES | [ROCm 5.x ](https://rocm.docs.amd.com/en/latest/release/versions.html) 
+| X86_64 CPU(s) |[ AMD Instinct MI200 GPU(s)](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-gpus) | Ubuntu <br> RHEL <br>  SLES | [ROCm 6.x ](https://rocm.docs.amd.com/en/latest/release/versions.html) 
 
 
 ## Licensing Information
