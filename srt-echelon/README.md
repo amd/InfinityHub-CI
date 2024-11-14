@@ -1,8 +1,7 @@
 # Stone Ridge Technology ECHELON
 
 ## Overview
-ECHELON software—the fastest reservoir simulation tool in the world—retaining precise accuracy and preserving legacy simulator results. Faster reservoir simulation enables reservoir engineers to produce many realizations, address larger models, and use advanced physics. It opens new workflows based on ensemble methodologies for history matching and forecasting that yield increased accuracy and more predictive results.
-[ECHELON Software](https://stoneridgetechnology.com/echelon-reservoir-simulation-software/)
+[ECHELON Software](https://stoneridgetechnology.com/echelon-reservoir-simulation-software/) - the fastest reservoir simulation tool in the world—retaining precise accuracy and preserving legacy simulator results. Faster reservoir simulation enables reservoir engineers to produce many realizations, address larger models, and use advanced physics. It opens new workflows based on ensemble methodologies for history matching and forecasting that yield increased accuracy and more predictive results.
 
 
 ## Single-Node Server Requirements
