@@ -127,7 +127,6 @@ Other:
 
 - OpenMP atomic on complex operations currently not supported (work in progress)
 - `REAL kind=2,3,10,16` types are not yet supported (work in progress)
-- When `!$omp target` directives are present, the `--offload-arch` command line flag must be supplied otherwise there is a linker error.
 - When compiling for offload, add `-lFortranRuntimeHostDevice` if you see unresolved symbols such as:
 
 ```bash
