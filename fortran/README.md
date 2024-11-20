@@ -8,6 +8,14 @@ the compiler is available through the following link:
 
 [https://repo.radeon.com/rocm/misc/flang/](https://repo.radeon.com/rocm/misc/flang/)
 
+The latest release is **drop 4.2.0**. You may obtain any of the supported OS through `wget`:
+
+```shell
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6405-drop-4.2.0-rhel.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6405-drop-4.2.0-sles.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6405-drop-4.2.0-ubuntu.tar.bz2
+```
+
 ## System requirements
 
 The Fortran compiler drops have similar requirements to the official ROCm releases.
