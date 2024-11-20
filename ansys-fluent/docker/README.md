@@ -31,7 +31,7 @@ Within the dockerfile the default value for the `FLUENT_TAR` and `FLUENT_VERSION
 
 ### Ansys License
 There are 2 License methods for Ansys Fluent. 
-At build time, the `ANSYSLMD_LICENSE_FILE` `build-arg` can be provided or update the [Temporary License section](/ansys-fluent/Dockerfile#L62) by uncommenting out the section and make sure the `ansyslmd.ini` is along side the tar in the `sources` directory.
+At build time, the `ANSYSLMD_LICENSE_FILE` `build-arg` can be provided or update the [Temporary License section](/ansys-fluent/docker/Dockerfile#L62) by uncommenting out the section and make sure the `ansyslmd.ini` is along side the tar in the `sources` directory.
 
 
 
@@ -57,7 +57,7 @@ Possible `build-arg` for the Docker build command
 
 
 ## Building Container
-Download the [Dockerfile](/ansys-fluent/Dockerfile)  
+Download the [Dockerfile](/ansys-fluent/docker/Dockerfile)  
 
 To run the default configuration:
 ```
