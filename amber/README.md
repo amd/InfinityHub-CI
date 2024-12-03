@@ -41,7 +41,7 @@ Amber is licensed and distributed by the University of California.  AMD optimiza
 The application requires the following separate and independent components:
 |Package | License | URL|
 |---|---|---|
-|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
 |Amber|Custom|[Amber](https://ambermd.org/)<br >[Amber License](https://ambermd.org/GetAmber.php)|
 
 

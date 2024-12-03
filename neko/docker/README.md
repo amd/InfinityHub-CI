@@ -99,7 +99,7 @@ The application is provided in a container image format that includes the follow
 |CMAKE|OSI-approved BSD-3 clause|[CMake License](https://cmake.org/licensing/)|
 |OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
 |OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
-|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
 |NEKO|BDS 3-Clause with additional notes|[NEKO](https://github.com/ExtremeFLOW/neko) <br /> [NEKO License](https://github.com/ExtremeFLOW/neko/blob/develop/COPYING)|
 |JSON Fortran|BDS 3-Clause/MIT|[JSON Fortran]( https://github.com/jacobwilliams/json-fortran.git) <br /> [JSON Fortran License](https://github.com/jacobwilliams/json-fortran/blob/master/LICENSE)|
 |GSLIB|BDS 3-Clause with additional notes|[GSLIB](https://github.com/Nek5000/gslib) <br /> [GSLIB License](https://github.com/Nek5000/gslib/blob/master/LICENSE)|

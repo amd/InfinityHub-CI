@@ -16,7 +16,7 @@ Your use of this application is subject to the terms of the applicable component
 The application is provided in a container image format that includes the following separate and independent components:
 |Package | License | URL|
 |---|---|---|
-|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
 |ECHELON|Custom/Contact for License Details |[Stone Ridge](https://stoneridgetechnology.com)<br>[Request ECHELON License](https://stoneridgetechnology.com/echelon-reservoir-simulation-software/#licensing)|
 
 

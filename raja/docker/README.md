@@ -100,7 +100,7 @@ The application is provided in a container image format that includes the follow
 |CMAKE|OSI-approved BSD-3 clause|[CMake License](https://cmake.org/licensing/)|
 |OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
 |OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
-|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
 |RAJA| BSD-3-Clause |[RAJA](https://github.com/LLNL/raja)<br >[RAJA License](https://github.com/LLNL/raja?tab=BSD-3-Clause-1-ov-file#readme)|
 |RAJAPerf| BSD-3-Clause|[RAJAPerf](https://github.com/LLNL/rajaperf)<br >[RAJA License](https://github.com/LLNL/rajaperf?tab=BSD-3-Clause-1-ov-file#readme)|
 

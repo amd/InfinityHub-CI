@@ -45,7 +45,7 @@ The application is provided in a container image format that includes the follow
 |---|---|---|
 |Ubuntu| Creative Commons CC-BY-SA Version 3.0 UK License |[Ubuntu Legal](https://ubuntu.com/legal)|
 |CMAKE|OSI-approved BSD-3 clause|[CMake License](https://cmake.org/licensing/)|
-|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
 |Google Benchmark|Apache v2.0|[Google Benchmark](https://github.com/google/benchmark) <br/> [Google Benchmark License](https://github.com/google/benchmark/blob/main/LICENSE)|
 |Kokkos|Apache v2.0|[Kokkos](https://kokkos.org/)<br /> [Kokkos License](https://github.com/kokkos/kokkos/blob/master/LICENSE)|
 |Kokkos-Kernels|Apache v2.0|[Kokkos-Kernels](https://kokkos.org/)<br /> [Kokkos-Kernels License](https://github.com/kokkos/kokkos-kernels?tab=License-1-ov-file#readme)|

@@ -20,7 +20,7 @@ Your use of this application is subject to the terms of the applicable component
 The application is provided in a container image format that includes the following separate and independent components:
 |Package | License | URL|
 |---|---|---|
-|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
 |Cadence Computational Fluid Dynamics|Custom/Contact for License Details |[Cadence](https://www.cadence.com)<br>[Request Cadence CFD License](https://www5.cadence.com/CFD_ReqTrial_LP.html)|
 
 

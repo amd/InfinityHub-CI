@@ -84,7 +84,7 @@ The application is provided in a container image format that includes the follow
 |Package | License | URL|
 |---|---|---|
 |Ubuntu| Creative Commons CC-BY-SA Version 3.0 UK License |[Ubuntu Legal](https://ubuntu.com/legal)|
-|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/release/licensing.html)|
+|ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
 |PyTorch|BSD-3|[PyTorch License](https://github.com/pytorch/pytorch?tab=License-1-ov-file#readme)|
 |Flash Attention|BSD-3-Clause|[Flash Attention License](https://github.com/ROCm/flash-attention?tab=BSD-3-Clause-1-ov-file#readme)|
 |CuPy |MIT|[CuPy License](https://github.com/ROCm/cupy?tab=MIT-1-ov-file#readme)|
