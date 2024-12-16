@@ -50,20 +50,20 @@ function generateMesh()
     if [[ $RUN_ONLY -eq 0 ]]; then
         echo " Running components of the AllmeshS script. Check progress in the log files generated"
         echo " 1. blockMesh &> log.blockMesh"
-        blockMesh &> log.blockMesh
+        blockMesh &> $OUTPUT/log.blockMesh
         echo " 2. decomposePar &> log.decomposePar"
         echo "    NOTE:  decomposing into 32 parts to speed up mesh generation"
         sed -i -e "s|.*numberOfSubdomains.*|numberOfSubdomains 32;|g" ./system/decomposeParDict
-        decomposePar &> log.decomposePar
+        decomposePar &> $OUTPUT/log.decomposePar
         echo " 3. mpirun -np 32 snappyHexMesh -overwrite &> log.snappyHexMesh"
         echo "    NOTE: Using 32 cores (from above) to run snappyHexMesh utility in parallel"
-        mpirun -np 32 snappyHexMesh -overwrite -parallel &> log.snappyHexMesh
+        mpirun -np 32 snappyHexMesh -overwrite -parallel &> $OUTPUT/log.snappyHexMesh
         #optional
         #runParallel checkMesh 
         echo " 4. reconstructParMesh -constant &> log.reconstructParMesh"
-        reconstructParMesh -constant &> log.reconstructParMesh
+        reconstructParMesh -constant &> $OUTPUT/log.reconstructParMesh
         echo " 5. reconstructPar -constant &> log.reconstructPar"
-        reconstructPar -constant &> log.reconstructPar
+        reconstructPar -constant &> $OUTPUT/log.reconstructPar
     else
         if [ -d "./constant/polyMesh" ]
         then
@@ -81,39 +81,39 @@ Error: no constant/polyMesh exists in HPC_Benchmark/${benchmark_case}.
 function singleGPUrun()
 {
     if [[ $VERBOSE -eq 1 ]]; then
-        potentialFoam -writephi 2>&1 | tee log.potentialFoam-${NGPUS}gpu
+        potentialFoam -writephi 2>&1 | tee $OUTPUT/log.potentialFoam-${NGPUS}gpu
         ${app} 2>&1 | tee log.${app}-${NGPUS}gpu
     else
       #2. potentialFoam -writephi | This is used to evaluate and write the phi field for the CFD test
-      potentialFoam -writephi &> log.potentialFoam-${NGPUS}gpu
+      potentialFoam -writephi &> $OUTPUT/log.potentialFoam-${NGPUS}gpu
 
       #3. simpleFoam  | This is the solver that that is used in this benchmark.
-      ${app} &> log.${app}-${NGPUS}gpu
+      ${app} &> $OUTPUT/log.${app}-${NGPUS}gpu
     fi
     #4. foamLog | This extracts the relevant KPIs (e.g. Execution time, residuals, etc.)
-    foamLog log.${app}-${NGPUS}gpu
+    foamLog $OUTPUT/log.${app}-${NGPUS}gpu
 }
 
 function parallelGPUrun()
 {
     if [[ $VERBOSE -eq 1 ]]; then
       sed -i -e "s|.*numberOfSubdomains.*|numberOfSubdomains ${NGPUS};|g" ./system/decomposeParDict
-      decomposePar -force 2>&1 | tee log.decomposePar-${NGPUS}gpu
-      mpirun -np ${NGPUS} potentialFoam -parallel -writephi 2>&1 | tee log.potentialFoam-${NGPUS}gpu
-      mpirun -np ${NGPUS} ${app} -parallel 2>&1 | tee log.${app}-${NGPUS}gpu
+      decomposePar -force 2>&1 | tee $OUTPUT/log.decomposePar-${NGPUS}gpu
+      mpirun -np ${NGPUS} potentialFoam -parallel -writephi 2>&1 | tee $OUTPUT/log.potentialFoam-${NGPUS}gpu
+      mpirun -np ${NGPUS} ${app} -parallel 2>&1 | tee $OUTPUT/log.${app}-${NGPUS}gpu
     else
       #2. decomposePar | This is used to decompose the 3D mesh into subdomains for parallel processing
       sed -i -e "s|.*numberOfSubdomains.*|numberOfSubdomains ${NGPUS};|g" ./system/decomposeParDict
-      decomposePar -force &> log.decomposePar-${NGPUS}gpu
+      decomposePar -force &> $OUTPUT/log.decomposePar-${NGPUS}gpu
       #
       #3. potentialFoam -writephi | This is used to evaluate and write the phi field for the CFD test
-      mpirun -np ${NGPUS} potentialFoam -parallel -writephi &> log.potentialFoam-${NGPUS}gpu
+      mpirun -np ${NGPUS} potentialFoam -parallel -writephi &> $OUTPUT/log.potentialFoam-${NGPUS}gpu
       #
       #4. simpleFoam  | This is the solver that that is used in this benchmark.
-      mpirun -np ${NGPUS} ${app} -parallel &> log.${app}-${NGPUS}gpu
+      mpirun -np ${NGPUS} ${app} -parallel &> $OUTPUT/log.${app}-${NGPUS}gpu
     fi
     #5. foamLog | This extracts the relevant KPIs (e.g. Execution time, residuals, etc.)
-    foamLog log.${app}-${NGPUS}gpu
+    foamLog $OUTPUT/log.${app}-${NGPUS}gpu
 }
 
 function printFOM()
@@ -163,6 +163,7 @@ usage: $0
        -r | --run-only  skip mesh build, and directly run the case
        -c | --clean     Clean the case directory
        -v | --verbose   Prints all logs from different stages for easy debugging
+       -o | --output    Change the output directory to a different directory
 
 "
 }
@@ -191,6 +192,10 @@ parse_args(){
                 VERBOSE=1
                 shift 1
                 ;;
+            -o|--output)
+                OUTPUT="$(realpath $2)"
+                shift 2
+                ;;
             -*|--*=|*) # unsupported flags
                 echo "Error: Unsupported flag $1" >&2
                 usage
@@ -210,6 +215,9 @@ parse_args(){
 
     if [[ -z "${VERBOSE+x}" ]]; then
         VERBOSE=0
+    fi
+    if [[ -z "${OUTPUT+x}" ]]; then
+        OUTPUT=.
     fi
 }
 

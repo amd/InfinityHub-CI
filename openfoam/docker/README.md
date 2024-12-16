@@ -9,7 +9,7 @@ Instructions on how to build a Docker Container with OpenFOAM using the PETSc so
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.2.4`  
+    Default: `rocm_gpu:6.3`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/).
     
@@ -18,11 +18,11 @@ Possible `build-arg` for the Docker build command
     Branch/Tag found: [OpenFOAM repo](https://develop.openfoam.com/Development/openfoam)
 
 - ### SCOTCH_VER
-    Default: `v7.0.3`  
+    Default: `v7.0.6`  
     Branch/Tag found: [Scotch repo](https://gitlab.inria.fr/scotch/scotch.git)
 
 - ### PETSC_VER
-    Default: `v3.22.1`  
+    Default: `v3.22.2`  
     Branch/Tag found: [PETSc repo](https://gitlab.com/petsc/petsc)  
     >NOTE:  
     >Initial HIP support was added in v3.18.0 with further optimizations included in minor releases. We recommend using v3.19 or newer for performance runs on AMD hardware

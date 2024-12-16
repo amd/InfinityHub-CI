@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.2.4"
+ARG IMAGE="rocm_gpu:6.3"
 FROM ${IMAGE}
 
 ARG NEKRS_BRANCH="v23.0"

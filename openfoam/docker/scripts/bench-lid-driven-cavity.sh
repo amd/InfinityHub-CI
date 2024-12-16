@@ -6,7 +6,7 @@ source ${OPENFOAM_DIR}/etc/bashrc
 cd ${0%/*} || exit 1    # Run from this directory
 CDIR=`pwd`
 # set the benchmark case
-benchmark_case=incompressible/icoFoam/old/Lid_driven_cavity-3d/M
+benchmark_case=Lid_driven_cavity-3d/M
 
 function setup()
 {
@@ -49,9 +49,9 @@ function generateMesh()
     if [[ $RUN_ONLY -eq 0 ]]; then
         echo "Running blockMesh. Check progress in the log file using command
         tail -f log.blockMesh"
-        blockMesh &> log.blockMesh
+        blockMesh &> $OUTPUT/log.blockMesh
         # 2. renumberMesh -overwrite | This is used to re-order and overwrite the mesh point and neighbor lists that reduces the matrix band.
-        renumberMesh -overwrite &> log.renumberMesh
+        renumberMesh -overwrite &> $OUTPUT/log.renumberMesh
     else
         if [ -d "./constant/polyMesh" ]
         then
@@ -69,13 +69,13 @@ Error: no constant/polyMesh exists in HPC_Benchmark/${benchmark_case}.
 function singleGPUrun()
 {
     if [[ $VERBOSE -eq 1 ]]; then
-        ${app} 2>&1 | tee log.${app}-${NGPUS}gpu
+        ${app} 2>&1 | tee $OUTPUT/log.${app}-${NGPUS}gpu
     else
         #3. icoFoam  | This is the solver that that is used in this benchmark.
-        ${app} &> log.${app}-${NGPUS}gpu
+        ${app} &> $OUTPUT/log.${app}-${NGPUS}gpu
     fi
     #4. foamLog | This extracts the relevant KPIs (e.g. Execution time, residuals, etc.)
-    foamLog log.${app}-${NGPUS}gpu
+    foamLog $OUTPUT/log.${app}-${NGPUS}gpu
 }
 
 
@@ -83,19 +83,19 @@ function parallelGPUrun()
 {
     if [[ $VERBOSE -eq 1 ]]; then
       sed -i -e "s|.*numberOfSubdomains.*|numberOfSubdomains ${NGPUS};|g" ./system/decomposeParDict
-      decomposePar -force 2>&1 | tee log.decomposePar-${NGPUS}gpu
-      mpirun -np ${NGPUS} ${app} -parallel 2>&1 | tee log.${app}-${NGPUS}gpu
+      decomposePar -force 2>&1 | tee $OUTPUT/log.decomposePar-${NGPUS}gpu
+      mpirun -np ${NGPUS} ${app} -parallel 2>&1 | tee $OUTPUT/log.${app}-${NGPUS}gpu
     else
       #3. decomposePar | This is used to decompose the 3D mesh into subdomains for parallel processing
       sed -i -e "s|.*numberOfSubdomains.*|numberOfSubdomains ${NGPUS};|g" ./system/decomposeParDict
-      decomposePar -force &> log.decomposePar-${NGPUS}gpu
+      decomposePar -force &> $OUTPUT/log.decomposePar-${NGPUS}gpu
       #
       #4. icoFoam  | This is the solver that that is used in this benchmark.
-      mpirun -np ${NGPUS} ${app} -parallel &> log.${app}-${NGPUS}gpu
+      mpirun -np ${NGPUS} ${app} -parallel &> $OUTPUT/log.${app}-${NGPUS}gpu
       #
       #5. foamLog | This extracts the relevant KPIs (e.g. Execution time, residuals, etc.)
     fi
-    foamLog log.${app}-${NGPUS}gpu
+    foamLog $OUTPUT/log.${app}-${NGPUS}gpu
 }
 
 function printFOM()
@@ -104,9 +104,9 @@ function printFOM()
     Final results:
 --------------------"
     if [[ $NGPUS -eq 1 ]]; then
-        awk 'NR>=270 && NR<=284' log.${app}-${NGPUS}gpu
+        awk 'NR>=270 && NR<=284' $OUTPUT/log.${app}-${NGPUS}gpu
     else
-        awk 'NR>=279 && NR<=294' log.${app}-${NGPUS}gpu
+        awk 'NR>=279 && NR<=294' $OUTPUT/log.${app}-${NGPUS}gpu
     fi
     echo "--------------------
     FOM: Execution Time
@@ -145,6 +145,8 @@ usage: $0
        -r | --run-only  skip mesh build, and directly run the case
        -c | --clean     Clean the case directory
        -v | --verbose   Prints all logs from different stages for easy debugging
+       -o | --output    Change the output directory to a different directory
+
 
 "
 }
@@ -173,6 +175,10 @@ parse_args(){
                 VERBOSE=1
                 shift 1
                 ;;
+            -o|--output)
+                OUTPUT="$(realpath $2)"
+                shift 2
+                ;;
             -*|--*=|*) # unsupported flags
                 echo "Error: Unsupported flag $1" >&2
                 usage
@@ -192,6 +198,9 @@ parse_args(){
 
     if [[ -z "${VERBOSE+x}" ]]; then
         VERBOSE=0
+    fi
+    if [[ -z "${OUTPUT+x}" ]]; then
+        OUTPUT=.
     fi
 }
 

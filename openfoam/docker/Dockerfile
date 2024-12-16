@@ -1,10 +1,10 @@
-ARG IMAGE="rocm_gpu:6.2.4"
+ARG IMAGE="rocm_gpu:6.3"
 
 FROM ${IMAGE}
 ARG OPENFOAM_VERSION="v2406"
-ARG SCOTCH_VER="v7.0.4"
-ARG PETSC_VER="v3.22.1"
-ARG USE_HYPRE=TRUE
+ARG SCOTCH_VER="v7.0.6"
+ARG PETSC_VER="v3.22.2"
+ARG USE_HYPRE=FALSE
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

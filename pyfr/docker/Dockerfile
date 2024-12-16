@@ -1,19 +1,19 @@
-ARG IMAGE="rocm_gpu:6.2.4"
+ARG IMAGE="rocm_gpu:6.3"
 
 FROM ${IMAGE}
 
-ARG PYFR_BRANCH="v1.15.0"
+ARG PYFR_BRANCH="v2.1"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         libmetis-dev \
         xz-utils \
+        python3-numpy \
+        python3-mpi4py \
     && apt-get clean
 
 WORKDIR /tmp
 
-RUN pip3 install mpi4py numpy>=1.26.4 
-    
 RUN git clone -b ${PYFR_BRANCH} https://github.com/PyFR/PyFR.git \
     && ls -lsa \
     && cd PyFR \

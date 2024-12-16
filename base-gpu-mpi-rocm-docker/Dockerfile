@@ -2,7 +2,7 @@ ARG UBUNTU_VERSION="noble"
 
 FROM ubuntu:${UBUNTU_VERSION}
 
-ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.2.4/ubuntu/noble/amdgpu-install_6.2.60204-1_all.deb"
+ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.3/ubuntu/noble/amdgpu-install_6.3.60300-1_all.deb"
 ARG UCX_BRANCH="v1.17.0"
 ARG UCC_BRANCH="v1.3.0"
 ARG OMPI_BRANCH="v5.0.5"

@@ -1,7 +1,7 @@
-ARG IMAGE="rocm_gpu:6.2.4"
+ARG IMAGE="rocm_gpu:6.3"
 
 FROM ${IMAGE}
-ARG PETSC_BRANCH="v3.22.1"
+ARG PETSC_BRANCH="v3.22.2"
 
 WORKDIR /tmp
 

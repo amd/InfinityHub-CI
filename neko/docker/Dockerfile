@@ -1,9 +1,9 @@
-ARG IMAGE="rocm_gpu:6.2.4"
+ARG IMAGE="rocm_gpu:6.3"
 
 FROM ${IMAGE}
 
 ARG JSON_FORTRAN_BRANCH="master"
-ARG NEKO_BRANCH="v0.7.2"
+ARG NEKO_BRANCH="v0.9.0"
 
 # Update and Install basic Linux development tools
 RUN apt-get update \

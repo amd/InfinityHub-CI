@@ -10,13 +10,13 @@ Instructions on how to build a Docker Container with PETSc.
 Possible `build-arg` for the Docker build command    
 
 - ### IMAGE
-    Default: `rocm_gpu:6.2.4`  
+    Default: `rocm_gpu:6.3`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 
 - ### PETSc_BRANCH
-    Default: default: `v3.22.1`  
+    Default: default: `v3.22.2`  
     Branch/Tag found: [ PETSc repo](https://github.com/petsc/petsc.git).
     >NOTE:  
     >Initial HIP support was added in v3.18.0 with further optimizations included in minor releases. We recommend using v3.19 or newer for performance runs on AMD hardware

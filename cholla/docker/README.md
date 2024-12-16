@@ -10,7 +10,7 @@ This document provides instructions on how to build Cholla into a Docker contain
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.2.4`  
+    Default: `rocm_gpu:6.3`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
