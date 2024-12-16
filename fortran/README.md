@@ -133,6 +133,7 @@ Other:
 
 ## Known issues
 
+- Architectures `gfx1030` and `gfx1100` do not work in Drops 4.2 and 4.3 but work in Drop 4.1. Will be re-enabled in future drops.
 - OpenMP atomic on complex operations currently not supported (work in progress)
 - `REAL kind=2,3,10,16` types are not yet supported (work in progress)
 - When compiling for offload, add `-lFortranRuntimeHostDevice` if you see unresolved symbols such as:
