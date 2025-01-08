@@ -8,12 +8,12 @@ the compiler is available through the following link:
 
 [https://repo.radeon.com/rocm/misc/flang/](https://repo.radeon.com/rocm/misc/flang/)
 
-The latest release is **drop 4.3.0**. You may obtain any of the supported OS through `wget`:
+The latest release is **drop 5.1.0**. You may obtain any of the supported OS through `wget`:
 
 ```shell
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6455-drop-4.3.0-1-rhel.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6455-drop-4.3.0-1-sles.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6455-drop-4.3.0-ubuntu.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6711-drop-5.1.0-rhel.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6711-drop-5.1.0-sles.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6711-drop-5.1.0-ubuntu.tar.bz2
 ```
 
 ## System requirements
@@ -22,7 +22,7 @@ The Fortran compiler drops have similar requirements to the official ROCm releas
 They can be used on any of the following OS:
 
 | CPUs | Operating Systems | ROCm™ Driver |
-|----  |-----------------  |------------------ | 
+|----  |-----------------  |------------------ |
 | X86_64 CPU(s) | [Ubuntu (version >= 22.04) <br> RHEL 8.x <br>  SLES 15 ](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-operating-systems) | [ROCm Latest](https://rocm.docs.amd.com/en/latest/) |
 
 For ROCm installation procedures and validation checks, see:
@@ -133,7 +133,7 @@ Other:
 
 ## Known issues
 
-- Architectures `gfx1030` and `gfx1100` do not work in Drops 4.2 and 4.3 but work in Drop 4.1. Will be re-enabled in future drops.
+- ICE when variables with the CONTIGUOUS attribute are used in kernels.
 - OpenMP atomic on complex operations currently not supported (work in progress)
 - `REAL kind=2,3,10,16` types are not yet supported (work in progress)
 - When compiling for offload, add `-lFortranRuntimeHostDevice` if you see unresolved symbols such as:
