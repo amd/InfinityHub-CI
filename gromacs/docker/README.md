@@ -23,8 +23,8 @@ Possible `build-arg` for the Docker build command
     Options: `off` or `on`  
 
 ## Building AMD's implementation of Gromacs with HIP Container
-Download the [Dockerfile](/gromacs-docker/docker/Dockerfile)  
-Download the [benchmark files](/gromacs-docker/docker/benchmark/) 
+Download the [Dockerfile](/gromacs/docker/Dockerfile)  
+Download the [benchmark files](/gromacs/docker/benchmark/) 
 
 To run the default configuration:
 ```

@@ -19,7 +19,7 @@ Possible `build-arg` for the Docker build command
 > The recipe has been updated to use the variable `GPU_TARGET`, set in the [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile), to determine what GPU architecture(s) to build for. The [Mi250](/cp2k/docker/Dockerfile#27) in the Dockerfile correctly configures the toolchain for all AMD GPUs, and the recipe updates the necessary details for the GPU(s) to build for. 
 
 ## Build Instructions
-Download the [CP2K Dockerfile](/cp2k-docker/Dockerfile).
+Download the [CP2K Dockerfile](/cp2k/docker/Dockerfile).
 
 To build the default configuration:
 ```bash

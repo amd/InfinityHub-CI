@@ -24,7 +24,7 @@ Possible `build-arg` for the Docker build command
     Branch/Tag found: [OpenMM repo](https://github.com/openmm/openmm.git)  
 
 ## Building OpenMM Container:
-Download the [Dockerfile](/openmm-docker/Dockerfile)  
+Download the [Dockerfile](/openmm/docker/Dockerfile)  
 
 To run the default configuration:
 ```
@@ -102,4 +102,4 @@ singularity run \
 ```
 
 ## Custom Simulation
-To run a custom simulation, included any scripts and data files in the container at build time adding [Docker Copy](https://docs.docker.com/engine/reference/builder/#copy) commands in the provided [Dockerfile](/openmm-docker/Dockerfile) or mounting the files into the container at runtime with [Docker Volumes](https://docs.docker.com/storage/volumes/) or [Singularity Mount](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html). 
+To run a custom simulation, included any scripts and data files in the container at build time adding [Docker Copy](https://docs.docker.com/engine/reference/builder/#copy) commands in the provided [Dockerfile](/openmm/docker/Dockerfile) or mounting the files into the container at runtime with [Docker Volumes](https://docs.docker.com/storage/volumes/) or [Singularity Mount](https://docs.sylabs.io/guides/3.0/user-guide/bind_paths_and_mounts.html). 
