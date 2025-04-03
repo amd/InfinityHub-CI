@@ -16,7 +16,7 @@ wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-sles.tar.
 wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-ubu.tar.bz2
 wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-alma.tar.bz2
 ```
-AlmaLinux OS build is now available starting from drop 6.0.0
+- AlmaLinux OS build is now available starting from drop 6.0.0
     - SLES 15 SP5 systems must use rocm-afar-7450-drop-6.0.0-alma.tar.bz2
     - SLES 15 SP6 systems can  use rocm-afar-7450-drop-6.0.0-sles.tar.bz2
       
@@ -153,16 +153,11 @@ result in performance issues. Adding the FortranRuntimeHostDevice library will a
 modification to the user's program.
 
 **NOTE:** Library changes starting from drop 6.0.0 (if linking explicitly to any of these)
-    - The host runtime libraries in 5.3.0:
-        llvm/lib/libFortranRuntime.a
-        llvm/lib/libFortranDecimal.a
-      have been replaced with:
-        llvm/lib/libflang_rt.runtime.a
-        llvm/lib/libflang_rt.quadmath.a (only needed if app uses 128-bit FP)
-    - The device runtime library in 5.3.0:
-        llvm/lib/libFortranRuntimeHostDevice.a
-      has been replaced with:
-        llvm/lib/libflang_rt.hostdevice.a
+- The host runtime libraries in 5.3.0:
+    -  llvm/lib/libFortranRuntime.a has been replaced with llvm/lib/libflang_rt.runtim
+    -  llvm/lib/libFortranDecimal.a has been replaced with llvm/lib/libflang_rt.quadmath.a (only needed if app uses 128-bit FP)
+- The device runtime library in 5.3.0:
+    - llvm/lib/libFortranRuntimeHostDevice.a has been replaced with llvm/lib/libflang_rt.hostdevice.a
       
 ## Reporting issues
 
