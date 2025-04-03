@@ -8,14 +8,18 @@ the compiler is available through the following link:
 
 [https://repo.radeon.com/rocm/misc/flang/](https://repo.radeon.com/rocm/misc/flang/)
 
-The latest release is **drop 5.1.0**. You may obtain any of the supported OS through `wget`:
+The latest release is **drop 6.0.0**. You may obtain any of the supported OS through `wget`:
 
 ```shell
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6711-drop-5.1.0-rhel.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6711-drop-5.1.0-sles.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-6711-drop-5.1.0-ubuntu.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-rhel.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-sles.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-ubu.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-alma.tar.bz2
 ```
-
+AlmaLinux OS build is now available starting from drop 6.0.0
+    - SLES 15 SP5 systems must use rocm-afar-7450-drop-6.0.0-alma.tar.bz2
+    - SLES 15 SP6 systems can  use rocm-afar-7450-drop-6.0.0-sles.tar.bz2
+      
 ## System requirements
 
 The Fortran compiler drops have similar requirements to the official ROCm releases.
@@ -45,7 +49,9 @@ It is then recommended to add `<path to install>/rocm-afar-<version>/bin` to you
 to `LD_LIBRARY_PATH`. Setting these allows the prebuilt compiler to work seamlessly with an existing ROCm installation on the system.
 
 ### Using hipfort
+**NOTE:**  starting from drop 6.0.0 hipfort is now included in the drop, modules built only for llvm-flang
 
+The following is only needed for older versions up to drop 5.3.0:
 In order to use hipfort, it must be built from source using `amdflang` since the build provided with ROCm is not compatible with the AMD Next Gen Fortran Compiler.
 The following set of commands will build hipfort using `amdflang`.
 
@@ -136,8 +142,7 @@ Other:
 - ICE when variables with the CONTIGUOUS attribute are used in kernels.
 - OpenMP atomic on complex operations currently not supported (work in progress)
 - `REAL kind=2,3,10,16` types are not yet supported (work in progress)
-- When compiling for offload, add `-lFortranRuntimeHostDevice` if you see unresolved symbols such as:
-
+- When compiling for offload, add `-lFortranRuntimeHostDevice` (up to  drop 5.3.0) or `-lflang_rt.hostdevice` (starting from drop 6.0.0) if you see unresolved symbols such as:
 ```bash
 error: undefined symbol: _FortranAAssign
 ```
@@ -147,6 +152,18 @@ Seeing these undefined symbols gives the user an indication that the target regi
 result in performance issues. Adding the FortranRuntimeHostDevice library will allow the program to link and run without further
 modification to the user's program.
 
+**NOTE:** Library changes starting from drop 6.0.0 (if linking explicitly to any of these)
+    - The host runtime libraries in 5.3.0:
+        llvm/lib/libFortranRuntime.a
+        llvm/lib/libFortranDecimal.a
+      have been replaced with:
+        llvm/lib/libflang_rt.runtime.a
+        llvm/lib/libflang_rt.quadmath.a (only needed if app uses 128-bit FP)
+    - The device runtime library in 5.3.0:
+        llvm/lib/libFortranRuntimeHostDevice.a
+      has been replaced with:
+        llvm/lib/libflang_rt.hostdevice.a
+      
 ## Reporting issues
 
 Bugs and other issues can be reported to [AMD's fork of the LLVM project](https://github.com/ROCm/llvm-project/issues).
