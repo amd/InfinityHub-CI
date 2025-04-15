@@ -49,7 +49,7 @@ For ROCm installation procedures and validation checks, see:
 |[PETSc](/petsc/)|<ul><li>[Docker](/petsc/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[PIConGPU](/picongpu/)|<ul><li>[Docker](/picongpu/docker/)</li></ul>|latest|<ul><li>Physics</li></ul>|
 |[PyFR](/pyfr/)|<ul><li>[Docker](/pyfr/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
-|[QUDA](/quda/)|<ul><li>[Docker](/quda/docker/)</li></ul>|latest|<ul><li>Computational Chemistry</li></ul>|
+|[QUDA](/quda/)|<ul><li>[Docker](/quda/docker/)</li></ul>|latest|<ul><li>Quantum Chromodynamic Library</li></ul>|
 |[QMCPACK](/qmcpack/)|<ul><li>[Docker](/qmcpack/docker/)</li></ul>|latest|<ul><li>Quantum Monte Carlo Simulation</li></ul>|
 |[RAJA](/raja/)|<ul><li>[Docker](/raja/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[RELION](/relion/)|<ul><li>[Container Instructions](/relion/)</li></ul>|5.3|<ul><li>Electronic Structure</li></ul>|
