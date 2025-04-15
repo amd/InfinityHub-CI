@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -12,7 +12,7 @@ RUN git clone --recursive -b ${SPECFEM3D_BRANCH} https://github.com/SPECFEM/spec
     && ./configure \
         --with-hip \
         --with-mpi \
-        HIP_FLAGS="-fPIC -ftemplate-depth-2048 -fno-gpu-rdc -O2 -fdenormal-fp-math=ieee -fcuda-flush-denormals-to-zero -munsafe-fp-atomics --offload-arch=$GPU_TARGET" \
+        HIP_FLAGS="-fPIC -ftemplate-depth-2048 -fno-gpu-rdc -O2 -fdenormal-fp-math=ieee -fcuda-flush-denormals-to-zero -munsafe-fp-atomics --offload-arch=$AMDGPU_TARGETS" \
     && make all -j $(nproc)
 
 COPY benchmarks /opt/specfem3d/benchmarks

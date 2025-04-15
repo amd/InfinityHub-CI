@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -33,7 +33,7 @@ COPY ./make.host.cholla-container /tmp/.
 
 WORKDIR /opt
 
-RUN sed -i "s/GPU_TARGET/${GPU_TARGET}/" /tmp/make.host.cholla-container \
+RUN sed -i "s/AMDGPU_TARGETS/${AMDGPU_TARGETS}/" /tmp/make.host.cholla-container \
     && git clone --recursive https://github.com/cholla-hydro/cholla.git -b ${CHOLLA_BRANCH} \
     && cp /tmp/make.host.cholla-container /opt/cholla/builds \
     && cd cholla \

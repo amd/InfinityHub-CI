@@ -1,4 +1,4 @@
-ARG IMAGE=rocm_gpu:6.3
+ARG IMAGE=rocm_gpu:6.4
 
 FROM ${IMAGE}
 
@@ -37,6 +37,7 @@ RUN git clone -b ${KOKKOS_VERSION} https://github.com/kokkos/kokkos.git \
                 -DKokkos_ARCH_VEGA90A=On; \
                 -DKokkos_ENABLE_OPENMP=${ENABLE_OPENMP} \
                 -DKokkos_ENABLE_OPENMPTARGET=${ENABLE_OPENMP}; \
+                -DCMAKE_CXX_FLAGS="--offload-arch=$AMDGPU_TARGETS" \
         else \
             cmake .. \
                 -DCMAKE_BUILD_TYPE=Debug \
@@ -49,6 +50,7 @@ RUN git clone -b ${KOKKOS_VERSION} https://github.com/kokkos/kokkos.git \
                 -DKokkos_ENABLE_TESTS=on \
                 -DKokkos_ENABLE_HIP_RELOCATABLE_DEVICE_CODE=off \
                 -DKokkos_ARCH_VEGA90A=On; \
+                -DCMAKE_CXX_FLAGS="--offload-arch=$AMDGPU_TARGETS" \
         fi \
         && make -j $(nproc)\
         && make install \
@@ -86,6 +88,7 @@ RUN  git clone --recursive -b ${KOKKOS_VERSION} https://github.com/kokkos/kokkos
         -DKokkosKernels_ENABLE_TPL_ROCSPARSE=ON \
         -DKokkosKernels_ENABLE_TPL_ROCBLAS=ON \
         -DKokkosKernels_ENABLE_TPL_ROCSOLVER=ON \
+        -DCMAKE_CXX_FLAGS="--offload-arch=$AMDGPU_TARGETS" \
     && make -j $(nproc)\
     && make install \
     && chmod -R a+rwx /kokkoskernels

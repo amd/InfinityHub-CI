@@ -1,9 +1,9 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
 ARG JSON_FORTRAN_BRANCH="master"
-ARG NEKO_BRANCH="v0.9.0"
+ARG NEKO_BRANCH="v0.8.1"
 
 # Update and Install basic Linux development tools
 RUN apt-get update \
@@ -34,7 +34,7 @@ RUN git clone -b ${NEKO_BRANCH} https://github.com/ExtremeFLOW/neko \
     && cd neko \
     && ./regen.sh \
     && ./configure \
-        HIP_HIPCC_FLAGS="-O3 -fPIE --offload-arch=${GPU_TARGET}" \
+        HIP_HIPCC_FLAGS="-O3 -fPIE --offload-arch=${AMDGPU_TARGETS}" \
         HIPCC=${ROCM_PATH}/bin/hipcc \
         --prefix=/opt/neko \
         --with-hip=${ROCM_PATH} \
@@ -42,8 +42,7 @@ RUN git clone -b ${NEKO_BRANCH} https://github.com/ExtremeFLOW/neko \
         --with-gslib=/opt/gslib/build/ \
     && make \
     && make install \
-    && chmod -R 777 /opt/neko \
-    && ln -s /opt/neko/examples/tgv/32768.nmsh /opt/neko/bench/tgv32/32768.nmsh
+    && chmod -R 777 /opt/neko
 
 WORKDIR /opt/neko/bench
 

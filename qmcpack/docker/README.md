@@ -10,17 +10,13 @@ This document provides instructions on how to build QMCPACK into a Docker contai
 Possible arguments for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.3`  
+    Default: `rocm_gpu:6.4`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 - ### QMCPACK_BRANCH
     Default: `develop`  
     Branch/Tag found: [QMCPACK repo](https://github.com/QMCPACK/qmcpack)
-
-- ### HDF5
-    Default: `hdf5-1_14_1`  
-    Branch/Tag found: [HDF5 repo](https://github.com/HDFGroup/hdf5)
 
 ## Building Container
 Download the [Dockerfile](/qmcpack/docker/Dockerfile)  
@@ -42,7 +38,6 @@ docker build \
     -t mycontainer/qmcpack \
     -f /path/to/Dockerfile \
     --build-arg QMCPACK_BRANCH=<branch_name> \
-    --build-arg HDF5_BRANCH=<branch_name> \
     . 
 ```
 
@@ -59,7 +54,7 @@ To run the [QMCPACK Benchmarks](/qmcpack/README.md#running-qmcpack-benchmark), j
 docker run --device=/dev/kfd \
            --device=/dev/dri \
            --security-opt seccomp=unconfined \
-           -it  mycontainer/qmcpack  bin/bash
+           -it mycontainer/qmcpack  bash
 ```
 
 

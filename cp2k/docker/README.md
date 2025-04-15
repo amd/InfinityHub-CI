@@ -10,13 +10,13 @@ This document provides instructions on how to build CP2K into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.3`  
+    Default: `rocm_gpu:6.4`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
 > **NOTE**
 > This recipe uses a script within the CP2K repo to install the all dependencies. The toolchain script does not directly support Mi300,
-> The recipe has been updated to use the variable `GPU_TARGET`, set in the [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile), to determine what GPU architecture(s) to build for. The [Mi250](/cp2k/docker/Dockerfile#27) in the Dockerfile correctly configures the toolchain for all AMD GPUs, and the recipe updates the necessary details for the GPU(s) to build for. 
+> The recipe has been updated to use the variable `AMDGPU_TARGETS`, set in the [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile), to determine what GPU architecture(s) to build for. The [Mi250](/cp2k/docker/Dockerfile#27) in the Dockerfile correctly configures the toolchain for all AMD GPUs, and the recipe updates the necessary details for the GPU(s) to build for. 
 
 ## Build Instructions
 Download the [CP2K Dockerfile](/cp2k/docker/Dockerfile).

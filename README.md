@@ -19,7 +19,8 @@ For ROCm installation procedures and validation checks, see:
 ## Applications:
 |Application|Builds|ROCm Version|Domains|
 |---|---|---|---|
-|[AMD ROCm with GPU-Aware MPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.3|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD ROCm with OpenMPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.4|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD ROCm with MPICH Container](/base-mpich-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.4|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD ROCm with Conda Environment Container](/conda-rocm-environment/)|<ul><li>[Docker](/conda-rocm-environment/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD's implementation of Gromacs with HIP](/gromacs/)|<ul><li>[Baremetal](/gromacs/baremetal/)</li><li>[Docker](/gromacs/docker/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[Ansys Fluent](/ansys-fluent/)|<ul><li>[Baremetal](/ansys-fluent/baremetal/)</li><li>[Docker](/ansys-fluent/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
@@ -30,8 +31,8 @@ For ROCm installation procedures and validation checks, see:
 |[Chroma](/chroma/)|<ul><li>[Docker](/chroma/docker/)</li></ul>|lastest|<ul><li>Physics</li></ul>|
 |[Cadence Fidelity LES](/cadence-fidelity-les/)|<ul><li>[Application Details](/cadence-fidelity-les/)</li></ul>|5.x|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[DevitoPRO](/devitopro/)|<ul><li>[Docker](https://github.com/devitocodes/devito/tree/master/docker#readme)</li><li>[Virtual Environment](http://devitocodes.github.io/devito/download.html#virtual-environment)</li></ul>|latest|<ul><li>Energy</li><li>Oil and Gas</li></ul>|
-|[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|latest|<ul><li>Electronic Structure</li></ul>|
-|[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|latest|<ul><li>Physics</ul>|
+|[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|6.3.3|<ul><li>Electronic Structure</li></ul>|
+|[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|6.3.3|<ul><li>Physics</ul>|
 |[HPCG](/hpcg/)|<ul><li>[Baremetal](/hpcg/baremetal/)</li><li>[Docker](/hpcg/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[Kokkos](/kokkos/)|<ul><li>[Docker](/kokkos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[LAMMPS](/lammps/)|<ul><li>[Baremetal](/lammps/baremetal/)</li><li>[Docker](/lammps/baremetal/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|

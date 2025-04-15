@@ -1,22 +1,18 @@
-# Ansys Fluent Base Container
+# AMD Base Container for GPU-Aware MPI with ROCm using MPICH Applications
 
 ## Overview
-This container recipe is a 'boiler-plate' for those with a license for Ansys Fluent. 
-A user must have licenses and binaries to be able to use Ansys Fluent within the container. 
+This container recipe is a 'boiler-plate' to building a container using ROCm and MPICH that is GPU-Aware MPI.  
+The container is the base upon which all other applications are built.  
 
-## Ansys Fluent
-[Ansys Fluent](https://www.ansys.com/products/fluids/ansys-fluent/) is an advanced computational fluid dynamics (CFD) software used for simulating and analyzing fluid flow, heat transfer, and related phenomena in complex systems. It offers a range of powerful features for detailed and accurate modeling of various physical processes, including turbulence, chemical reactions, and multiphase flows. 
-
+> **DISCLAIMER**  
+> MITCH is API/ABI to compatible with CRAY MPICH, however there is no garantee that the version present on the system will be compatible with the version within the container.  
+> The current recipes presented in the [InfinityHub-CI](https://github.com/AMD/InfinityHub-CI/) repo have been written with OpenMPI, and may require some modification to build/run with MIPCH.  
 
 ## Single-Node Server Requirements
 [System Requirements](/README.md#single-node-server-requirements) 
 
 ## Docker Container Build
-These instructions use Docker to create a container for Ansys Fluent.
-This container assumes that you have a license for Ansys Fluent and a tar with the Fluent application provided by Ansys.
-These files are expected to be in a directory named `sources` in the docker build context.  
-This example, is using a tar with the name `fluent.24.2.lnamd64.tgz`.
-
+These instructions use Docker to create an HPC Application Container.  
 If you are not familiar with creating Docker builds, please see the available [Docker manuals and references](https://docs.docker.com/).
 
 ## Build System Requirements
@@ -25,60 +21,90 @@ If you are not familiar with creating Docker builds, please see the available [D
 
 ## Updating the Dockerfile
 
-### Input values
-Within the dockerfile the default value for the `FLUENT_TAR` and `FLUENT_VERSION` can be hard coded before building or input at build time.  
-[Build Details](#building-container) can be found below.  
+### ROCm Installation Notes
+The default container has ROCm and all of its libraries installed. Additional components may need to be installed depending on your application.
+Environment variables for `PATH`, `LIBRARY_PATH`, `LD_LIBRARY_PATH`, `C_INCLUDE_PATH`, and `CPLUS_INCLUDE_PATH` for the base libraries of ROCm, OMPI and UCX.
 
-### Ansys License
-There are 2 License methods for Ansys Fluent. 
-At build time, the `ANSYSLMD_LICENSE_FILE` `build-arg` can be provided or update the [Temporary License section](/ansys-fluent/docker/Dockerfile#L62) by uncommenting out the section and make sure the `ansyslmd.ini` is along side the tar in the `sources` directory.
+> - The implementation of MPI on the node must match the implementation in the container for multi-node runs. 
+> - To use OpenMP support add the following after the ROCm install:
+>```
+>env CC=$ROCM_PATH/bin/amdclang \
+>    CXX=$ROCM_PATH/bin/amdclang++ \
+>    FC=$ROCM_PATH/bin/amdflang
+>```
 
+### Application
+Many Applications require components or applications that are not available using `apt-get`. These may be installed, per the applications installation instructions, at the section of the Docker file with the comment `# Install Additional Apps Below`. Add any binary, libraries, or include file paths to the appropriate environment variables similarly to the ROCm, UCX, and OpenMPI examples. After adding any additional applications add the desired application at the bottom of that section. 
+
+There are a few ways to get additional applications into the container. 
+- CURL/wget: download the binary/source and compile, using docker RUN command
+- Source Control: Git is included; To uses a different SCM, add the desired SCM using `apt-get` as above. Clone your repo and build your application, using docker RUN command 
+- The Docker COPY command: command to copy in files directory from the users local system.  
+
+Please consult the [Docker documentation](https://docs.docker.com/engine/reference/builder) for details.
 
 
 ## Inputs
 Possible `build-arg` for the Docker build command  
-- ### IMAGE
-    Default: `rocm_gpu:6.4`  
-    > ***Note:***  
-    >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).  
-- ### FLUENT_TAR
-    Default: `fluent.24.2.lnamd64.tgz`
+
+- ### ROCM_URL
+    Default: `https://repo.radeon.com/amdgpu-install/6.4/ubuntu/noble/amdgpu-install_6.4.60400-1_all.deb`
+    - [AMDGPU-installer Directory](https://repo.radeon.com/amdgpu-install/)
     > ** Note ** 
-    > This should reflect the tar file provided by Ansys. This file must be in the folder `sources` and and this folder must be referenced at build time.
+    > The UBUNTU_VERSION below must match the same version of Ubuntu chosen for the amdgpu installer deb.
+    > Each App has a recommended ROCm version. 
 
-- ### FLUENT_VERSION
-    Default: `242`  
-    > ** Note ** 
-    > This is the numeric version of the Fluent version number. Eg: The example is 24.2, so use 242, as that is the reference in the Fluent tar. 
+- ### UBUNTU_VERSION
+    Default: `noble`  
+    Docker Tags found: 
+    - [Docker Ubuntu](https://hub.docker.com/_/ubuntu)
+    > noble is currently recommended as many apps require newer versions of GNU tools than can be installed with `apt-get`. 
 
-- ### ANSYSLMD_LICENSE_FILE
-    > **MANDATORY!**  
-    > If not using the Temporary License, This must be provided. This is the reference to the Ansys License Server/License required to run Ansys Fluent. 
+- ### MPICH_BRANCH
+    Default: v4.3.0`  
+    Branch/Tag found: [OpenMPI repo](https://github.com/open-mpi/ompi)
 
+- ### MPICH_DEVICE  
+    Default: `ch4:ofi`  
+    This is generally what is used for clusters build with Instinct GPUs, consult the cluster admin for additional info.  
+
+- ### APT_GET_APPS
+    Default:  `[BLANK]`  
+    This allows a user to add additional applications and libraries through the apt-get interface in Ubuntu. Use a space separate list.   
+    Example: `git vim nano` 
+
+
+- ### AMDGPU_TARGETS
+    Default: `gfx908,gfx90a,gfx942`  
+    This variable is used to determine the GPU architecture. It is set as an environment variable that can used to pass into `--offload-arch` into your cmake compiler flags. 
+    > |GPUs     | Architectures |
+    > |---      |---            |
+    > | MI100   | gfx908        |
+    > | MI200   | gfx90a        |
+    > | MI300   | gfx942        |
 
 ## Building Container
-Download the [Dockerfile](/ansys-fluent/docker/Dockerfile)  
+Download the [Dockerfile](/base-gpu-mpi-rocm-docker/Dockerfile)  
 
 To run the default configuration:
 ```
-docker build -t ansys/fluent:latest --build-arg ANSYSLMD_LICENSE_FILE=1234 -f /path/to/Dockerfile . 
+docker build -t rocm_gpu:6.4 -f /path/to/Dockerfile . 
 ```
 > Notes:  
->- `ansys/fluent:latest` is an example container name.
->- the `.` at the end of the build line is important. It tells Docker where your build context is located, the Ansys Fluent files should be relative to this path. 
+>- `rocm_gpu:6.4` is an example container name.
+>- the `.` at the end of the build line is important. It tells Docker where your build context is located.
 >- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
 
-To run a custom configuration, include one or more customized `build-arg` parameters.   
-*DISCLAIMER:* This Docker build has only been validated using the default values. Alterations may lead to failed builds if instructions are not followed.
+To run a custom configuration, include one or more customized build-arg parameters.   
+*DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.  
 
 ```
 docker build \
-    -t fluent:latest \
+    -t rocm_gpu:6.4 \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm_gpu:6.1.1 \
-    --build-arg FLUENT_TAR=fluent.23.2.lnamd64.tgz \
-    --build-arg FLUENT_VERSION=232 \
-    --build-arg ANSYSLMD_LICENSE_FILE=1055@127.0.0.1 \
+    --build-arg UBUNTU_VERSION=jammy \
+    --build-arg MPICH_BRANCH=main \
+    --build-arg APT_GET_APPS="vim nano git"
     . 
 ```
 
@@ -89,48 +115,38 @@ If needed, please consult with your system administrator or view official docume
 ### Docker  
 To run the container interactively, run the following command:
 ```
-docker run -it \
-    --device=/dev/kfd \
-    --device=/dev/dri \
-    --security-opt \
-    seccomp=unconfined \
-    -v /PATH/TO/FLUENT_TEST_FILES/:/benchmark \
-    fluent:latest bash
+docker run --device=/dev/kfd \
+           --device=/dev/dri \
+           --security-opt seccomp=unconfined \
+           -it rocm_gpu:6.4 bash
 ```
-
 > ** Notes **
 > User running container user must have permissions to `/dev/kfd` and `/dev/dri`. This can be achieved by being a member of `video` and/or `render` group.  
 > Additional Parameters
-> - `-v [system-directory]:[container-directory]` will mount a directory into the container at run time.
+> - `-v [system-directory]/[container-directory]` will mount a directory into the container at run time.
 > - `-w [container-directory]` will designate what directory within a container to start in. 
-> - This container is build with `OpenMPI`, to use `Cray MPICH`, it will need to be  mount in over the OpenMPI installation. 
-> `-v [/absolute/path/to/mpich]/:/opt/ompi/`  
-> Include any/all Cray environment variables necessary using `-e` for each variable  
-> `-e MPICH_GPU_SUPPORT_ENABLED=1`
 
 ### Singularity  
 Singularity, like Docker, can be used for running HPC containers.  
 To create a Singularity container from your local Docker container, run the following command:
 ```
-singularity build fluent.sif  docker-daemon://fluent:latest
+singularity build rocm_gpu.sif  docker-daemon://rocm_gpu:6.4
 ```
 
 Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a interactive run
 ```
-singularity shell --writable-tmpfs fluent.sif
+singularity shell --writable-tmpfs rocm_gpu.sif
 ```
 > - `--writable-tmpfs` allows for the file system to be writable, many benchmarks/workloads require this.  
 > - `--no-home` will *not* mount the users home directory into the container at run time. 
-> - `--bind [system-directory]:[container-directory]` will mount a directory into the container  at run time. 
+> - `--bind [system-directory]/[container-directory]` will mount a directory into the container  at run time. 
 > - `--pwd [container-directory]` will designate what directory within a container to start in. 
-> - This container is build with `OpenMPI`, to use `Cray MPICH`, it will need to be mount in over the OpenMPI installation. 
-> `-bind [/absolute/path/to/mpich]/:/opt/ompi/`  
-> Include any/all Cray environment variables necessary  using `--env` for each variable  
-> `--env MPICH_GPU_SUPPORT_ENABLED=1`
-
-
 
 *For more details on Singularity please see their [User Guide](https://docs.sylabs.io/guides/3.7/user-guide/)*
+
+> **NOTES**  
+> For running multi-node MPI enabled applications, it is required that the MPI implementation from the cluster is mounted into the container, along with any extra libraries that may be needed. When mounted in, these libraries should also be included in the LD_LIBRARY_PATH so the application can find them.  
+> It is advised that Singularity be used as a part of an sbatch/srun (for slurm) for multi-node testing was well.  
 
 
 ## Licensing Information
@@ -141,11 +157,8 @@ The application is provided in a container image format that includes the follow
 |---|---|---|
 |Ubuntu| Creative Commons CC-BY-SA Version 3.0 UK License |[Ubuntu Legal](https://ubuntu.com/legal)|
 |CMAKE|OSI-approved BSD-3 clause|[CMake License](https://cmake.org/licensing/)|
-|OpenMPI|BSD 3-Clause|[OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html)|
-|OpenUCX|BSD 3-Clause|[OpenUCX License](https://openucx.org/license/)|
-|OpenUCC|BSD 3-Clause|[OpenUCC License](https://github.com/openucx/ucc?tab=BSD-3-Clause-1-ov-file#readme)|
+|MPICH|MIT (Custom)|[MPICH License](https://github.com/pmodels/mpich?tab=License-1-ov-file)|
 |ROCm|Custom/MIT/Apache V2.0/UIUC OSL|[ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html)|
-|Ansys Fluent|Custom|[Ansys Fluent](https://www.ansys.com/products/fluids/ansys-fluent)|
 
 Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD “AS IS” WITHOUT A WARRANTY OF ANY KIND. USE OF SUCH THIRD-PARTY CONTENT IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THIRD-PARTY CONTENT.
 

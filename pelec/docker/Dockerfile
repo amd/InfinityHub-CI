@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -6,7 +6,7 @@ ARG PELEC_BRANCH="development"
 
 WORKDIR /opt/
 
-ENV AMD_ARCH="gfx90a,gfx942" \
+ENV AMD_ARCH=$AMDGPU_TARGETS \
     HIP_PLATFORM=amd
 
 RUN git clone -b ${PELEC_BRANCH} --recursive  https://github.com/AMReX-Combustion/pelec/ \

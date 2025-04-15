@@ -69,12 +69,12 @@ cd cp2k/tools/toolchain
 The generated psmp file must be modified. The following command can be used to implement the required modification:  
 `sed -i 's/hip\/bin/bin/' ./tools/toolchain/install/arch/local_hip.psmp`  
 > **Optional:**   
-> If building for any GPUs other than MI200 series, update the `GPU_TARGET` variable to the correct architecture and run the following commands.  
+> If building for any GPUs other than MI200 series, update the `AMDGPU_TARGETS` variable to the correct architecture and run the following commands.  
 >Example for the MI300 series:  
 >```bash
->EXPORT $GPU_TARGET=gfx942
->sed -i "s/gfx90a/$GPU_TARGET/" ./tools/toolchain/install/arch/local_hip.psmp
->sed -i "s/gfx90a/$GPU_TARGET/" ./exts/build_dbcsr/Makefile
+>EXPORT $AMDGPU_TARGETS=gfx942
+>sed -i "s/gfx90a/$AMDGPU_TARGETS/" ./tools/toolchain/install/arch/local_hip.psmp
+>sed -i "s/gfx90a/$AMDGPU_TARGETS/" ./exts/build_dbcsr/Makefile
 >```
 
 5. Copy tool chain build files to `cp2k/arch`

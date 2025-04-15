@@ -25,8 +25,10 @@ For ROCm installation procedures and validation checks, see:
     - [Docker/Singularity Build](/specfem3d/docker/)
     - [Spack Build](/specfem3d/spack-docker/)
 > **Note:**  
-> SPECFEM3D is not compatible with OpenMPI v5.0.3.  
->  AMD recommends using OpenMPI <= v5.0.2. 
+> The version of libxml2 and hwloc that come with Ubuntu and OpenMPI create a runtime error with SpecFEM3D-Cartecian.  
+> Recommended versions: 
+> - libxml2:    2.10.4 
+> - hwloc:  2.12.0
 
 ## Running SPECFEM3D Benchmarks
 SPECFEM3D provides an example test at the root of the [GitHub repo](https://github.com/SPECFEM/specfem3d/).

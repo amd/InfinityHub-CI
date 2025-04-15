@@ -1,4 +1,4 @@
-ARG IMAGE=rocm_gpu:6.3
+ARG IMAGE=rocm_gpu:6.4
 FROM $IMAGE
 
 # Input options
@@ -6,7 +6,7 @@ ARG TRILINOS_BRANCH=develop
 ARG ZLIB_BRANCH=v1.2.13
 ARG HDF5_BRANCH=hdf5-1_14_3
 ARG PNETCDF_BRANCH=checkpoint.1.12.3
-ARG NETCDF_BRANCH=v4.9.0
+ARG NETCDF_BRANCH=v4.9.3
 ARG MATIO_BRANCH=v1.5.23 
 ARG BOOST_BRANCH=boost-1.80.0
 ARG NUM_BUILD_THREADS=32
@@ -70,7 +70,7 @@ RUN git clone --recursive -b ${NETCDF_BRANCH} https://github.com/Unidata/netcdf-
      CPPFLAGS="-I$ZLIB_ROOT/include -I$HDF5_ROOT/include" \
      LDFLAGS="-L$ZLIB_ROOT/lib -L$HDF5_ROOT/lib" \
      LIBS="-lz -lhdf5" \
-     ../configure --prefix=$NETCDF_ROOT --with-hdf5=yes --enable-pnetcd \
+     ../configure --prefix=$NETCDF_ROOT --with-hdf5=yes --enable-pnetcd --disable-libxml2 \
   && make -j $NUM_BUILD_THREADS install \
   && cd /tmp \
   && rm -rf netcdf-c
@@ -114,7 +114,7 @@ RUN git clone --recursive -b $TRILINOS_BRANCH https://github.com/trilinos/trilin
         -D CMAKE_BUILD_TYPE=RelWithDebInfo \
         -D CMAKE_CXX_COMPILER=mpicxx \
         -D CMAKE_C_COMPILER=mpicc \
-        -D CMAKE_CXX_FLAGS="--offload-arch=$GPU_TARGET" \
+        -D CMAKE_CXX_FLAGS="--offload-arch=$AMDGPU_TARGETS" \
         -D AztecOO_C_FLAGS="-Wno-implicit-function-declaration" \
         -D Trilinos_ENABLE_Fortran=OFF \
         -D Trilinos_ENABLE_ALL_PACKAGES=OFF \

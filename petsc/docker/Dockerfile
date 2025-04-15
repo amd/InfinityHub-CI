@@ -1,7 +1,7 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
-ARG PETSC_BRANCH="v3.22.2"
+ARG PETSC_BRANCH="main"
 
 WORKDIR /tmp
 
@@ -21,7 +21,7 @@ RUN git clone -b ${PETSC_BRANCH} https://github.com/petsc/petsc.git \
             --with-hip=1 \
             --with-hipc=hipcc \
             --with-hip-dir=${ROCM_PATH} \
-            --with-hip-arch=${GPU_TARGET} \
+            --with-hip-arch=${AMDGPU_TARGETS} \
             --with-precision=double \
             --with-clanguage=c \
             --download-fblaslapack \

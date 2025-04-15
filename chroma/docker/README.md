@@ -10,7 +10,7 @@ This document provides instructions on how to build Chroma into a Docker contain
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.3`  
+    Default: `rocm_gpu:6.4`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).  
 
@@ -33,13 +33,6 @@ Possible `build-arg` for the Docker build command
 - ### QUDA_BRANCH
     Default: `develop`  
     Branch/Tag found: [QUDA repo](https://github.com/lattice/quda.git)
-
-- ### GPU_TARGET
-    Default: `gfx90a`  
-    Only one GPU architecture needs to be provided.  
-    A comma separated list can be provided for multiple GPU build. (This increases build time.)
-    - gfx908 (MI100)
-    - gfx90a (MI210, MI250)
 
 ## Building Container
 Download the [Dockerfile](/chroma/docker/Dockerfile)
@@ -65,7 +58,6 @@ docker build \
     --build-arg QDPXX_BRANCH=master
     --build-arg QUDA_BRANCH=master
     --build-arg CHROMA_BRANCH=master
-    --build-arg GPU_TARGET="gfx908,gfx90a"
     . 
 ```
 

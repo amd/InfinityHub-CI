@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -78,7 +78,7 @@ RUN git clone -b ${QUDA_BRANCH} --recursive https://github.com/lattice/quda.git 
         && cmake /tmp/quda \
             -G "Unix Makefiles" \
             -DQUDA_TARGET_TYPE=HIP \
-            -DQUDA_GPU_ARCH="$GPU_TARGET" \
+            -DQUDA_GPU_ARCH="$AMDGPU_TARGETS" \
             -DROCM_PATH=${ROCM_PATH} \
             -DQUDA_DIRAC_CLOVER=ON \
             -DQUDA_DIRAC_CLOVER_HASENBUSCH=ON \
@@ -121,9 +121,9 @@ RUN git clone -b ${QUDA_BRANCH} --recursive https://github.com/lattice/quda.git 
             -DCMAKE_C_STANDARD=99 \
             -DCMAKE_CXX_FLAGS="-O3 -ggdb" \
             -DCMAKE_C_FLAGS="-O3 -ggdb" \
-            -DCMAKE_HIP_FLAGS="-O3 -ggdb --offload-arch=${GPU_TARGET} --gpu-max-threads-per-block=1024" \
+            -DCMAKE_HIP_FLAGS="-O3 -ggdb --offload-arch=${AMDGPU_TARGETS} --gpu-max-threads-per-block=1024" \
             -DCMAKE_SHARED_LINKER_FLAGS="-O3 -ggdb" \
-            -DCMAKE_EXE_LINKER_FLAGS="-O3 -ggdb --offload-arch=${GPU_TARGET}" \
+            -DCMAKE_EXE_LINKER_FLAGS="-O3 -ggdb --offload-arch=${AMDGPU_TARGETS}" \
         && cmake --build . -v -j $(nproc) \
         && cmake --install . \
         && rm -rf /tmp/*

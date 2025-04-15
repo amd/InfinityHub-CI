@@ -39,6 +39,13 @@ Execute
 ```
 /path/to/qmcpack/build/bin/qmcpack NiO-fcc-S64-dmc.xml
 ```
+
+The FOM can be calculated as follows:
+```
+target walkers * DMCBatched::RunSteps#Column4 / DMCBatched::RunSteps#Column2
+```
+These values can be found at the end of the logs of a successful run.
+
 ## Licensing Information
 Your access and use of this application is subject to the terms of the applicable component-level license identified below. To the extent any subcomponent in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application.
 

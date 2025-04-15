@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -7,12 +7,10 @@ ARG QIO_BRANCH="master"
 ARG QDPXX_BRANCH="devel"
 ARG QUDA_BRANCH="develop"
 ARG CHROMA_BRANCH="devel"
-ARG GPU_TARGET="gfx90a"
 
 # Update and Install basic Linux development tools
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    libxml2-dev \
     xmldiff \
   && apt-get clean
 
@@ -116,7 +114,7 @@ RUN git clone -b ${QUDA_BRANCH} --recursive https://github.com/lattice/quda.git 
             -DQUDA_TARGET_TYPE=HIP \
             -DQUDA_DIRAC_CLOVER=ON \
             -DQUDA_DOWNLOAD_EIGEN=ON \
-            -DQUDA_GPU_ARCH=$GPU_TARGET \
+            -DQUDA_GPU_ARCH=$AMDGPU_TARGETS \
             -DQUDA_QMP=ON \
             -DQMP_DIR=${INSTALLROOT}/qmp/lib/cmake/QMP \
             -DQUDA_QIO=ON \
@@ -128,10 +126,10 @@ RUN git clone -b ${QUDA_BRANCH} --recursive https://github.com/lattice/quda.git 
             -DCMAKE_HIP_COMPILER=mpicxx \
             -DCMAKE_CXX_FLAGS="-O3 -ggdb --save-temps" \
             -DCMAKE_C_FLAGS="-O3 -ggdb --save-temps" \
-            -DCMAKE_HIP_FLAGS="-O3 -ggdb --offload-arch=${GPU_TARGET} --save-temps" \
+            -DCMAKE_HIP_FLAGS="-O3 -ggdb --offload-arch=${AMDGPU_TARGETS} --save-temps" \
             -DCMAKE_SHARED_LINKER_FLAGS="-O3 -ggdb" \
-            -DCMAKE_EXE_LINKER_FLAGS="-O3 -ggdb --offload-arch=${GPU_TARGET}" \
-            -DCMAKE_HIP_ARCHITECTURES="${GPU_TARGET}" \
+            -DCMAKE_EXE_LINKER_FLAGS="-O3 -ggdb --offload-arch=${AMDGPU_TARGETS}" \
+            -DCMAKE_HIP_ARCHITECTURES="${AMDGPU_TARGETS}" \
         && cmake --build . -v -j $(nproc) \
         && cmake --install . \
         && sed -i 's/\/opt\/rocm\/hipfft\/include/\/opt\/rocm\/include\/hipfft/'   /opt/quda/lib/cmake/QUDA/QUDATargets.cmake \

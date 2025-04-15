@@ -2,15 +2,15 @@ ARG UBUNTU_VERSION="noble"
 
 FROM ubuntu:${UBUNTU_VERSION}
 
-ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.3/ubuntu/noble/amdgpu-install_6.3.60300-1_all.deb"
+ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.4/ubuntu/noble/amdgpu-install_6.4.60400-1_all.deb"
 ARG UCX_BRANCH="v1.17.0"
 ARG UCC_BRANCH="v1.3.0"
 ARG OMPI_BRANCH="v5.0.5"
 ARG APT_GET_APPS=""
-ARG GPU_TARGET="gfx908,gfx90a,gfx942"
+ARG AMDGPU_TARGETS="gfx908,gfx90a,gfx942"
 
 # Update and Install basic Linux development tools
-RUN apt-get update \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates \
         git \
@@ -46,7 +46,7 @@ RUN wget -qO- https://repo.radeon.com/rocm/rocm.gpg.key | gpg --dearmor | tee /e
     && apt install -y ./rocm.deb \
     && amdgpu-install --usecase=rocm,hiplibsdk --no-dkms -y
 
-RUN bash -c """IFS=',' read -r -a ARCH <<<${GPU_TARGET} \
+RUN bash -c """IFS=',' read -r -a ARCH <<<${AMDGPU_TARGETS} \
         &&  for gpu_arch in \${ARCH[@]}; do \
             echo \$gpu_arch  >> /opt/rocm/bin/target.lst; \
         done""" \
@@ -60,11 +60,11 @@ ENV ROCM_PATH=/opt/rocm \
     UCX_PATH=/opt/ucx \
     UCC_PATH=/opt/ucc \
     OMPI_PATH=/opt/ompi \
-    GPU_TARGET=${GPU_TARGET}
+    AMDGPU_TARGETS=${AMDGPU_TARGETS}
 
 # Adding rocm/cmake to the Environment 
 ENV PATH=$ROCM_PATH/bin:/opt/cmake/bin:$PATH \
-    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$LD_LIBRARY_PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$ROCM_PATH/lib/llvm/lib:$LD_LIBRARY_PATH \
     LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LIBRARY_PATH \
     C_INCLUDE_PATH=$ROCM_PATH/include:$C_INCLUDE_PATH \
     CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$CPLUS_INCLUDE_PATH \

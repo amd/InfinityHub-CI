@@ -9,7 +9,7 @@ Instructions on how to build a Docker Container with OpenFOAM using the PETSc so
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.3`  
+    Default: `rocm_gpu:6.4`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/).
     

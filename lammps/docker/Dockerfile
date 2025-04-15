@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -37,7 +37,7 @@ RUN git clone https://github.com/lammps/lammps.git \
         -DKokkos_ENABLE_HWLOC=on \
         -DLAMMPS_SIZES=smallbig \
         -DKokkos_ENABLE_HIP_MULTIPLE_KERNEL_INSTANTIATIONS=ON \
-        -DCMAKE_CXX_FLAGS="--offload-arch=$GPU_TARGET" \
+        -DCMAKE_CXX_FLAGS="--offload-arch=$AMDGPU_TARGETS" \
         ../lammps/cmake \
     &&   make -j$(nproc) install \
     && cd /tmp/lammps \  

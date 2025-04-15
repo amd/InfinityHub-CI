@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -35,7 +35,8 @@ RUN git clone https://github.com/pngwriter/pngwriter.git \
     && make install
 
 ENV LD_LIBRARY_PATH=/opt/pngwriter/lib \
-    CMAKE_PREFIX_PATH=/opt/pngwriter:$CMAKE_PREFIX_PATH
+    CMAKE_PREFIX_PATH=/opt/pngwriter:$CMAKE_PREFIX_PATH \
+    HDF5_HOME=/opt/hdf5
 
 RUN cd /tmp \
     && git clone --recursive https://github.com/HDFGroup/hdf5.git -b ${HDF5_BRANCH} \
@@ -65,12 +66,15 @@ RUN git clone https://github.com/openPMD/openPMD-api.git openpmd \
 
 ENV CMAKE_PREFIX_PATH=/opt/openpmd-api:$CMAKE_PREFIX_PATH \
         LD_LIBRARY_PATH=/opt/openpmd-api/lib:$LD_LIBRARY_PATH \
-        PICSRC=/opt/picongpu/
+        PICSRC=/opt/picongpu
 
 ENV PIC_EXAMPLES=$PICSRC/share/picongpu/examples \
         PATH=$PICSRC:$PICSRC/bin:$PICSRC/src/tools/bin:$PATH \
         PYTHONPATH=$PICSRC/lib/python:$PYTHONPATH \
-        CXX=hipcc
+        CXX=hipcc \
+        OMPI_CXX=hipcc \
+        OMPI_CC=hipcc
+        
 WORKDIR /opt
 
 #Build Picongpu
@@ -79,10 +83,10 @@ RUN git clone -b ${PICONGPU_BRANCH} https://github.com/ComputationalRadiationPhy
     && cd /opt/picon-examples \
     && pic-create $PICSRC/share/picongpu/tests/KHI_growthRate/ khi_fom \
     && cd khi_fom \
-    && pic-build -f -b "hip:${GPU_TARGET}" \
+    && pic-build -f -b "hip:${AMDGPU_TARGETS}" \
     && chmod -R 777 /opt/picon-examples
 
-ENV PATH=$PATH:/opt/picon-examples/khi_fom/bin
+ENV PATH=/opt/picon-examples/khi_fom/bin:$PATH
 
 WORKDIR /opt/picon-examples
 

@@ -9,7 +9,7 @@ This document provides instructions on how to build NEKO into a Docker container
 Possible arguments for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.3`  
+    Default: `rocm_gpu:6.4`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 

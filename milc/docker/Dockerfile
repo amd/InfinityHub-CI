@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -82,7 +82,7 @@ RUN git clone -b ${QUDA_BRANCH} --recursive https://github.com/lattice/quda.git 
             -D CMAKE_C_COMPILER=amdclang \
             -D CMAKE_CXX_COMPILER=amdclang++ \
             -D QUDA_TARGET_TYPE=HIP \
-            -D QUDA_GPU_ARCH=gfx90a \
+            -D QUDA_GPU_ARCH=$AMDGPU_TARGETS \
             -D QUDA_DIRAC_DEFAULT_OFF=ON \
             -D QUDA_DIRAC_STAGGERED=ON \
             -D QUDA_QMP=ON \

@@ -1,13 +1,14 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
-ARG PYFR_BRANCH="v2.1"
+ARG PYFR_BRANCH="v1.15.0"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         libmetis-dev \
         xz-utils \
+        python3-h5py-mpi \
         python3-numpy \
         python3-mpi4py \
     && apt-get clean

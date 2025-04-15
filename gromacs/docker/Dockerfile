@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.3"
+ARG IMAGE="rocm_gpu:6.4"
 
 FROM ${IMAGE}
 
@@ -15,7 +15,7 @@ RUN git clone -b ${GROMACS_BRANCH} https://gitlab.com/gromacs/gromacs.git \
         -DCMAKE_C_COMPILER=gcc \
         -DCMAKE_CXX_COMPILER=g++ \
         -DGMX_MPI=${OMPI_ENABLED} \
-        -DGMX_HIP_TARGET_ARCH=${GPU_TARGET} \
+        -DGMX_HIP_TARGET_ARCH=${AMDGPU_TARGETS} \
         -DGMX_GPU=HIP \
         -DREGRESSIONTEST_DOWNLOAD=OFF \
       .. \

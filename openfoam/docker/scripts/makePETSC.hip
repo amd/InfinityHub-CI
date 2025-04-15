@@ -285,7 +285,7 @@ echo
        HIPOPTFLAGS="-g -O3 -fPIC -fdenormal-fp-math=ieee -munsafe-fp-atomics -w" \
        --with-cuda=0 \
        --with-hip=1 --with-hipc=hipcc --with-hip-dir=${ROCM_PATH} \
-       --with-hip-arch=$GPU_TARGET \
+       --with-hip-arch=$AMDGPU_TARGETS \
        --with-clanguage=c \
        --download-fblaslapack \
        $configOpt \

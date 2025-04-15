@@ -35,7 +35,7 @@ RUN git clone -b ${GRID_BRANCH} https://github.com/paboyle/Grid.git \
         --disable-fermion-reps \
         CXX=hipcc \
         MPICXX=mpicxx \
-        CPPFLAGS="-I${ROCM_PATH}/include -I${ROCM_PATH}/include/roctracer -std=c++17 " \
+        CPPFLAGS="-I${ROCM_PATH}/include -I${ROCM_PATH}/include/roctracer -std=c++17 --offload-arch=$AMDGPU_TARGETS" \
         LDFLAGS="-L${ROCM_PATH}/lib -lhipblas -L${ROCM_PATH}/lib/roctracer -lroctracer64 -lroctx64 -std=c++17" \
    && make -j 8 \
    && make install \
