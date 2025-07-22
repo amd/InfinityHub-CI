@@ -8,17 +8,17 @@ the compiler is available through the following link:
 
 [https://repo.radeon.com/rocm/misc/flang/](https://repo.radeon.com/rocm/misc/flang/)
 
-The latest release is **drop 6.0.0**. You may obtain any of the supported OS through `wget`:
+The latest release is **drop 7.0.0**. You may obtain any of the supported OS through `wget`:
 
 ```shell
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-rhel.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-sles.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-ubu.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-7450-drop-6.0.0-alma.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-rhel.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-sles.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-ubu.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-alma.tar.bz2
 ```
 - AlmaLinux OS build is now available starting from drop 6.0.0
-    - SLES 15 SP5 systems must use rocm-afar-7450-drop-6.0.0-alma.tar.bz2
-    - SLES 15 SP6 systems can  use rocm-afar-7450-drop-6.0.0-sles.tar.bz2
+    - SLES 15 SP5 systems must use rocm-afar-####-drop-i.j.k-alma.tar.bz2
+    - SLES 15 SP6 systems can  use rocm-afar-####-drop-i.j.k-sles.tar.bz2
       
 ## System requirements
 
@@ -34,8 +34,6 @@ For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)
 * [ROCm Installation notes](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/).
 * [ROCm Examples](https://github.com/amd/rocm-examples)
-
->**NOTE:** For best performance we recommend ROCm 6.1.2, however we are backward compatible with ROCm 5.7.0 from a functionality standpoint.
 
 ## Setting up the compiler
 
@@ -185,6 +183,6 @@ is at your own risk.
 
 ## Notices and Attribution
 
-© 2022-2024 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
+© 2022-2025 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 All other trademarks and copyrights are property of their respective owners and are only mentioned for informative purposes.
