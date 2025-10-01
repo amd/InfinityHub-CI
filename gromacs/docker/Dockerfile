@@ -26,15 +26,13 @@ RUN git clone -b ${GROMACS_BRANCH} https://gitlab.com/gromacs/gromacs.git \
 COPY benchmark /benchmarks
 RUN chmod -R g+w,o+w /benchmarks
 
-ENV GMX_ENABLE_DIRECT_GPU_COMM=1 \
-    GMX_FORCE_UPDATE_DEFAULT_GPU=1 \
-    ROC_ACTIVE_WAIT_TIMEOUT=0 \
+ENV ROC_ACTIVE_WAIT_TIMEOUT=0 \
     AMD_DIRECT_DISPATCH=1 \
     LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/gromacs/lib/ \
     PATH=/benchmarks/:/usr/local/gromacs/bin:$PATH
 
 # GPL -- need to include link to source code
-RUN echo "echo Gromacs - HIP  source code located at https://gitlab.com/gromacs/gromacs.git " >> /etc/profile.d/gromacs.sh
+RUN echo "echo GROMACS - HIP  source code located at https://gitlab.com/gromacs/gromacs.git " >> /etc/profile.d/gromacs.sh
 
 CMD ["/bin/bash"]
 
