@@ -10,7 +10,7 @@ Instructions on how to build a Docker Container with AMD's implementation of Gro
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.4`  
+    Default: `rocm_gpu:7.0`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 

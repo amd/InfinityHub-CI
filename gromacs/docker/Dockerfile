@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.4"
+ARG IMAGE="rocm_gpu:7.0"
 
 FROM ${IMAGE}
 

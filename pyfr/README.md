@@ -16,21 +16,9 @@ If needed, please consult with your system administrator or view official docume
 
 
 ### PyFR Examples
-There are several PyFR examples in the [PyFR Test Cases](https://github.com/PyFR/PyFR-Test-Cases.git) repo as well as a [BSF](/pyfr/docker/examples/bsf/), [Naca0021](/pyfr/docker/examples/naca0021/), and [TVG](/pyfr/docker/examples/tgv/) that PyFR supports. We have details for the latter. 
+There are several PyFR examples in the [PyFR Test Cases](https://github.com/PyFR/PyFR-Test-Cases.git) repo as well as a [Naca0021](/pyfr/docker/examples/naca0021/) and [TVG](/pyfr/docker/examples/tgv/) that PyFR supports. We have details for the latter. 
 > Note:
 > These benchmarks/examples prefer to be run in an interactive session, if the output is captured to a file, it will result in a single line with possibly hundreds of thousands of characters. `tail -c 80 <PyFR-example.log>` should capture the last executed frame with the elapsed time. Depending on the size of the example, it may be a few characters off. 
-
-<details>
-<summary> BSF </summary>
-
-#### BSF
- The script will make PyFR boot up the benchmark, compile the GPU kernels, and execute the simulation.  
- The user can track progress through a built-in progress bar in the application.  
-```
-/examples/bsf/run_bsf 
-```
-> NOTE: It is not possible to run the BFS input set with more than one GPU currently.
-</details>
 
 <details>
 <summary> TGV </summary>  

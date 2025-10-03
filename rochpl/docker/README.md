@@ -11,7 +11,7 @@ If you are not familiar with creating Docker builds, please see the available [D
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.4`  
+    Default: `rocm_gpu:7.0`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
@@ -39,7 +39,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/rochpl \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm_gpu:6.4 \
+    --build-arg IMAGE=rocm_gpu:7.0 \
     --build-arg HPL_BRANCH=apu \
     . 
 ```

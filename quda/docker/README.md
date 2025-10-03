@@ -11,7 +11,7 @@ This document provides instructions on how to build QUDA into a Docker container
 Possible `build-arg` for the Docker build command  
 
 - ### IMAGE
-    Default: `rocm_gpu:6.4`  
+    Default: `rocm_gpu:7.0`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
@@ -45,7 +45,7 @@ To run a custom configuration, include one or more customized build-arg
 docker build \
     -t mycontainer/quda \
     -f /path/to/Dockerfile \
-    --build-arg IMAGE=rocm_gpu:6.4 \
+    --build-arg IMAGE=rocm_gpu:7.0 \
     --build-arg QUDA_BRANCH=master \
     --build-arg QMP_BRANCH=master \
     --build-arg QIO_BRANCH=master \

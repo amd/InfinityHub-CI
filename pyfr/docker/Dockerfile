@@ -1,8 +1,8 @@
-ARG IMAGE="rocm_gpu:6.4"
+ARG IMAGE="rocm_gpu:7.0"
 
 FROM ${IMAGE}
 
-ARG PYFR_BRANCH="v1.15.0"
+ARG PYFR_BRANCH="v2.1"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -11,12 +11,12 @@ RUN apt-get update \
         python3-h5py-mpi \
         python3-numpy \
         python3-mpi4py \
+        libptscotch-dev \
     && apt-get clean
 
-WORKDIR /tmp
+WORKDIR /opt
 
 RUN git clone -b ${PYFR_BRANCH} https://github.com/PyFR/PyFR.git \
-    && ls -lsa \
     && cd PyFR \
     && python3 setup.py install \    
     && git clone https://github.com/PyFR/PyFR-Test-Cases.git /examples/PyFR-Test-Cases 

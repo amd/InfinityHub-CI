@@ -11,7 +11,6 @@ ENV AMD_ARCH=$AMDGPU_TARGETS \
 
 RUN git clone -b ${PELEC_BRANCH} --recursive  https://github.com/AMReX-Combustion/pelec/ \
     && sed -i 's/defined(__HIP_PLATFORM_HCC__)/defined(__HIP_PLATFORM_HCC__) || defined(__HIP_PLATFORM_AMD__)/'  /opt/pelec/Submodules/PelePhysics/Submodules/sundials/include/sundials/sundials_hip_policies.hpp \
-    && cat /opt/pelec/Submodules/PelePhysics/Submodules/sundials/include/sundials/sundials_hip_policies.hpp \
     && cd pelec/Exec/RegTests/PMF \
     && export MODELS="drm19 dodecane_lu" \
     && for model in $MODELS; do \

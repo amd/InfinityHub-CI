@@ -1,9 +1,9 @@
-ARG IMAGE="rocm_gpu:6.4"
+ARG IMAGE="rocm_gpu:7.0"
 
 FROM ${IMAGE}
 
-ARG RAJA_BRANCH="v2024.07.0"
-ARG RAJAPERF_BRANCH="v2024.07.0"
+ARG RAJA_BRANCH="develop"
+ARG RAJAPERF_BRANCH="develop"
 ARG ENABLE_OPENMP=ON
 ARG ENABLE_OMPI=OFF
 WORKDIR /opt
@@ -28,7 +28,11 @@ RUN git clone --recursive -b ${RAJA_BRANCH} https://github.com/LLNL/raja.git \
         -D AMDGPU_TARGETS=${AMDGPU_TARGETS} \
         -D AMDGPU_TARGETS=${AMDGPU_TARGETS} \
         -D CMAKE_CXX_FLAGS="-munsafe-fp-atomics" \
-        -D BLT_CXX_STD=c++14 \
+        -D CMAKE_CXX_STANDARD=17 \
+        -D CMAKE_CXX_STANDARD_REQUIRED=ON \
+        -D CMAKE_CXX_EXTENSIONS=OFF \
+        -D CMAKE_HIP_STANDARD=17 \
+        -D BLT_CXX_STD=c++17 \
         -D ENABLE_MPI=${ENABLE_OMPI} \
         -D ENABLE_OPENMP=${ENABLE_OPENMP} \
         -D ENABLE_HIP=ON \
@@ -59,7 +63,11 @@ RUN git clone --recursive -b ${RAJAPERF_BRANCH} https://github.com/LLNL/rajaperf
         -D AMDGPU_TARGETS=${AMDGPU_TARGETS} \
         -D AMDGPU_TARGETS=${AMDGPU_TARGETS} \
         -D CMAKE_CXX_FLAGS="-munsafe-fp-atomics" \
-        -D BLT_CXX_STD=c++14 \
+        -D CMAKE_CXX_STANDARD=17 \
+        -D CMAKE_CXX_STANDARD_REQUIRED=ON \
+        -D CMAKE_CXX_EXTENSIONS=OFF \
+        -D CMAKE_HIP_STANDARD=17 \
+        -D BLT_CXX_STD=c++17 \
         -D ENABLE_MPI=${ENABLE_OMPI} \
         -D ENABLE_OPENMP=${ENABLE_OPENMP} \
         -D ENABLE_CUDA=OFF \

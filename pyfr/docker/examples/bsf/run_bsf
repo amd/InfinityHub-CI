@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo "Running BSF benchmark"
-cd /examples/bsf
-mpirun -np 1 pyfr -v run -b hip -p mesh.pyfrm inistep.ini

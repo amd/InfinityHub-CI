@@ -14,10 +14,16 @@ RUN apt-get update \
 
 WORKDIR /tmp
 #Build app
-ENV GRID_PATH=/opt/grid
+ENV GRID_PATH=/opt/grid \
+    OMPI_CC=amdclang \
+    OMPI_CXX=amdclang++
 
 RUN git clone -b ${GRID_BRANCH} https://github.com/paboyle/Grid.git \
    && cd Grid \
+   && sed -i 's/hipblasDoubleComplex/hipDoubleComplex/g' Grid/algorithms/blas/BatchedBlas.h \
+   && sed -i 's/hipblasDoubleComplex/hipDoubleComplex/g' Grid/algorithms/blas/BatchedBlas.cc \
+   && sed -i 's/hipblasComplex/hipComplex/g' Grid/algorithms/blas/BatchedBlas.h \
+   && sed -i 's/hipblasComplex/hipComplex/g' Grid/algorithms/blas/BatchedBlas.cc \
    && ./bootstrap.sh \
    && mkdir build \
    && cd build \
@@ -37,7 +43,7 @@ RUN git clone -b ${GRID_BRANCH} https://github.com/paboyle/Grid.git \
         MPICXX=mpicxx \
         CPPFLAGS="-I${ROCM_PATH}/include -I${ROCM_PATH}/include/roctracer -std=c++17 --offload-arch=$AMDGPU_TARGETS" \
         LDFLAGS="-L${ROCM_PATH}/lib -lhipblas -L${ROCM_PATH}/lib/roctracer -lroctracer64 -lroctx64 -std=c++17" \
-   && make -j 8 \
+   && make -j $(nproc) \
    && make install \
    && cd /tmp \
    && rm -rf Grid

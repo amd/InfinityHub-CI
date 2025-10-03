@@ -14,8 +14,8 @@ pyfr import cube_40.msh cube_40.pyfrm
 
 if [[ "$1" -eq "2" ]]; then
     echo "Creating partisions"
-    pyfr partition 2 cube_40.pyfrm .
+    pyfr partition -p scotch 2 cube_40.pyfrm .
 fi
 
 echo "Running tgv benchmark"
-mpirun -np $1 pyfr -v run -b hip -p cube_40.pyfrm tgv.ini
+mpirun -np $1 pyfr -v -p run -b hip cube_40.pyfrm tgv.ini

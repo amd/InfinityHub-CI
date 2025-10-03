@@ -25,7 +25,7 @@ There are a few ways to get additional applications into the container.
 Possible `build-arg` for the Docker build command
 
 - ### IMAGE
-    Default: `rocm_gpu:6.4`  
+    Default: `rocm_gpu:7.0`  
     > ***Note:***  
     >  This container needs to be build using [Base ROCm GPU](/base-gpu-mpi-rocm-docker/Dockerfile).
 
@@ -34,10 +34,10 @@ Download the [Dockerfile](/conda-rocm-environment/Dockerfile)
 
 To run the default configuration:
 ```
-docker build -t conda_rocm_gpu:6.4 -f /path/to/Dockerfile . 
+docker build -t conda_rocm_gpu:7.0 -f /path/to/Dockerfile . 
 ```
 > Notes:  
->- `conda_rocm_gpu:6.4` is an example container name.
+>- `conda_rocm_gpu:7.0` is an example container name.
 >- the `.` at the end of the build line is important. It tells Docker where your build context is located.
 >- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required.
 >
@@ -46,7 +46,7 @@ docker build -t conda_rocm_gpu:6.4 -f /path/to/Dockerfile .
 
 ```
 docker build \
-    -t conda_rocm_gpu:6.4 \
+    -t conda_rocm_gpu:7.0 \
     -f /path/to/Dockerfile \
     --build-arg IMAGE=<custom_image>
     .
@@ -62,7 +62,7 @@ To run the container interactively, run the following command:
 docker run --device=/dev/kfd \
            --device=/dev/dri \
            --security-opt seccomp=unconfined \
-           -it conda_rocm_gpu:6.4 bash
+           -it conda_rocm_gpu:7.0 bash
 ```
 > ** Notes **
 > User running container user must have permissions to `/dev/kfd` and `/dev/dri`. This can be achieved by being a member of `video` and/or `render` group.  
@@ -74,7 +74,7 @@ docker run --device=/dev/kfd \
 Singularity, like Docker, can be used for running HPC containers.  
 To create a Singularity container from your local Docker container, run the following command:
 ```
-singularity build conda_rocm_gpu.sif  docker-daemon://conda_rocm_gpu:6.4
+singularity build conda_rocm_gpu.sif  docker-daemon://conda_rocm_gpu:7.0
 ```
 
 Singularity can be used similar to Docker to launch interactive and non-interactive containers, as shown in the following example of launching a interactive run

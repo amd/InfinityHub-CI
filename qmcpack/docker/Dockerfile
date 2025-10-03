@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.4"
+ARG IMAGE="rocm_gpu:7.0"
 
 FROM ${IMAGE}
 RUN mkdir /data
@@ -8,10 +8,10 @@ RUN chmod -R g+w,o+w /data
 ARG QMCPACK_BRANCH="develop"
 
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y libopenblas-dev libfftw3-dev libxml2-dev libboost-dev libhdf5-dev
+    DEBIAN_FRONTEND=noninteractive apt-get install -y libopenblas-dev libfftw3-dev libxml2-dev libboost-dev libhdf5-dev rocm-openmp openmp-extras-dev openmp-extras-runtime 
 
 ENV PATH=/opt/qmcpack/bin:$PATH \
-    LD_LIBRARY_PATH=$ROCM_PATH/lib/llvm/lib//lib:$LD_LIBRARY_PATH \
+    LD_LIBRARY_PATH=$ROCM_PATH/lib/llvm/lib:$LD_LIBRARY_PATH \
     QMCPACK_MACHINE='qmcpack-container' \
     HSA_XNACK=1 \
     OMP_NUM_THREADS=4 \
@@ -39,7 +39,6 @@ RUN git clone https://github.com/QMCPACK/qmcpack.git -b ${QMCPACK_BRANCH} && \
     curl -L -O -J https://anl.box.com/shared/static/a0j8gjrfvco0mnko00wq5ujt5oidlg0y.h5 && \
     curl -L -O -J https://anl.box.com/shared/static/373klkrpmc362aevkt7gb0s8rg1hs9ps.h5 && \
     cd /tmp/qmcpack/build && \
-     scp /opt/rocm/lib/llvm/lib/libomptarget-amdgpu-*.bc $OMPI_PATH/lib/. && \
      cmake \
         -D CMAKE_INSTALL_PREFIX=/opt/qmcpack/ \
         -D ROCM_PATH=/opt/rocm \

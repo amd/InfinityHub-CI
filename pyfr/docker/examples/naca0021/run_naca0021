@@ -12,15 +12,15 @@ elif [[ $1 -gt 8 ]]; then
     exit 1
 elif [[ $1 -gt 1 ]]; then 
     echo "Creating partisions"
-    pyfr partition $1 naca0021_p3_1c.pyfrm .
+    pyfr partition $1 -p scotch naca0021_p3_1c.pyfrm .
 fi
 
 if [ $? -eq 0 ]; then
         echo "mesh import succeeded"
-        mpiexec --allow-run-as-root -np $1 pyfr run -b hip -p naca0021_p3_1c.pyfrm p3_warmup.ini
+        mpiexec --allow-run-as-root -np $1 pyfr -p run -b hip naca0021_p3_1c.pyfrm p3_warmup.ini
         if [ $? -eq 0 ]; then
                 echo "warmup succeeded"
-                time mpiexec --allow-run-as-root -np $1 pyfr restart -b hip -p naca0021_p3_1c.pyfrm naca_p3_1c_warmup_100.00.pyfrs 3d_naca.ini
+                time mpiexec --allow-run-as-root -np $1 pyfr -p restart -b hip naca0021_p3_1c.pyfrm naca_p3_1c_warmup_100.00.pyfrs 3d_naca.ini
         else
                 echo "warmup failed"
         fi

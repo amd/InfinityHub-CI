@@ -2,10 +2,10 @@ ARG UBUNTU_VERSION="noble"
 
 FROM ubuntu:${UBUNTU_VERSION}
 
-ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.4/ubuntu/noble/amdgpu-install_6.4.60400-1_all.deb"
-ARG UCX_BRANCH="v1.17.0"
-ARG UCC_BRANCH="v1.3.0"
-ARG OMPI_BRANCH="v5.0.5"
+ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/7.0/ubuntu/noble/amdgpu-install_7.0.70000-1_all.deb"
+ARG UCX_BRANCH="v1.19.0"
+ARG UCC_BRANCH="v1.5.1"
+ARG OMPI_BRANCH="v5.0.8"
 ARG APT_GET_APPS=""
 ARG AMDGPU_TARGETS="gfx908,gfx90a,gfx942"
 
@@ -60,6 +60,9 @@ ENV ROCM_PATH=/opt/rocm \
     UCX_PATH=/opt/ucx \
     UCC_PATH=/opt/ucc \
     OMPI_PATH=/opt/ompi \
+    FC=amdflang \
+    CC=amdclang \
+    CXX=amdclang++ \
     AMDGPU_TARGETS=${AMDGPU_TARGETS}
 
 # Adding rocm/cmake to the Environment 
@@ -95,12 +98,9 @@ RUN git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
 RUN git clone -b ${UCC_BRANCH} https://github.com/openucx/ucc \
     && cd ucc \
     && ./autogen.sh \
-    && sed -i 's/memoryType/type/g' ./src/components/mc/rocm/mc_rocm.c \
-    # offload-arch=native builds the local architecutre, which may not be present at build time for a container. 
-    && sed -i 's/--offload-arch=native//g' ./cuda_lt.sh \
     && mkdir build \
     && cd build \
-    && ../configure --prefix=${UCC_PATH} --with-rocm=${ROCM_PATH} --with-ucx=${UCX_PATH} --with-rccl=no  \
+    && ../configure --prefix=${UCC_PATH} --with-rocm=${ROCM_PATH} --with-ucx=${UCX_PATH} --with-rccl=no --with-rocm-arch=all-arch-no-native \
     && make -j $(nproc) \
     && make install
 

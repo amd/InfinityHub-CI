@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.4"
+ARG IMAGE="rocm_gpu:7.0"
 
 FROM ${IMAGE}
 
@@ -18,7 +18,7 @@ RUN git clone -b ${JSON_FORTRAN_BRANCH} https://github.com/jacobwilliams/json-fo
     && cd json-fortran \
     && mkdir build \
     && cd build \
-    && cmake -DCMAKE_INSTALL_PREFIX=/opt/json-fortran -DUSE_GNU_INSTALL_CONVENTION=ON .. \
+    && cmake -DCMAKE_INSTALL_PREFIX=/opt/json-fortran -DUSE_GNU_INSTALL_CONVENTION=ON -DCMAKE_Fortran_FLAGS="-fPIC" .. \
     && make install
 
 ENV PKG_CONFIG_PATH=/opt/json-fortran/lib/pkgconfig:$PKG_CONFIG_PATH \

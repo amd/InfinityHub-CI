@@ -1,4 +1,4 @@
-ARG IMAGE="rocm_gpu:6.4"
+ARG IMAGE="rocm_gpu:7.0"
 
 FROM ${IMAGE}
 
@@ -79,6 +79,7 @@ WORKDIR /opt
 
 #Build Picongpu
 RUN git clone -b ${PICONGPU_BRANCH} https://github.com/ComputationalRadiationPhysics/picongpu.git \
+    && sed -i 's/template getAvailaibleSlotsDeviceFunction/template getAvailaibleSlotsDeviceFunction<AlpakaAcc>/g' ./picongpu/thirdParty/mallocMC/include/mallocMC/creationPolicies/Scatter.hpp \
     && mkdir -p /opt/picon-examples \
     && cd /opt/picon-examples \
     && pic-create $PICSRC/share/picongpu/tests/KHI_growthRate/ khi_fom \

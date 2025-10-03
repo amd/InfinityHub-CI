@@ -2,8 +2,8 @@ ARG UBUNTU_VERSION="noble"
 
 FROM ubuntu:${UBUNTU_VERSION}
 
-ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/6.4/ubuntu/noble/amdgpu-install_6.4.60400-1_all.deb"
-ARG MPICH_BRANCH="v4.3.0"
+ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/7.0/ubuntu/noble/amdgpu-install_7.0.70000-1_all.deb"
+ARG MPICH_BRANCH="v4.3.1"
 ARG MPICH_DEVICE="ch4:ofi"
 ARG APT_GET_APPS=""
 ARG AMDGPU_TARGETS="gfx908,gfx90a,gfx942"
@@ -58,6 +58,9 @@ RUN mkdir -p /opt/cmake  \
 
 ENV ROCM_PATH=/opt/rocm \
     MPI_PATH=/opt/mpich \
+    FC=amdflang \
+    CC=amdclang \
+    CXX=amdclang++ \
     AMDGPU_TARGETS=${AMDGPU_TARGETS}
 
 # Adding rocm/cmake to the Environment 

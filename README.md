@@ -19,8 +19,8 @@ For ROCm installation procedures and validation checks, see:
 ## Applications:
 |Application|Builds|ROCm Version|Domains|
 |---|---|---|---|
-|[AMD ROCm with OpenMPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.4|<ul><li>Tools</li><li>Libraries</li></ui>|
-|[AMD ROCm with MPICH Container](/base-mpich-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|6.4|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD ROCm with OpenMPI Container](/base-gpu-mpi-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|7.0|<ul><li>Tools</li><li>Libraries</li></ui>|
+|[AMD ROCm with MPICH Container](/base-mpich-rocm-docker/)|<ul><li>[Docker](/base-gpu-mpi-rocm-docker/)</li></ul>|7.0|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD ROCm with Conda Environment Container](/conda-rocm-environment/)|<ul><li>[Docker](/conda-rocm-environment/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ui>|
 |[AMD's implementation of Gromacs with HIP](/gromacs/)|<ul><li>[Baremetal](/gromacs/baremetal/)</li><li>[Docker](/gromacs/docker/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
 |[Ansys Fluent](/ansys-fluent/)|<ul><li>[Baremetal](/ansys-fluent/baremetal/)</li><li>[Docker](/ansys-fluent/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
@@ -32,7 +32,7 @@ For ROCm installation procedures and validation checks, see:
 |[Cadence Fidelity LES](/cadence-fidelity-les/)|<ul><li>[Application Details](/cadence-fidelity-les/)</li></ul>|5.x|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[DevitoPRO](/devitopro/)|<ul><li>[Docker](https://github.com/devitocodes/devito/tree/master/docker#readme)</li><li>[Virtual Environment](http://devitocodes.github.io/devito/download.html#virtual-environment)</li></ul>|latest|<ul><li>Energy</li><li>Oil and Gas</li></ul>|
 |[CP2K](/cp2k/)|<ul><li>[Baremetal](/cp2k/baremetal/)</li><li>[Docker](/cp2k/docker/)</li></ul>|6.3.3|<ul><li>Electronic Structure</li></ul>|
-|[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|6.3.3|<ul><li>Physics</ul>|
+|[Grid](/grid/)|<ul><li>[Docker](/grid/docker/)</li></ul>|latest|<ul><li>Physics</ul>|
 |[HPCG](/hpcg/)|<ul><li>[Baremetal](/hpcg/baremetal/)</li><li>[Docker](/hpcg/docker/)</li></ul>|latest|<ul><li>Benchmark</li></ul>|
 |[Kokkos](/kokkos/)|<ul><li>[Docker](/kokkos/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[LAMMPS](/lammps/)|<ul><li>[Baremetal](/lammps/baremetal/)</li><li>[Docker](/lammps/baremetal/)</li></ul>|latest|<ul><li>Molecular Dynamics</li></ul>|
@@ -41,12 +41,12 @@ For ROCm installation procedures and validation checks, see:
 |[MPAS](/mpas/)|<ul><li>[Baremetal](/mpas/)</li></ul>|latest|<ul><li>Climate</li><li>Weather</li></ul>|
 |[NAMD](/namd/)|<ul><li>[Container Instructions](/namd/)</li></ul>|4.3/4.5|<ul><li>Molecular Dynamics</li></ul>|
 |[NEKO](/neko/)|<ul><li>[Docker](/neko/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
-|[nekRS](/nekrs/)|<ul><li>[Docker](/nekrs/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[nekRS](/nekrs/)|<ul><li>[Docker](/nekrs/docker/)</li></ul>|6.4|<ul><li>Computational Fluid Dynamics</li></ul>|
 |[NWChem](/nwchem/)|<ul><li>[Container Instructions](/nwchem/)</li></ul>|5.3|<ul><li>Computational Chemistry</li></ul>|
-|[OpenFOAM with PETSc Solver](/openfoam/)|<ul><li>[Docker](/openfoam/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
-|[OpenMM](/openmm/)|<ul><li>[Docker](/openmm/docker/)</li></ul>|5.7|<ul><li>Molecular Dynamics</li></ul>|
-|[PeleC](/pelec/)|<ul><li>[Docker](/pelec/docker/)</li></ul>|latest|<ul><li>Computational Fluid Dynamics</li></ul>|
-|[PETSc](/petsc/)|<ul><li>[Docker](/petsc/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
+|[OpenFOAM with PETSc Solver](/openfoam/)|<ul><li>[Docker](/openfoam/docker/)</li></ul>|6.3.3|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[OpenMM](/openmm/)|<ul><li>[Docker](/openmm/docker/)</li></ul>|6.4|<ul><li>Molecular Dynamics</li></ul>|
+|[PeleC](/pelec/)|<ul><li>[Docker](/pelec/docker/)</li></ul>|6.4|<ul><li>Computational Fluid Dynamics</li></ul>|
+|[PETSc](/petsc/)|<ul><li>[Docker](/petsc/docker/)</li></ul>|6.3.3|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[PIConGPU](/picongpu/)|<ul><li>[Docker](/picongpu/docker/)</li></ul>|latest|<ul><li>Physics</li></ul>|
 |[PyFR](/pyfr/)|<ul><li>[Docker](/pyfr/docker/)</li></ul>|latest|<ul><li>Tools</li><li>Libraries</li></ul>|
 |[QUDA](/quda/)|<ul><li>[Docker](/quda/docker/)</li></ul>|latest|<ul><li>Quantum Chromodynamic Library</li></ul>|
