@@ -95,8 +95,7 @@ AMD GPU related flags:
 
 ```bash
 -fopenmp --offload-arch=gfx90a      Compile OpenMP target directives for a given GPU (e.g. gfx90a/MI250)
--fdo-concurrent-parallel=<value>    Try to map `do concurrent` loops to OpenMP (on host or device)
-                                        value: none, host, device
+-fdo-concurrent-to-openmp=<value>   Try to map `do concurrent` loops to OpenMP [none|host|device]
 -fopenmp-force-usm                  Force behavior as if the user specified pragma omp requires unified_shared_memory
  ```
 
