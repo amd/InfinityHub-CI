@@ -5,7 +5,7 @@ FROM ${IMAGE}
 ARG GROMACS_BRANCH="4947-hip-feature-enablement"
 ARG MPI_ENABLED="off"
 
-# Installing Gromnacs - HIP
+# Installing Gromacs - HIP
 RUN git clone -b ${GROMACS_BRANCH} https://gitlab.com/gromacs/gromacs.git \
   && cd gromacs \
   && mkdir build  \
@@ -14,7 +14,7 @@ RUN git clone -b ${GROMACS_BRANCH} https://gitlab.com/gromacs/gromacs.git \
         -DGMX_BUILD_OWN_FFTW=ON \
         -DCMAKE_C_COMPILER=gcc \
         -DCMAKE_CXX_COMPILER=g++ \
-        -DGMX_MPI=${OMPI_ENABLED} \
+        -DGMX_MPI=${MPI_ENABLED} \
         -DGMX_HIP_TARGET_ARCH=${AMDGPU_TARGETS} \
         -DGMX_GPU=HIP \
         -DREGRESSIONTEST_DOWNLOAD=OFF \
