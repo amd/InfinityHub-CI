@@ -1,6 +1,6 @@
 # GROMACS
 ## Overview
-This AMD Container is based on the 2022 release of GROMACS modified by AMD. This container only supports up to an 8 GPU configuration.
+This AMD Container is based on the 2025 release of GROMACS modified by AMD. This container only supports up to an 8 GPU configuration.
 
 GROMACS is a versatile package to perform molecular dynamics, i.e. simulate the Newtonian equations of motion for systems with hundreds to millions of particles. It is primarily designed for biochemical molecules like proteins, lipids and nucleic acids that have a lot of complicated bonded interactions, but since GROMACS is extremely fast at calculating the nonbonded interactions (that usually dominate simulations) many groups are also using it for research on non-biological systems, e.g. polymers.
 For more information about GROMACS, visit [gromacs.org](https://www.gromacs.org).
@@ -8,9 +8,9 @@ For more information about GROMACS, visit [gromacs.org](https://www.gromacs.org)
 For more information on the ROCm™ open software platform and access to an active community discussion on installing, configuring, and using ROCm, please visit the ROCm web pages at www.AMD.com/ROCm and [ROCm Community Forum](https://community.amd.com/t5/rocm/ct-p/amd-rocm)
 >Notes:
 >- This recipe is based on a fork of the GROMACS project written for AMD GPUs - it is not an official release by the GROMACS team
->- The source of the GROMACS fork is publicly available here: https://github.com/ROCmSoftwarePlatform/Gromacs
->- This code base is not maintained or supported by the GROMACS team
->- This code base is not developed by the GROMACS team
+>- The specific code is currently in the process of being upstreamed, with progress trackable here: https://gitlab.com/gromacs/gromacs/-/issues/4947
+>- The source of the GROMACS fork is publicly available here: https://gitlab.com/gromacs/gromacs/-/tree/4947-hip-feature-enablement?ref_type=heads
+>- This code base is not maintained or supported by the GROMACS team directly during the upstreaming process
 
 ## Single-Node Server Requirements
 [System Requirements](/README.md#single-node-server-requirements)  

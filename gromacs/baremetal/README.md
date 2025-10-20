@@ -1,12 +1,12 @@
-# AMD's Implementation of Gromacs with HIP Bare Metal Build Instructions
+# AMD's Implementation of GROMACS with HIP Bare Metal Build Instructions
 
 ## Overview
-This document provides instructions on how to do a bare metal install of AMD's Implementation of Gromacs with HIP in a Linux environment. 
+This document provides instructions on how to do a bare metal install of AMD's Implementation of GROMACS with HIP in a Linux environment. 
 
 ## Single-Node Server Requirements
 | CPUs | GPUs | Operating Systems | ROCm™ Driver |
 | ---- | ---- | ----------------- | ------------ |
-| X86_64 CPU(s) | AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |
+| X86_64 CPU(s) | AMD Instinct MI350 GPU(s) <br> AMD Instinct MI300 GPUS(s) <br> AMD Instinct MI200 GPU(s) <br>  AMD Instinct MI100 GPU(s) | Ubuntu 20.04 <br> Ubuntu 22.04 <BR> RHEL8 <br> RHEL9 <br> SLES 15 sp4 | ROCm v5.x compatibility <br> ROCm v6.x compatibility |
 
 For ROCm installation procedures and validation checks, see:
 * [ROCm Documentation](https://rocm.docs.amd.com)
@@ -20,12 +20,12 @@ For ROCm installation procedures and validation checks, see:
 |---|---|---|
 |Git|Latest|Latest|
 |ROCm|5.3.0|latest|
-|CMAKE|3.22.2|Latest|
-|OpenMPI (Optional)|4.0.3|5.0.3|
-|UCX (Optional)|1.13.0|1.16.0|
+|CMAKE|3.28.0|Latest|
+|OpenMPI (Optional)|4.0.3|5.0.7|
+|UCX (Optional)|1.13.0|1.19.0|
 
 
-## Installing AMD's Implementation of Gromacs with HIP
+## Installing AMD's Implementation of GROMACS with HIP
 1. Validate the Cluster/System has all of the above applications, with system path, library, and include environments set correctly. If you are unsure, the [Dockerfile](/gromacs/docker/Dockerfile) has examples of all useful configurations listed after the `ENV` commands. 
 2. Clone the [GROMACS repository](https://gitlab.com/gromacs/gromacs.git) into your workspace. Use the 4947-hip-feature-enablement feature enablement branch to use the version with all supported features enabled.. 
 ```
@@ -60,15 +60,13 @@ make -j $(nproc)
 make install
 ```
 
-6. Adding Gromacs system environment variables
+6. Adding system environment variables
 ```bash
-export GMX_ENABLE_DIRECT_GPU_COMM=1
-export GMX_FORCE_UPDATE_DEFAULT_GPU=1
 export ROC_ACTIVE_WAIT_TIMEOUT=0
 export AMD_DIRECT_DISPATCH=1
 ```
-Optional, By default Gomacs is installed to: `/usr/local/gromacs`
-Adding Gromacs to the system PATH and Library path can be done as follows:
+Optional, By default GROMACS is installed to: `/usr/local/gromacs`
+Adding GROMACS to the system PATH and Library path can be done as follows:
 ```bash
 export PATH=$PATH:/user/local/gromacs/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/user/local/gromacs/lib

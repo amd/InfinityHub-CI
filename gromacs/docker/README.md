@@ -1,5 +1,5 @@
-# AMD's Implementation of Gromacs with HIP Docker Build
-Instructions on how to build a Docker Container with AMD's implementation of Gromacs.
+# AMD's Implementation of GROMACS with HIP Docker Build
+Instructions on how to build a Docker Container with AMD's implementation of GROMACS.
 
 
 ## Build System Requirements
@@ -22,7 +22,7 @@ Possible `build-arg` for the Docker build command
     Default: `off`  
     Options: `off` or `on`  
 
-## Building AMD's implementation of Gromacs with HIP Container
+## Building AMD's implementation of GROMACS with HIP Container
 Download the [Dockerfile](/gromacs/docker/Dockerfile)  
 Download the [benchmark files](/gromacs/docker/benchmark/) 
 
@@ -34,7 +34,7 @@ docker build -t mycontainer/gromacs-hip -f /path/to/Dockerfile .
 >- `mycontainer/gromacs-hip` is an example container name. 
 >- the `.` at the end of the build line is important! It tells Docker where your build context is located!
 >- `-f /path/to/Dockerfile` is only required if your docker file is in a different directory than your build context. If you are building in the same directory it is not required. 
->- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-amd-implementation-of-gromacs-with-hip-container)). If you plan on running AMD's implementation of Gromacs with HIP against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
+>- The `benchmark` directory is required within the build context directory, and the contents will be copied into the container. We have provided three benchmarks, and instructions on how to run them ([see below](#running-amd-implementation-of-gromacs-with-hip-container)). If you plan on running AMD's implementation of GROMACS with HIP against your own data set, it can be copied into the container by placing it in the benchmark directory before building or mounted into the container using dockers mount/volume API. 
 
 To run a custom configuration, include one or more customized build-arg  
 *DISCLAIMER:* This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
@@ -47,9 +47,9 @@ docker build \
     . 
 ```
 
-## Running AMD implementation of Gromacs with HIP Container
+## Running AMD implementation of GROMACS with HIP Container
 Both Docker and Singularity can be run interactively or as a single command.
-To run the [Gromacs Benchmarks](/gromacs/README.md#running-gromacs-benchmarks), just replace the `<Gromacs Command>` the examples in [Running Gromacs Benchmarks](/gromacs/README.md#running-gromacs-benchmarks) section of the Gromacs readme. The commands can be run directly in an interactive session as well. 
+To run the [GROMACS Benchmarks](/gromacs/README.md#running-gromacs-benchmarks), just replace the `<GROMACS Command>` the examples in [Running GROMACS Benchmarks](/gromacs/README.md#running-gromacs-benchmarks) section of the GROMACS readme. The commands can be run directly in an interactive session as well. 
 
 ### Docker  
 
@@ -59,7 +59,7 @@ docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=u
 ```
 ### Docker Non-Interactive
 ```
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/gromacs-hip <Gromacs Command>
+docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined mycontainer/gromacs-hip <GROMACS Command>
 ```
 
 ### Singularity  
@@ -79,7 +79,7 @@ singularity shell --no-home --writable-tmpfs --pwd /benchmark gromacs.sif
 #### Singularity Single Command
 To launch a Singularity image build locally.
 ```
-singularity run --no-home --writable-tmpfs --pwd /benchmark gromacs.sif <Gromacs Command>
+singularity run --no-home --writable-tmpfs --pwd /benchmark gromacs.sif <GROMACS Command>
 `
 
 ## Licensing Information
