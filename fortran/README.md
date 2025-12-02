@@ -1,28 +1,31 @@
-# AMD Next Gen Fortran Compiler - User Guide
+# AMD Fortran Compiler - User Guide
+
 
 ## Overview
 
-This user guide provides instructions for obtaining the pre-production build of the AMD Next Generation Fortran Compiler
-as well as general information like usage, known issues, and system requirements. The latest preview of
-the compiler is available through the following link:
+This user guide provides instructions for obtaining the pre-production build of the AMD Fortran Compiler
+that has been released starting with AMD ROCm platform packages, version 7.0.
+The document also contains information like usage, known issues, and system requirements.
+The latest preview of the compiler is available through the following link:
 
 [https://repo.radeon.com/rocm/misc/flang/](https://repo.radeon.com/rocm/misc/flang/)
 
-The latest release is **drop 7.0.0**. You may obtain any of the supported OS through `wget`:
+The latest release is **drop 22.2.0**. You may obtain any of the supported OS through `wget`:
 
 ```shell
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-rhel.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-sles.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-ubu.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8248-drop-7.0.0-alma.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-rhel.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-sles.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-ubu.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-alma.tar.bz2
 ```
-- AlmaLinux OS build is now available starting from drop 6.0.0
-    - SLES 15 SP5 systems must use rocm-afar-####-drop-i.j.k-alma.tar.bz2
-    - SLES 15 SP6 systems can  use rocm-afar-####-drop-i.j.k-sles.tar.bz2
-      
+An AlmaLinux OS build is now available starting with drop 6.0.0:
+- SLES 15 SP5 systems must use rocm-afar-####-drop-i.j.k-alma.tar.bz2
+- SLES 15 SP6 systems can  use rocm-afar-####-drop-i.j.k-sles.tar.bz2
+
+
 ## System requirements
 
-The Fortran compiler drops have similar requirements to the official ROCm releases.
+The AMD Fortran Compiler drops have similar requirements to the official ROCm releases.
 They can be used on any of the following OS:
 
 | CPUs | Operating Systems | ROCm™ Driver |
@@ -43,8 +46,8 @@ Download and untar the desired `rocm-afar-<latest version>-<OS>.tar.bz2` file an
 tar jxf rocm-afar-<latest version>-<OS>.tar.bz2 -C <path to install>
 ```
 
-It is then recommended to add `<path to install>/rocm-afar-<version>/bin` to your `PATH` and `<path to install>/rocm-afar-<version>/lib`
-to `LD_LIBRARY_PATH`. Setting these allows the prebuilt compiler to work seamlessly with an existing ROCm installation on the system.
+It is then recommended to add `<path to install>/rocm-afar-<version>/bin` to your `PATH` and `<path to install>/rocm-afar-<version>/lib` to `LD_LIBRARY_PATH`.
+Setting these allows the prebuilt compiler to work seamlessly with an existing ROCm installation on the system.
 
 ### Using hipfort
 **NOTE:**  starting from drop 6.0.0 hipfort is now included in the drop, modules built only for llvm-flang
@@ -86,6 +89,7 @@ The following CMake targets are provided following `find_package(hipfort)`:
 These can be used to set the correct include paths and link lines via `target_include_directories` and `target_link_libraries`.
 Use the library interface target corresponding to each [hipfort API](https://rocm.docs.amd.com/projects/hipfort/en/latest/doxygen/html/pages.html) that is required.
 
+
 ## Usage
 
 - Compiler driver located in `bin/amdflang`.
@@ -94,7 +98,7 @@ Use the library interface target corresponding to each [hipfort API](https://roc
 AMD GPU related flags:
 
 ```bash
--fopenmp --offload-arch=gfx90a      Compile OpenMP target directives for a given GPU (e.g. gfx90a/MI250)
+-fopenmp --offload-arch=<gfx>       Compile OpenMP target directives for a given GPU (e.g. gfx90a/MI250)
 -fdo-concurrent-to-openmp=<value>   Try to map `do concurrent` loops to OpenMP [none|host|device]
 -fopenmp-force-usm                  Force behavior as if the user specified pragma omp requires unified_shared_memory
  ```
@@ -102,36 +106,38 @@ AMD GPU related flags:
 Default data precision/conversion:
 
 ```bash
--fdefault-double-8              Set the default double precision kind to an 8 byte wide type
--fdefault-integer-8             Set the default integer and logical kind to an 8 byte wide type
--fdefault-real-8                Set the default real kind to an 8 byte wide type
--fconvert=<value>               Set endian conversion of data for unformatted files
-                                    value: big-endian, little-endian, native
+-fdefault-double-8                  Set the default double precision kind to an 8 byte wide type
+-fdefault-integer-8                 Set the default integer and logical kind to an 8 byte wide type
+-fdefault-real-8                    Set the default real kind to an 8 byte wide type
+-fconvert=<value>                   Set endian conversion of data for unformatted files
+                                        value: big-endian, little-endian, native
+-ffast-math                         Enable less precise arithmetic optimizations
+-ffast-real-mod                     Enable fast implementation of MOD for REAL types
  ```
 
 Source form (determined by file extension by default):
 
 ```bash
--ffree-form                     Process source files in free form
--ffixed-form                    Process source files in fixed form
--ffixed-line-length=<value>     Use <value> as character line width in fixed mode
+-ffree-form                         Process source files in free form
+-ffixed-form                        Process source files in fixed form
+-ffixed-line-length=<value>         Use <value> as character line width in fixed mode
 ```
 
 Alternate directory selection:
 
 ```bash
---gcc-toolchain=...             Specify a directory where Clang can find 'include' and 'lib*'
---gcc-install-dir=...           Use GCC installation in the specified directory.
---rocm-path=...                 ROCm installation path.
--frtlib-add-rpath               Add -rpath with architecture-specific resource directory to the linker flags.
--fno-rtlib-add-rpath            Don't add -rpath with architecture-specific resource directory to the linker flags.
--resource-dir=...               Resource directory for use with -frtlib-add-rpath
+--gcc-toolchain=...                 Specify a directory where Clang can find 'include' and 'lib*'
+--gcc-install-dir=...               Use GCC installation in the specified directory.
+--rocm-path=...                     ROCm installation path.
+-frtlib-add-rpath                   Add -rpath with architecture-specific resource directory to the linker flags.
+-fno-rtlib-add-rpath                Don't add -rpath with architecture-specific resource directory to the linker flags.
+-resource-dir=...                   Resource directory for use with -frtlib-add-rpath
  ```
 
 Other:
 
 ```bash
---help                          See all supported options
+--help                              See all supported options
 ```
 
 ## Known issues
@@ -155,7 +161,8 @@ modification to the user's program.
     -  llvm/lib/libFortranDecimal.a has been replaced with llvm/lib/libflang_rt.quadmath.a (only needed if app uses 128-bit FP)
 - The device runtime library in 5.3.0:
     - llvm/lib/libFortranRuntimeHostDevice.a has been replaced with llvm/lib/libflang_rt.hostdevice.a
-      
+
+
 ## Reporting issues
 
 Bugs and other issues can be reported to [AMD's fork of the LLVM project](https://github.com/ROCm/llvm-project/issues).
@@ -171,6 +178,7 @@ All bug reports should also include:
 2. The complete output of any error (an additional abbreviated message may be added for clarity)
 3. Directions capturing all compiler and executable invocations that reproduce the issue
 
+
 ## Disclaimer
 
 PRE-PRODUCTION SOFTWARE:  The software accessible on this page may be a pre-production version, intended to provide advance access to features
@@ -179,6 +187,7 @@ functional, may contain errors, and may have reduced or different security, priv
 relative to production versions of the software. Use of pre-production software may result in unexpected results, loss of data, project delays
 or other unpredictable damage or loss.  Pre-production software is not intended for use in production, and your use of pre-production software
 is at your own risk.
+
 
 ## Notices and Attribution
 
