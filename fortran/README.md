@@ -50,10 +50,11 @@ It is then recommended to add `<path to install>/rocm-afar-<version>/bin` to you
 Setting these allows the prebuilt compiler to work seamlessly with an existing ROCm installation on the system.
 
 ### Using hipfort
-**NOTE:**  starting from drop 6.0.0 hipfort is now included in the drop, modules built only for llvm-flang
+
+>**NOTE:**  Starting from drop 6.0.0 hipfort is now included in the drop, modules built only for llvm-flang
 
 The following is only needed for older versions up to drop 5.3.0:
-In order to use hipfort, it must be built from source using `amdflang` since the build provided with ROCm is not compatible with the AMD Next Gen Fortran Compiler.
+In order to use hipfort, it must be built from source using `amdflang` since the build provided with ROCm is not compatible with the AMD Fortran Compiler.
 The following set of commands will build hipfort using `amdflang`.
 
 ```shell
@@ -65,7 +66,8 @@ cmake ../ -DHIPFORT_INSTALL_DIR=<install path> -DHIPFORT_BUILD_TYPE=RELEASE -DHI
 make -j install
 ```
 
->**NOTE:** `amdflang` in the preproduction release of the AMD Next Gen Fortran Compiler is distinct from `amdflang` in ROCm, which corresponds to `amdflang-legacy` in the preproduction release.
+>**NOTE:** In ROCm releases before version 7.0 and the AMD Optimizing CPU Compiler (AOCC) version 5.0, `amdflang` invokes the previous Fortran compiler based on the legacy Flang compiler.
+With ROCm version 7.0 and preproduction drops, `amdflang` invokes the new AMD Fortran Compiler.
 
 The hipfort library can be easily incorporated into GNU Make or CMake build systems.
 A file `Makefile.hipfort` is provided in the install at `<install path>/share/hipfort/Makefile.hipfort` that is intended to be included by other Makefiles.
