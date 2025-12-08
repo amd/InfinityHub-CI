@@ -143,6 +143,48 @@ These can be used to set the correct include paths and link lines via `target_in
 Use the library interface target corresponding to each [hipfort API](https://rocm.docs.amd.com/projects/hipfort/en/latest/doxygen/html/pages.html) that is required.
 
 
+# AMD Flang OpenMP Feature Support Summary (Drop 22.2.0)
+
+In addition to the features as of OpenMP API version 3.1 (supported by LLVM/Flang of the the LLVM project), the AMD Fortran Compiler has support for the following additional features from later OpenMP API versions.
+
+| Category                      | Construct / Directive | Support Status         | Notes |
+|-------------------------------|-----------------------|------------------------|-------|
+| **Parallelism Constructs**    | `teams`               | ✅ Supported           | Multi-block teams, reductions, nesting checks |
+|                               | `simd`                | ✅ Supported           | Combined forms, safelen/simdlen, linear/aligned |
+| **Work-Sharing Constructs**   | `do` / `for`          | ✅ Fully Supported     | All schedules, collapse, ordered, canonical loops |
+|                               | `workdistribute`      | ⚠️ In Development      | Claimed in 7.1.1, no details |
+| **Tasking Constructs**        | `task`                | ✅ Fully Supported     | Full clause coverage, detach/event checks |
+|                               | `taskloop`            | ⚠️ Likely Supported    | Infrastructure suggests support |
+|                               | `taskyield`           | ✅ Supported           | Runtime support |
+|                               | `taskgroup`           | ✅ Supported           | Task reductions, allocate clause |
+|                               | `taskgraph`           | ⚠️ Parsing Only        | Parsing complete, lowering not detailed |
+| **Device Constructs**         | `target`              | ✅ Fully Supported     | Full clause coverage, AMD GPU backend |
+|                               | `target data`         | ✅ Supported           | Map/use_device_ptr/addr improvements |
+|                               | `target enter/exit data` | ✅ Supported        | Full clause coverage |
+|                               | `target update`       | ✅ Supported           | To/from, depend, nowait |
+| **Loop Constructs**           | `loop`                | ✅ Fully Supported     | Standalone + combined forms, bind clause |
+|                               | `distribute`          | ✅ Supported           | Dist_schedule, collapse, canonical loops |
+| **Loop Transformations**      | `tile`                | ✅ Supported           | Standalone + nested loop tiling |
+|                               | `unroll`              | ✅ Supported           | Full + partial unrolling |
+| **Synchronization**           | `barrier`             | ✅ Supported           | Per-symbol checks |
+|                               | `ordered`             | ✅ Supported           | Standalone with depend/doacross |
+|                               | `taskwait`            | ✅ Supported           | Depend + nowait |
+| **Cancellation**              | `cancel`              | ✅ Supported           | Parallel, sections, do/for, taskgroup |
+|                               | `cancellation point`  | ✅ Supported           | Standard support |
+| **Data Environment**          | `threadprivate`       | ✅ Supported           | Host association, default(none) fixes |
+|                               | `declare reduction`   | ✅ Supported           | User-defined reductions, GPU combiner regions |
+|                               | `declare mapper`      | ✅ Supported           | Custom mappers, derived types |
+|                               | `scan`                | ⚠️ Backend Support     | IR builder changes, partial |
+|                               | `groupprivate`        | ⚠️ Parsing Support     | Parsing + semantic checks only |
+| **Variant Directives**        | `metadirective`       | ⚠️ Parsing/Semantics   | Context selectors, WHEN/OTHERWISE |
+|                               | `declare variant`     | ⚠️ Parsing Supported   | Context match parsing |
+|                               | `declare simd`        | ⚠️ Parsing Supported   | Scoping checks |
+|                               | `declare target`      | ✅ Supported           | Device_type, link, indirect clauses |
+|                               | `dispatch`            | ⚠️ Parsing Support     | Parsing only |
+| **Utility Directives**        | `requires`            | ✅ Supported           | Unified memory, atomic default mem order |
+|                               | `assumes`             | ✅ Supported           | Assumption parsing |
+
+
 ## Known issues
 
 - ICE when variables with the CONTIGUOUS attribute are used in kernels.
@@ -197,47 +239,3 @@ is at your own risk.
 © 2022-2025 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
 
 All other trademarks and copyrights are property of their respective owners and are only mentioned for informative purposes.
-
-
-# AMD Flang OpenMP Feature Support Summary (Drop 22.2.0)
-
-In addition to the features as of OpenMP API version 3.1 (supported by LLVM/Flang of the the LLVM project), the AMD Fortran Compiler has support for the following additional features from later OpenMP API versions.
-
-| Category                      | Construct / Directive | Support Status         | Notes |
-|-------------------------------|-----------------------|------------------------|-------|
-| **Parallelism Constructs**    | `teams`               | ✅ Supported           | Multi-block teams, reductions, nesting checks |
-|                               | `simd`                | ✅ Supported           | Combined forms, safelen/simdlen, linear/aligned |
-| **Work-Sharing Constructs**   | `do` / `for`          | ✅ Fully Supported     | All schedules, collapse, ordered, canonical loops |
-|                               | `workdistribute`      | ⚠️ In Development      | Claimed in 7.1.1, no details |
-| **Tasking Constructs**        | `task`                | ✅ Fully Supported     | Full clause coverage, detach/event checks |
-|                               | `taskloop`            | ⚠️ Likely Supported    | Infrastructure suggests support |
-|                               | `taskyield`           | ✅ Supported           | Runtime support |
-|                               | `taskgroup`           | ✅ Supported           | Task reductions, allocate clause |
-|                               | `taskgraph`           | ⚠️ Parsing Only        | Parsing complete, lowering not detailed |
-| **Device Constructs**         | `target`              | ✅ Fully Supported     | Full clause coverage, AMD GPU backend |
-|                               | `target data`         | ✅ Supported           | Map/use_device_ptr/addr improvements |
-|                               | `target enter/exit data` | ✅ Supported        | Full clause coverage |
-|                               | `target update`       | ✅ Supported           | To/from, depend, nowait |
-| **Loop Constructs**           | `loop`                | ✅ Fully Supported     | Standalone + combined forms, bind clause |
-|                               | `distribute`          | ✅ Supported           | Dist_schedule, collapse, canonical loops |
-| **Loop Transformations**      | `tile`                | ✅ Supported           | Standalone + nested loop tiling |
-|                               | `unroll`              | ✅ Supported           | Full + partial unrolling |
-| **Synchronization**           | `barrier`             | ✅ Supported           | Per-symbol checks |
-|                               | `ordered`             | ✅ Supported           | Standalone with depend/doacross |
-|                               | `taskwait`            | ✅ Supported           | Depend + nowait |
-| **Cancellation**              | `cancel`              | ✅ Supported           | Parallel, sections, do/for, taskgroup |
-|                               | `cancellation point`  | ✅ Supported           | Standard support |
-| **Data Environment**          | `threadprivate`       | ✅ Supported           | Host association, default(none) fixes |
-|                               | `declare reduction`   | ✅ Supported           | User-defined reductions, GPU combiner regions |
-|                               | `declare mapper`      | ✅ Supported           | Custom mappers, derived types |
-|                               | `scan`                | ⚠️ Backend Support     | IR builder changes, partial |
-|                               | `groupprivate`        | ⚠️ Parsing Support     | Parsing + semantic checks only |
-| **Memory Management**         | `allocate`            | ✅ Supported           | Scope + semantic checks |
-|                               | `allocators`          | ✅ Supported           | Custom allocators supported |
-| **Variant Directives**        | `metadirective`       | ⚠️ Parsing/Semantics   | Context selectors, WHEN/OTHERWISE |
-|                               | `declare variant`     | ⚠️ Parsing Supported   | Context match parsing |
-|                               | `declare simd`        | ⚠️ Parsing Supported   | Scoping checks |
-|                               | `declare target`      | ✅ Supported           | Device_type, link, indirect clauses |
-|                               | `dispatch`            | ⚠️ Parsing Support     | Parsing only |
-| **Utility Directives**        | `requires`            | ✅ Supported           | Unified memory, atomic default mem order |
-|                               | `assumes`             | ✅ Supported           | Assumption parsing |
