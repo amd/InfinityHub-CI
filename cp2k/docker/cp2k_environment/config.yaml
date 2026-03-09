@@ -1,0 +1,6 @@
+config:
+  # This is the path to the root of the Spack install tree.
+  # You can use $spack here to refer to the root of the spack instance.
+  install_tree:
+    root: /opt/cp2k-dist
+

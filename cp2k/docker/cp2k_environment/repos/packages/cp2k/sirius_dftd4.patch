@@ -1,0 +1,416 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8ba3d8c857..15d1b79b77 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -23,7 +23,6 @@ endif()
+ # =================================================================================================
+ # PROJECT AND VERSION
+ include(CMakeDependentOption)
+-include(GitSubmodule)
+ include(CustomTargets)
+ 
+ cmake_policy(SET CMP0048 NEW)
+@@ -55,7 +54,7 @@ if(NOT DEFINED CMAKE_CUDA_STANDARD)
+ endif()
+ 
+ if(NOT DEFINED CMAKE_CXX_STANDARD)
+-  set(CMAKE_CXX_STANDARD 14)
++  set(CMAKE_CXX_STANDARD 17)
+   set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ endif()
+ 
+@@ -185,18 +184,18 @@ cmake_dependent_option(CP2K_USE_SIRIUS_NLCG "Enable nlcg method in SIRIUS" OFF
+ 
+ cmake_dependent_option(
+   CP2K_DBCSR_USE_CPU_ONLY "Disable the DBCSR accelerated backend" OFF
+-  "NOT CP2K_USE_ACCEL MATCHES \"OPENCL\"" OFF)
++  "NOT CP2K_USE_ACCEL MATCHES \"OPENCL|HIP|CUDA\"" OFF)
+ 
+ cmake_dependent_option(
+-  CP2K_ENABLE_DBM_GPU "Disable the dbm accelerated backend (mostly GPU)." ON
++  CP2K_ENABLE_DBM_GPU "Enable the dbm accelerated backend (mostly GPU)." ON
+   "CP2K_USE_ACCEL" OFF)
+ 
+ cmake_dependent_option(
+-  CP2K_ENABLE_GRID_GPU "Disable acceleration for grid related functions." ON
++  CP2K_ENABLE_GRID_GPU "Enable acceleration for grid related functions." ON
+   "CP2K_USE_ACCEL MATCHES \"HIP|CUDA\"" OFF)
+ 
+ cmake_dependent_option(
+-  CP2K_ENABLE_PW_GPU "Disable the ffts accelerated backend (mostly GPU)." ON
++  CP2K_ENABLE_PW_GPU "Enable the ffts accelerated backend (mostly GPU)." ON
+   "CP2K_USE_ACCEL MATCHES \"HIP|CUDA\"" OFF)
+ 
+ cmake_dependent_option(
+@@ -230,7 +229,21 @@ cmake_dependent_option(
+ 
+ set(CP2K_BLAS_VENDOR
+     "auto"
+-    CACHE STRING "BLAS library for computations on host")
++    CACHE STRING "blas vendor/generic libraries")
++
++set_property(
++  CACHE CP2K_BLAS_VENDOR
++  PROPERTY STRINGS
++           "auto"
++           "MKL"
++           "OpenBLAS"
++           "SCI"
++           "GenericBLAS"
++           "Armpl"
++           "FlexiBLAS"
++           "Atlas"
++           "NVHPCBlas"
++           "CUSTOM")
+ 
+ set(CP2K_SCALAPACK_VENDOR_LIST "MKL" "SCI" "GENERIC" "auto")
+ set(CP2K_SCALAPACK_VENDOR
+@@ -761,14 +774,10 @@ endif()
+ 
+ if(CP2K_USE_ACE)
+   find_package(ACE REQUIRED)
+-  get_target_property(CP2K_ACE_INCLUDE_DIRS ACE::pace
++  get_target_property(CP2K_ACE_INCLUDE_DIRS cp2k::ACE
+                       INTERFACE_INCLUDE_DIRECTORIES)
+-  get_target_property(CP2K_ACE_LINK_LIBRARIES ACE::pace
++  get_target_property(CP2K_ACE_LINK_LIBRARIES cp2k::ACE
+                       INTERFACE_LINK_LIBRARIES)
+-  get_target_property(LIB_PATH ACE::yaml-cpp-pace INTERFACE_LINK_LIBRARIES)
+-  list(APPEND CP2K_ACE_LINK_LIBRARIES ${LIB_PATH})
+-  get_target_property(LIB_PATH ACE::cnpy INTERFACE_LINK_LIBRARIES)
+-  list(APPEND CP2K_ACE_LINK_LIBRARIES ${LIB_PATH})
+ endif()
+ 
+ if(CP2K_USE_TBLITE)
+@@ -776,9 +785,10 @@ if(CP2K_USE_TBLITE)
+   find_package(toml-f REQUIRED)
+   find_package(s-dftd3 REQUIRED)
+   find_package(tblite REQUIRED)
++  add_library(cp2k::tblite INTERFACE IMPORTED)
+   target_link_libraries(
+-    tblite::tblite INTERFACE mctc-lib::mctc-lib dftd4::dftd4 toml-f::toml-f
+-                             s-dftd3::s-dftd3)
++    cp2k::tblite INTERFACE tblite::tblite mctc-lib::mctc-lib dftd4::dftd4
++                           toml-f::toml-f s-dftd3::s-dftd3)
+ endif()
+ 
+ # SIRIUS
+@@ -825,6 +835,9 @@ if(CP2K_USE_GREENX)
+   set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-L${GMP_LIBRARY_PATH}")
+   set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS}
+                                 "-L${GMP_LIBRARY_PATH}")
++
++  add_library(cp2k::greenx INTERFACE greenX::GXCommon greenX::LibGXAC
++              greenX::LibGXMiniMax cp2k::trexio::trexio)
+ endif()
+ 
+ # OPTION HANDLING
+diff --git a/cmake/CompilerConfiguration.cmake b/cmake/CompilerConfiguration.cmake
+index 6469558f56..93b946fa58 100644
+--- a/cmake/CompilerConfiguration.cmake
++++ b/cmake/CompilerConfiguration.cmake
+@@ -37,16 +37,14 @@ endif()
+ add_compile_options(
+   "$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-std=f2008;-ffree-form;-ffree-line-length-none;-fimplicit-none>"
+   "$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-g;-fno-omit-frame-pointer;-fbacktrace>"
+-  "$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:$<$<VERSION_GREATER_EQUAL:${CMAKE_Fortran_COMPILER_VERSION},11>:-fallow-argument-mismatch>>"
++  "$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:$<$<VERSION_GREATER:$<Fortran_COMPILER_VERSION>,10>:-fallow-argument-mismatch>>"
+   "$<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-Wno-deprecated-declarations;-Wno-maybe-uninitialized;-Wuninitialized;-Wuse-without-only>"
+ )
+ add_compile_options(
+-  "$<$<COMPILE_LANG_AND_ID:CXX,GNU>:--std=c++17>"
+   "$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-g;-fno-omit-frame-pointer>"
+   "$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Wno-deprecated-declarations;-Wno-vla-parameter>"
+ )
+ add_compile_options(
+-  "$<$<COMPILE_LANG_AND_ID:C,GNU>:-std=c11>"
+   "$<$<COMPILE_LANG_AND_ID:C,GNU>:-g;-fno-omit-frame-pointer>"
+   "$<$<COMPILE_LANG_AND_ID:C,GNU>:-Wno-deprecated-declarations;-Wno-vla-parameter>"
+ )
+diff --git a/cmake/GitSubmodule.cmake b/cmake/GitSubmodule.cmake
+deleted file mode 100644
+index b9ca6a2fe1..0000000000
+--- a/cmake/GitSubmodule.cmake
++++ /dev/null
+@@ -1,30 +0,0 @@
+-#!-------------------------------------------------------------------------------------------------!
+-#!   CP2K: A general program to perform molecular dynamics simulations                             !
+-#!   Copyright 2000-2025 CP2K developers group <https://cp2k.org>                                  !
+-#!                                                                                                 !
+-#!   SPDX-License-Identifier: GPL-2.0-or-later                                                     !
+-#!-------------------------------------------------------------------------------------------------!
+-
+-# Call to ensure that the git submodule in location `path` is loaded. If the
+-# submodule is not loaded, an error message that describes how to update the
+-# submodules is printed. Sets the variable name_avail to `ON` if the submodule
+-# is available, or `OFF` otherwise. copyright github.com/arbor-sim
+-
+-function(check_git_submodule name path)
+-  set(success_var "${name}_avail")
+-  set(${success_var}
+-      ON
+-      PARENT_SCOPE)
+-
+-  get_filename_component(dotgit "${path}/.git" ABSOLUTE)
+-  if(NOT EXISTS ${dotgit})
+-    message(
+-      FATAL_ERROR
+-        "\nThe git submodule for ${name} is not available.\n"
+-        "To check out all submodules use the following commands:\n"
+-        "    git submodule init\n"
+-        "    git submodule update\n"
+-        "Or download submodules recursively when checking out:\n"
+-        "    git clone --recursive https://github.com/cp2k/cp2k.git\n")
+-  endif()
+-endfunction()
+diff --git a/cmake/modules/FindACE.cmake b/cmake/modules/FindACE.cmake
+index 4dfabcae18..9b69ea9109 100644
+--- a/cmake/modules/FindACE.cmake
++++ b/cmake/modules/FindACE.cmake
+@@ -24,30 +24,18 @@ cp2k_find_libraries(ACE_CNPY "cnpy")
+ find_package_handle_standard_args(ACE DEFAULT_MSG CP2K_ACE_CNPY_LINK_LIBRARIES)
+ 
+ if(CP2K_ACE_FOUND)
+-  if(NOT TARGET ACE::pace)
+-    add_library(ACE::pace INTERFACE IMPORTED)
++  if(NOT TARGET cp2k::ACE)
++    add_library(cp2k::ACE INTERFACE IMPORTED)
+   endif()
+   set_target_properties(
+-    ACE::pace
++    cp2k::ACE
+     PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CP2K_ACE_INCLUDE_DIRS}"
+                INTERFACE_LINK_LIBRARIES "${CP2K_ACE_LINK_LIBRARIES}")
+-endif()
+-
+-if(CP2K_ACE_YAML_FOUND)
+-  if(NOT TARGET ACE::yaml-cpp-pace)
+-    add_library(ACE::yaml-cpp-pace INTERFACE IMPORTED)
+-  endif()
+-  set_target_properties(
+-    ACE::yaml-cpp-pace PROPERTIES INTERFACE_LINK_LIBRARIES
+-                                  "${CP2K_ACE_YAML_LINK_LIBRARIES}")
+-endif()
+ 
+-if(CP2K_ACE_CNPY_FOUND)
+-  if(NOT TARGET ACE::cnpy)
+-    add_library(ACE::cnpy INTERFACE IMPORTED)
+-  endif()
+-  set_target_properties(ACE::cnpy PROPERTIES INTERFACE_LINK_LIBRARIES
+-                                             "${CP2K_ACE_CNPY_LINK_LIBRARIES}")
++  target_link_libraries(
++    cp2k::ACE PROPERTIES INTERFACE_LINK_LIBRARIES
++    "$<BOOL:${CP2K_ACE_YAML_FOUND}>:${CP2K_ACE_YAML_LINK_LIBRARIES}>"
++    "$<BOOL:${CP2K_ACE_CNPY_FOUND}>:${CP2K_ACE_CNPY_LINK_LIBRARIES}>")
+ endif()
+ 
+ mark_as_advanced(CP2K_ACE_FOUND CP2K_ACE_INCLUDE_DIRS CP2K_ACE_LINK_LIBRARIES
+diff --git a/cmake/modules/FindBlas.cmake b/cmake/modules/FindBlas.cmake
+index deb67cff96..369233cae3 100644
+--- a/cmake/modules/FindBlas.cmake
++++ b/cmake/modules/FindBlas.cmake
+@@ -9,13 +9,6 @@
+ #
+ # authors : Mathieu Taillefumier
+ 
+-if(NOT
+-   (CMAKE_C_COMPILER_LOADED
+-    OR CMAKE_CXX_COMPILER_LOADED
+-    OR CMAKE_Fortran_COMPILER_LOADED))
+-  message(FATAL_ERROR "FindBLAS requires Fortran, C, or C++ to be enabled.")
+-endif()
+-
+ if(NOT CP2K_CONFIG_PACKAGE)
+   set(CP2K_BLAS_VENDOR_LIST
+       # cmake-format: sortable
+@@ -34,8 +27,6 @@ if(NOT CP2K_CONFIG_PACKAGE)
+   list(REMOVE_ITEM __BLAS_VENDOR_LIST "auto")
+   list(REMOVE_ITEM __BLAS_VENDOR_LIST "CUSTOM")
+ 
+-  # set(CP2K_BLAS_VENDOR "auto" CACHE STRING "Blas library for computations on
+-  # host")
+   set_property(CACHE CP2K_BLAS_VENDOR PROPERTY STRINGS ${CP2K_BLAS_VENDOR_LIST})
+ 
+   if(NOT ${CP2K_BLAS_VENDOR} IN_LIST CP2K_BLAS_VENDOR_LIST)
+@@ -152,3 +143,4 @@ mark_as_advanced(CP2K_BLAS_INCLUDE_DIRS)
+ mark_as_advanced(CP2K_BLAS_LINK_LIBRARIES)
+ mark_as_advanced(CP2K_BLAS_VENDOR)
+ mark_as_advanced(CP2K_BLAS_FOUND)
++mark_as_advanced(CP2K_BLAS_VENDOR_LIST)
+diff --git a/cmake/modules/FindLibXSMM.cmake b/cmake/modules/FindLibXSMM.cmake
+index 60fe8c836d..4d0fe8f2eb 100644
+--- a/cmake/modules/FindLibXSMM.cmake
++++ b/cmake/modules/FindLibXSMM.cmake
+@@ -75,26 +75,28 @@ else()
+     CP2K_LIBXSMM_LINK_LIBRARIES)
+ endif()
+ 
+-if(NOT TARGET cp2k::LibXSMM::libxsmm)
+-  foreach(__lib libxsmm libxsmmf libxsmmext libxsmmnoblas)
++if(NOT TARGET cp2k::LibXSMM)
++  add_library(cp2k::LibXSMM INTERFACE IMPORTED)
++  foreach(__lib libxsmmf libxsmmext libxsmm libxsmmnoblas)
+     string(TOUPPER "CP2K_${__lib}" __lib_search_up)
+ 
+     if(${__lib_search_up}_FOUND AND NOT TARGET cp2k::LibXSMM::${__lib})
+       add_library(cp2k::LibXSMM::${__lib} INTERFACE IMPORTED)
+       target_link_directories(cp2k::LibXSMM::${__lib} INTERFACE
+                               ${${__lib_search_up}_LIBRARY_DIRS})
+-    endif()
+-
+-    set_target_properties(
+-      cp2k::LibXSMM::${__lib} PROPERTIES INTERFACE_LINK_LIBRARIES
+-                                         "${${__lib_search_up}_LINK_LIBRARIES}")
+-
+-    if(CP2K_LIBXSMM_INCLUDE_DIRS)
+       set_target_properties(
+         cp2k::LibXSMM::${__lib}
+-        PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
+-                   "${CP2K_LIBXSMM_INCLUDE_DIRS};${CP2K_LIBXSMM_PREFIX}/include"
+-      )
++        PROPERTIES INTERFACE_LINK_LIBRARIES
++                   "${${__lib_search_up}_LINK_LIBRARIES}")
++
++      if(CP2K_LIBXSMM_INCLUDE_DIRS)
++        set_target_properties(
++          cp2k::LibXSMM::${__lib}
++          PROPERTIES
++            INTERFACE_INCLUDE_DIRECTORIES
++            "${CP2K_LIBXSMM_INCLUDE_DIRS};${CP2K_LIBXSMM_PREFIX}/include")
++      endif()
++      target_link_libraries(cp2k::LibXSMM INTERFACE cp2k::LibXSMM::${__lib})
+     endif()
+   endforeach()
+ endif()
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index d2baf2a32b..ab2e674807 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -1635,14 +1635,13 @@ set(CP2K_GPU_DFLAGS
+ # ##############################################################################
+ 
+ add_fypp_sources(CP2K_SRCS ${CP2K_SRCS_F})
+-
+-# TODO Add __SHORT_FILE__ also to program files, e.g. metadyn_tools/graph.F
++add_fypp_sources(CP2K_PROGS_F_FYPP ${CP2K_PROGS_F})
+ 
+ # set the __SHORT_FILE__ per file for CP2K sources
+-foreach(cp2k_src ${CP2K_SRCS})
+-  # add_fypp_sources returns a path in the current binary dir
+-  file(RELATIVE_PATH short_file "${CMAKE_BINARY_DIR}/src" "${cp2k_src}")
+-  set_source_files_properties(
++foreach(cp2k_src ${CP2K_SRCS} ${CP2K_PROGS_F_FYPP})
++# add_fypp_sources returns a path in the current binary dir
++file(RELATIVE_PATH short_file "${CMAKE_BINARY_DIR}/src" "${cp2k_src}")
++set_source_files_properties(
+     ${cp2k_src} PROPERTIES COMPILE_DEFINITIONS __SHORT_FILE__="${short_file}")
+ endforeach()
+ 
+diff --git a/src/input_cp2k_pwdft.F b/src/input_cp2k_pwdft.F
+index 0a86c14b9f..507c89efa5 100644
+--- a/src/input_cp2k_pwdft.F
++++ b/src/input_cp2k_pwdft.F
+@@ -18,7 +18,7 @@ MODULE input_cp2k_pwdft
+    USE SIRIUS, ONLY: &
+       sirius_option_get, &
+       sirius_option_get_section_length, sirius_option_get_info, &
+-      SIRIUS_INTEGER_TYPE, SIRIUS_NUMBER_TYPE, SIRIUS_STRING_TYPE, &
++      SIRIUS_INTEGER_TYPE, SIRIUS_NUMBER_TYPE, SIRIUS_STRING_TYPE, SIRIUS_OBJECT_TYPE, &
+       SIRIUS_LOGICAL_TYPE, SIRIUS_ARRAY_TYPE, SIRIUS_INTEGER_ARRAY_TYPE, SIRIUS_LOGICAL_ARRAY_TYPE, &
+       SIRIUS_NUMBER_ARRAY_TYPE, SIRIUS_STRING_ARRAY_TYPE, string_f2c
+ #endif
+@@ -186,13 +186,13 @@ CONTAINS
+       CHARACTER(len=*), INTENT(in)                       :: section_name
+ 
+       CHARACTER(len=128)                                 :: name
+-      CHARACTER(len=128), TARGET                         :: possible_values(1:16)
++      CHARACTER(len=128), TARGET                         :: possible_values(1:256)
+       CHARACTER(len=4096)                                :: description, usage
+-      INTEGER                                            :: ctype, enum_i_val(1:16), enum_length, i, &
+-                                                            j, length, num_possible_values
+-      INTEGER, ALLOCATABLE, DIMENSION(:), TARGET         :: ivec
++      INTEGER                                            :: ctype, enum_length, i, j, length, &
++                                                            num_possible_values
++      INTEGER, ALLOCATABLE, DIMENSION(:), TARGET         :: enum_i_val, ivec
+       INTEGER, TARGET                                    :: dummy_i
+-      LOGICAL                                            :: lvecl(1:16)
++      LOGICAL                                            :: jump_dft_parameters, lvecl(1:16)
+       LOGICAL(4), ALLOCATABLE, DIMENSION(:), TARGET      :: lvec
+       LOGICAL(4), TARGET                                 :: dummy_l
+       REAL(kind=dp), ALLOCATABLE, DIMENSION(:), TARGET   :: rvec
+@@ -202,7 +202,8 @@ CONTAINS
+       ALLOCATE (ivec(1:16))
+       ALLOCATE (rvec(1:16))
+       ALLOCATE (lvec(1:16))
+-
++      ALLOCATE (enum_i_val(1:256))
++      jump_dft_parameters = .FALSE.
+ #ifdef __LIBVDWXC
+       IF (section_name == "parameters") THEN
+          NULLIFY (keyword)
+@@ -238,10 +239,18 @@ CONTAINS
+                                      4096, &
+                                      usage, &
+                                      4096)
++
+          ! description and usage are ignored here
+          ! it is a minor inconvenience from the api.
+-
+          name = TRIM(ADJUSTL(name))
++
++#if defined(__SIRIUS_DFTD4)
++         ! need to implement the object case within a section
++         IF (((section_name == 'dftd3') .OR. (section_name == 'dftd4')) .AND. (name == 'parameters')) THEN
++            CYCLE
++         END IF
++#endif
++
+          ! I exclude these three keywords because one of them is for debugging
+          ! purpose the other are replaced by a dedicated call in cp2k
+          !
+@@ -403,10 +412,19 @@ CONTAINS
+                END IF
+                CALL section_add_keyword(section, keyword)
+                CALL keyword_release(keyword)
++               !CASE (SIRIUS_OBJECT_TYPE)
++               ! create a subsection for the dftd3/dftd4 parameters
++               !CALL create_sirius_section(sub_section, sub_section_name)
++               !CALL section_add_subsection(section, sub_section)
++               !CALL section_release(sub_section)
+             CASE default
+             END SELECT
+          END IF
+       END DO
++      DEALLOCATE (ivec)
++      DEALLOCATE (rvec)
++      DEALLOCATE (lvec)
++      DEALLOCATE (enum_i_val)
+    END SUBROUTINE fill_in_section
+ 
+ ! **************************************************************************************************
+diff --git a/src/sirius_interface.F b/src/sirius_interface.F
+index 120998477f..f3b18804df 100644
+--- a/src/sirius_interface.F
++++ b/src/sirius_interface.F
+@@ -229,7 +229,7 @@ CONTAINS
+          CASE (SIRIUS_FUNC_VDWDF2)
+             CALL sirius_add_xc_functional(sctx, "XC_FUNC_VDWDF2")
+          CASE (SIRIUS_FUNC_VDWDFCX)
+-            CALL sirius_add_xc_functional(sctx, "XC_FUNC_VDWDF2")
++            CALL sirius_add_xc_functional(sctx, "XC_FUNC_VDWDFCX")
+          CASE default
+          END SELECT
+ #endif
+@@ -671,6 +671,12 @@ CONTAINS
+                                      4096, &
+                                      usage, &
+                                      4096)
++
++         ! ignore the keyword parametes for sections dftd3 and dftd4.
++         IF (((section_name == 'dftd3') .OR. (section_name == 'dftd4')) .AND. (option_name == 'parameters')) THEN
++            CYCLE
++         END IF
++
+          IF ((option_name /= 'memory_usage') .AND. (option_name /= 'xc_functionals') .AND. (option_name /= 'vk')) THEN
+             CALL section_vals_val_get(section, option_name, explicit=found)
+             IF (found) THEN

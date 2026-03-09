@@ -1,0 +1,84 @@
+From ec31484c3848cfa4baaf98e55ad2f035be044f29 Mon Sep 17 00:00:00 2001
+From: Mathieu Taillefumier <mathieu.taillefumier@free.fr>
+Date: Thu, 13 Feb 2025 12:39:23 +0100
+Subject: [PATCH] Update c++ standard
+
+---
+ CMakeLists.txt                        | 30 ++++++++++++++++++++-------
+ src/acc/libsmm_acc/tune/tune_setup.py |  2 +-
+ 2 files changed, 24 insertions(+), 8 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 601570c24ab..2124756ad22 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -77,6 +77,8 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+ option(USE_OPENMP "Build with OpenMP support" ON)
+ option(USE_MPI "Build with MPI support" ON)
+ option(USE_MPI_F08 "Build with the mpi_f08 module support" OFF)
++option(BUILD_TESTING "build dbcsr unit tests" OFF)
++
+ cmake_dependent_option(
+   WITH_C_API "Build the C API (ISO_C_BINDINGS)" ON "USE_MPI" OFF
+ )# the ISO_C_BINDINGS require MPI unconditionally
+@@ -126,14 +128,28 @@ option(WITH_HIP_PROFILING "Enable profiling within HIP" OFF)
+ # =================================================================================================
+ # LANGUAGES AND TESTING
+ enable_language(Fortran)
++enable_language(CXX)
++enable_language(C)
+ 
+-if (WITH_C_API AND WITH_EXAMPLES)
+-  enable_language(CXX)
+-  enable_language(C)
+-endif ()
++if(NOT DEFINED CMAKE_CUDA_STANDARD)
++  set(CMAKE_CUDA_STANDARD 14)
++  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
++endif()
++
++if(NOT DEFINED CMAKE_CXX_STANDARD)
++  set(CMAKE_CXX_STANDARD 14)
++  set(CMAKE_CXX_STANDARD_REQUIRED ON)
++endif()
++
++if(NOT DEFINED CMAKE_C_STANDARD)
++  set(CMAKE_C_STANDARD 11)
++  set(CMAKE_C_STANDARD_REQUIRED ON)
++endif()
+ 
+-# always use at least C++11
+-set(CMAKE_CXX_STANDARD 11)
++if(NOT DEFINED CMAKE_HIP_STANDARD)
++  set(CMAKE_HIP_STANDARD 14)
++  set(CMAKE_HIP_STANDARD_REQUIRED ON)
++endif()
+ 
+ # =================================== OpenMP
+ if (USE_OPENMP)
+@@ -365,8 +381,8 @@ include(CheckCompilerSupport)
+ # subdirectories
+ add_subdirectory(${DBCSR_SOURCE_DIR})
+ 
+-include(CTest)
+ if (BUILD_TESTING)
++  include(CTest)
+   add_subdirectory(tests)
+ endif ()
+ 
+diff --git a/src/acc/libsmm_acc/tune/tune_setup.py b/src/acc/libsmm_acc/tune/tune_setup.py
+index deb8a10011e..9a430509dc5 100755
+--- a/src/acc/libsmm_acc/tune/tune_setup.py
++++ b/src/acc/libsmm_acc/tune/tune_setup.py
+@@ -361,7 +361,7 @@ def gen_makefile(outdir, compiler, arch):
+         output += (
+             "\tnvcc -O3 -D__TUNING -D__CUDA -arch="
+             + str(arch)
+-            + " -w -c -o $@ -std=c++11 $<\n\n"
++            + " -w -c -o $@ -std=c++14 $<\n\n"
+         )
+     else:
+         output += (
+-- 
+2.51.0
+

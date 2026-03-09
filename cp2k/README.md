@@ -17,10 +17,9 @@ The latest CP2K review, as of **May 2020**, can be found at **[The Journal of Ch
 - [Bare Metal build](/cp2k/baremetal/)
 - [Docker/Singularity Build](/cp2k/docker/)
 
-> **NOTE**
-> The recipes provided here use a script within CP2K to install the all dependencies. This toolchain script does not support MI300. 
-
 ## Running CP2K Benchmarks
+
+> **Note**: Convenient benchmark scripts are available in `docker/scripts/` and `baremetal/scripts/` directories. These scripts handle CP2K repository cloning, environment setup, CPU/GPU affinity, and output management. See the [Docker README](docker/README.md#running-benchmarks) and [Baremetal README](baremetal/README.md#running-benchmarks) for details.
 
 <details>
 <summary>MI210/MI100 GPUs</summary>
@@ -35,6 +34,7 @@ mpirun \
     -x NUM_GPUS=8 \
     -x RANK_STRIDE=8 \
     -x OMP_NUM_THREADS=8 \
+    -x DBCSR_USE_ACC_G2G=1 \
     --oversubscribe \
     -np 16 \
     --bind-to none \
@@ -44,6 +44,8 @@ mpirun \
     -i /opt/cp2k/benchmarks/QS_DM_LS/H2O-dft-ls.NREP2.inp \
     -o /tmp/H2O-DFT-LS-NREP2-8GPU.txt
 ```
+
+> **Note**: The `DBCSR_USE_ACC_G2G=1` environment variable enables GPU-to-GPU communication for improved performance for the DFT benchmark. This is included in the provided benchmark scripts.
 
 In the above example, the H2O-DFT-LS (NREP2) benchmark is run on a dual socket server with 8 MI210 GPUs and 128 physical cores. The job in this example is run with 16 MPI ranks and 8 OpenMP threads per rank with two processes sharing a GPU. The `NUM_CPUS`, `NUM_GPUS` and `RANK_STRIDE` variables are used by the helper scripts that set GPU and CPU affinity for CP2K processes and their threads. The `RANK_STRIDE` option allows the processes and their threads to be spread out and pinned to physical cores across the two sockets. If your system has a different configuration, please adjust these parameters accordingly.
 
@@ -56,6 +58,7 @@ mpirun \
     -x NUM_GPUS=4 \
     -x RANK_STRIDE=4 \
     -x OMP_NUM_THREADS=4 \
+    -x DBCSR_USE_ACC_G2G=1 \
     --oversubscribe \
     -np 16 \
     --bind-to none \
@@ -115,12 +118,12 @@ In the above example, the two stages of the 32-H2O-RPA benchmark are run on a du
 A grep for `"CP2K     "` in the output files `/tmp/32-H2O-RPA-*.txt` will show the elapsed time for each run.
 
 >Note:  
->The above-mentioned commands can also be run verbatim on a dual socket server with 8 MI100 GPUs and 128 physical CPU cores. If your system configuration is different, please adjust the parameters accordingly.
+>The above-mentioned commands can also be run verbatim on a dual socket server with 8 MI100/MI300X/MI325X GPUs and 128 physical CPU cores. If your system configuration is different, please adjust the parameters accordingly.
 
 </details>
 <details>
-<summary>MI250/MI300 GPUs</summary>
-### MI250/MI300 GPUs
+<summary>MI250 GPUs</summary>
+### MI250 GPUs
 
 An MI250 GPU contains two Graphics Compute Dies (GCDs) each of which is presented to the application
 as a separate GPU device. When running with MI250 GPUs, the scripts that set up CPU and GPU affinities,
@@ -138,6 +141,7 @@ mpirun \
     -x NUM_GPUS=2 \
     -x RANK_STRIDE=8 \
     -x OMP_NUM_THREADS=4 \
+    -x DBCSR_USE_ACC_G2G=1 \
     --oversubscribe \
     -np 4 \
     --bind-to none \
@@ -155,6 +159,7 @@ mpirun \
     -x NUM_GPUS=8 \
     -x RANK_STRIDE=8 \
     -x OMP_NUM_THREADS=4 \
+    -x DBCSR_USE_ACC_G2G=1 \
     --oversubscribe \
     -np 16 \
     --bind-to none \
