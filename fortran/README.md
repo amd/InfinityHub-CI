@@ -14,7 +14,7 @@ The latest release is **drop 22.2.0**. You may obtain any of the supported OS th
 ```shell
 wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-rhel.tar.bz2
 wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-sles.tar.bz2
-wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-ubu.tar.bz2
+wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-ubuntu.tar.bz2
 wget https://repo.radeon.com/rocm/misc/flang/rocm-afar-8873-drop-22.2.0-alma.tar.bz2
 ```
 An AlmaLinux OS build is now available starting with drop 6.0.0:
