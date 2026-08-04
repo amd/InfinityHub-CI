@@ -1,0 +1,100 @@
+#!/usr/bin/bash
+#-----------------------------------------------------------------------------
+#SBATCH -p MI350x
+#SBATCH -t 00:30:00
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=16
+#SBATCH --gres=gpu:8
+#SBATCH --exclusive
+#SBATCH -J cp2k_QS_DM_LS_H2O-dft-ls-NREP2-docker
+#SBATCH -o cp2k_QS_DM_LS_H2O-dft-ls-NREP2-docker-%j.out
+
+# Docker variant of the QS_DM_LS H2O-dft-ls.NREP2 benchmark. Mirrors
+# ../../baremetal/scripts/cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run, but wraps
+# the mpirun launch in `docker run` against the cp2k image. Can also be
+# run interactively (`./cp2k_QS_DM_LS_...run`) as the SBATCH directives
+# are just shell comments.
+
+set -eu
+set -o pipefail
+
+SCRIPT_NAME_FULL=${BASH_SOURCE[0]}
+if [ -n "${SLURM_JOB_ID:-}" ]; then
+    is_batch_job=$(scontrol show jobid="${SLURM_JOB_ID}" | grep -q BatchFlag=1 && echo yes || echo no)
+    if [ "${is_batch_job}" = "yes" ]; then
+        SCRIPT_NAME_FULL=$(scontrol show jobid="${SLURM_JOB_ID}" | grep "Command=" | cut -d= -f2 | cut -d' ' -f1)
+    fi
+fi
+
+SCRIPT_DIR=$(cd "$(dirname "${SCRIPT_NAME_FULL}")" && pwd)
+# shellcheck source=./_run_common.sh
+source "${SCRIPT_DIR}/_run_common.sh"
+
+ARCH="${arch:-mi350x}"
+CP2K_CONFIG=QS_DM_LS
+CP2K_EXPERIMENT=H2O-dft-ls-NREP2
+CP2K_INPUT=H2O-dft-ls.NREP2.inp
+CP2K_OUTPUT=H2O-dft-ls.NREP2.out
+
+# Cluster topology defaults (single-node MI350X-class: 256 logical CPUs /
+# 128 physical CPUs / 8 NUMA domains / 8 GPUs). Override via env vars.
+lcpus_per_node=${lcpus_per_node:-256}
+physcpus_per_node=${physcpus_per_node:-128}
+numa_per_node=${numa_per_node:-8}
+gpus_per_node=${GPUS_PER_NODE:-8}
+
+nnodes=${SLURM_NNODES:-1}
+ntasks=${SLURM_NTASKS:-$(( nnodes * 16 ))}
+ntasks_per_node=${SLURM_NTASKS_PER_NODE:-$(( ntasks / nnodes ))}
+ntasks_per_numa=$(( ntasks_per_node / numa_per_node ))
+nthreads=${SLURM_CPUS_PER_TASK:-$(( physcpus_per_node / ntasks_per_node ))}
+
+# Enable DBCSR GPU-to-GPU communication (improves DFT performance on multi-GPU)
+DBCSR_USE_ACC_G2G="${DBCSR_USE_ACC_G2G:-1}"
+
+BENCH_DIR="$(cp2k_benchmark_dir "${CP2K_CONFIG}")"
+INPUT_PATH="${BENCH_DIR}/${CP2K_INPUT}"
+if [ ! -f "${INPUT_PATH}" ]; then
+    echo "ERROR: benchmark input not found: ${INPUT_PATH}" >&2
+    exit 1
+fi
+
+EXPNAME="${ARCH}_N${nnodes}.n${ntasks}.t${nthreads}.g${gpus_per_node}_${SLURM_JOB_ID:-local}"
+OUTPUT_DIR="${HOST_OUTPUT_ROOT}/${CP2K_CONFIG}/${CP2K_EXPERIMENT}/${EXPNAME}"
+CONTAINER_OUT="/outputs/${CP2K_CONFIG}/${CP2K_EXPERIMENT}/${EXPNAME}"
+mkdir -p "${OUTPUT_DIR}"
+
+cat <<EOF
+==========================================
+CP2K DFT benchmark (${CP2K_CONFIG} / ${CP2K_INPUT}) - docker
+  image:        ${CONTAINER_IMAGE}
+  ranks/node:   ${ntasks_per_node}
+  threads/rank: ${nthreads}
+  GPUs/node:    ${gpus_per_node}
+  ranks/NUMA:   ${ntasks_per_numa}
+  output dir:   ${OUTPUT_DIR}
+==========================================
+EOF
+
+LAUNCH=$(cat <<LAUNCH_EOF
+cd /benchmark
+mkdir -p ${CONTAINER_OUT}
+
+date
+mpirun --report-bindings -np ${ntasks} --map-by ppr:${ntasks_per_numa}:numa:PE=${nthreads} -x OMP_NUM_THREADS=${nthreads} -x DBCSR_USE_ACC_G2G "\${GPU_BIND_BIN}" "\${CP2K_BIN}" -i ${CP2K_INPUT} -o ${CONTAINER_OUT}/${CP2K_OUTPUT}
+date
+LAUNCH_EOF
+)
+
+# shellcheck disable=SC2046
+docker run $(docker_run_args | tr '\n' ' ') \
+    -v "${BENCH_DIR}":/benchmark \
+    -e GPUS_PER_NODE="${gpus_per_node}" \
+    -e OMP_PROC_BIND=spread \
+    -e OMP_PLACES=threads \
+    -e OMP_STACKSIZE=256M \
+    -e DBCSR_USE_ACC_G2G="${DBCSR_USE_ACC_G2G}" \
+    "${CONTAINER_IMAGE}" \
+    bash -c "$(container_command "${LAUNCH}")"
+
+report_fom "${OUTPUT_DIR}/${CP2K_OUTPUT}"

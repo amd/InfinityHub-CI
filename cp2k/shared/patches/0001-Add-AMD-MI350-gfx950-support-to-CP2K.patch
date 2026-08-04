@@ -1,0 +1,68 @@
+From 7fc2a089415079d9b9b994ce09281a6bf86b4325 Mon Sep 17 00:00:00 2001
+From: Mikko Byckling <mikko.byckling@amd.com>
+Date: Wed, 22 Apr 2026 01:48:14 -0500
+Subject: [PATCH] Add AMD MI350 (gfx950) support to CP2K
+
+---
+ .../builtin/packages/cp2k/package.py           |  5 +++++
+ .../builtin/packages/cp2k/rocm-Mi350.patch     | 18 ++++++++++++++++++
+ 2 files changed, 23 insertions(+)
+ create mode 100644 repos/spack_repo/builtin/packages/cp2k/rocm-Mi350.patch
+
+diff --git a/repos/spack_repo/builtin/packages/cp2k/package.py b/repos/spack_repo/builtin/packages/cp2k/package.py
+index 9ff9a5257e..b41bcbb2d4 100644
+--- a/repos/spack_repo/builtin/packages/cp2k/package.py
++++ b/repos/spack_repo/builtin/packages/cp2k/package.py
+@@ -25,6 +25,7 @@ GPU_MAP = {
+     "gfx90a:xnack-": "Mi250",
+     "gfx90a:xnack+": "Mi250",
+     "gfx942": "Mi300",
++    "gfx950": "Mi350",
+ }
+ 
+ 
+@@ -455,6 +456,7 @@ class Cp2k(MakefilePackage, CMakePackage, CudaPackage, ROCmPackage):
+         "gfx90a:xnack-",
+         "gfx90a:xnack+",
+         "gfx942",
++        "gfx950"
+     )
+     cuda_msg = "cp2k only supports cuda_arch {0}".format(supported_cuda_arch_list)
+     rocm_msg = "cp2k only supports amdgpu_target {0}".format(supported_rocm_arch_list)
+@@ -526,6 +528,9 @@ class Cp2k(MakefilePackage, CMakePackage, CudaPackage, ROCmPackage):
+         sha256="0d542c414216866953c95e642d2590b3d313717dfaebbf12cfafedbdd3bf54a3",
+         when="@=2025.1",
+     )
++    patch("rocm-Mi350.patch",
++          sha256="504f2b03fd501cbe33ce1db51cd25a7ca8da85a89fe6479f0d2fb841e96c125a",
++          when="@=2026.1")
+ 
+     def patch(self):
+         # Patch for an undefined constant due to incompatible changes in ELPA
+diff --git a/repos/spack_repo/builtin/packages/cp2k/rocm-Mi350.patch b/repos/spack_repo/builtin/packages/cp2k/rocm-Mi350.patch
+new file mode 100644
+index 0000000000..69e9662856
+--- /dev/null
++++ b/repos/spack_repo/builtin/packages/cp2k/rocm-Mi350.patch
+@@ -0,0 +1,18 @@
++--- a/CMakeLists.txt	2026-01-06 03:30:44.750963200 -0600
+++++ b/CMakeLists.txt	2026-04-22 01:42:58.494570023 -0500
++@@ -287,6 +287,7 @@
++     Mi210
++     Mi250
++     Mi300
+++    Mi350
++     K20X
++     K40
++     K80
++@@ -461,6 +462,7 @@
++   set(CP2K_GPU_ARCH_NUMBER_Mi200 gfx90a)
++   set(CP2K_GPU_ARCH_NUMBER_Mi250 gfx90a)
++   set(CP2K_GPU_ARCH_NUMBER_Mi300 gfx942)
+++  set(CP2K_GPU_ARCH_NUMBER_Mi350 gfx950)
++ 
++   # CMAKE_HIP_ARCHITECTURES and CMAKE_CUDA_ARCHITECTURES are the prefered
++   # mechanism to set the GPU architecture. We still offer the CP2K_WITH_GPU
+-- 
+2.43.0
+

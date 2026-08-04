@@ -1,174 +1,114 @@
 #!/bin/bash
 #
-# CP2K Docker Build Script
-# This script builds the CP2K Docker image with caching and image reuse support
+# Build the CP2K Docker image.
+#
+# The image is built from the repository root so that ./shared/ is part of
+# the build context (the Dockerfile COPYs shared/ into the image and runs
+# shared/cp2k_build.sh inside).
 #
 # Usage:
-#   ./build_cp2k.sh [--clean] [--no-cache] [--cache-from IMAGE] [--dockerfile FILE]
+#   ./build_cp2k.sh [--clean] [--no-cache] [--cache-from IMAGE]
 #
-# Options:
-#   --clean        Clean up old containers and images before building
-#   --no-cache     Build without using Docker cache
-#   --cache-from   Use specified image as cache source
-#   --dockerfile   Use specified Dockerfile (default: Dockerfile)
+# Build target/version knobs are forwarded to the Dockerfile via build args
+# and default to an MI350X recipe (gfx950 / zen5 / ROCm 7.2). Override
+# them via environment variables before invoking this script:
 #
+#   GPU_ARCH=gfx942 CPU_ARCH=zen3 ROCM_VERSION=7.0.0 ./build_cp2k.sh
 
-set -e
+set -eu
+set -o pipefail
 
-# Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Ensure we're in the cp2k/docker directory
-cd "$SCRIPT_DIR"
+IMAGE_NAME="${IMAGE_NAME:-cp2k}"
+IMAGE_TAG="${IMAGE_TAG:-latest}"
+BASE_IMAGE="${BASE_IMAGE:-rocm/dev-ubuntu-24.04:7.2-complete}"
 
-# Verify we're in the right directory (cp2k/docker)
-if [ ! -f "Dockerfile" ] || [ ! -f "spack.sh" ] || [ ! -d "cp2k_environment" ]; then
-    echo "Error: Required files not found. Please run this script from the cp2k/docker directory."
-    echo "Current directory: $(pwd)"
-    echo "Expected files: Dockerfile, spack.sh, cp2k_environment/"
-    exit 1
-fi
+GPU_ARCH="${GPU_ARCH:-gfx950}"
+CPU_ARCH="${CPU_ARCH:-zen5}"
+ROCM_VERSION="${ROCM_VERSION:-7.2.0}"
+ROCM_PATH="${ROCM_PATH:-/opt/rocm-${ROCM_VERSION}}"
+GCC_VERSION="${GCC_VERSION:-14.3.0}"
+SPACK_BRANCH="${SPACK_BRANCH:-v1.1.1}"
+SPACK_PACKAGES_TAG="${SPACK_PACKAGES_TAG:-v2026.03.0}"
+BUILD_JOBS="${BUILD_JOBS:-32}"
 
-# Configuration
-IMAGE_NAME="cp2k"
-IMAGE_TAG="latest"
-BASE_IMAGE="rocm/dev-ubuntu-24.04:7.0-complete"
-CACHE_DIR="${SCRIPT_DIR}/cache"
-SPACK_CACHE_DIR="${CACHE_DIR}/spack"
 BUILD_LOG="${SCRIPT_DIR}/build.log"
-DOCKERFILE="${SCRIPT_DIR}/Dockerfile"
 
-# Parse arguments
 CLEAN=false
 NO_CACHE=false
 CACHE_FROM=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --clean)
-            CLEAN=true
-            shift
-            ;;
-        --no-cache)
-            NO_CACHE=true
-            shift
-            ;;
-        --cache-from)
-            CACHE_FROM="$2"
-            shift 2
-            ;;
-        --dockerfile)
-            DOCKERFILE="$2"
-            shift 2
+        --clean)       CLEAN=true; shift ;;
+        --no-cache)    NO_CACHE=true; shift ;;
+        --cache-from)  CACHE_FROM="$2"; shift 2 ;;
+        --help|-h)
+            sed -n '2,/^set -eu/p' "$0" | sed 's/^# \{0,1\}//'
+            exit 0
             ;;
         *)
-            echo "Unknown option: $1"
-            echo "Usage: $0 [--clean] [--no-cache] [--cache-from IMAGE] [--dockerfile FILE]"
-            echo ""
-            echo "Options:"
-            echo "  --clean          Clean up old containers/images"
-            echo "  --no-cache       Build without Docker cache"
-            echo "  --cache-from     Use specified image as cache source"
-            echo "  --dockerfile     Use specified Dockerfile (default: Dockerfile)"
+            echo "Unknown option: $1" >&2
+            echo "Usage: $0 [--clean] [--no-cache] [--cache-from IMAGE]" >&2
             exit 1
             ;;
     esac
 done
 
-# Cleanup function
-cleanup() {
+if [ "${CLEAN}" = true ]; then
     echo "=== Cleaning up old containers and images ==="
-    
-    # Stop and remove containers
-    docker ps -a --filter "ancestor=${IMAGE_NAME}:${IMAGE_TAG}" --format "{{.ID}}" | xargs -r docker rm -f 2>/dev/null || true
-    
-    # Remove old images (keep the latest)
+    docker ps -a --filter "ancestor=${IMAGE_NAME}:${IMAGE_TAG}" --format "{{.ID}}" \
+        | xargs -r docker rm -f 2>/dev/null || true
     OLD_IMAGES=$(docker images "${IMAGE_NAME}" --format "{{.ID}}" | tail -n +2)
-    if [ -n "$OLD_IMAGES" ]; then
-        echo "$OLD_IMAGES" | xargs -r docker rmi -f 2>/dev/null || true
+    if [ -n "${OLD_IMAGES}" ]; then
+        echo "${OLD_IMAGES}" | xargs -r docker rmi -f 2>/dev/null || true
     fi
-    
-    echo "Cleanup complete"
-}
+fi
 
-# Create cache directories
-setup_cache() {
-    echo "=== Setting up cache directories ==="
-    mkdir -p "${SPACK_CACHE_DIR}"
-    mkdir -p "${CACHE_DIR}/build"
-    echo "Cache directory: ${CACHE_DIR}"
-    echo "Spack cache: ${SPACK_CACHE_DIR}"
-}
+cat <<EOF
+==========================================
+CP2K Docker build
+  Image:              ${IMAGE_NAME}:${IMAGE_TAG}
+  Base image:         ${BASE_IMAGE}
+  GPU target:         ${GPU_ARCH}
+  CPU target:         ${CPU_ARCH}
+  ROCm version:       ${ROCM_VERSION}
+  ROCm path:          ${ROCM_PATH}
+  GCC version:        ${GCC_VERSION}
+  Spack:              ${SPACK_BRANCH}
+  spack-packages tag: ${SPACK_PACKAGES_TAG}
+  Build jobs:         ${BUILD_JOBS}
+  Build context:      ${REPO_ROOT}
+==========================================
+EOF
 
-# Build function
-build_image() {
-    # Ensure we're still in the correct directory
-    cd "$SCRIPT_DIR"
-    
-    echo "=== Building Docker image ==="
-    echo "Working directory: $(pwd)"
-    echo "Image: ${IMAGE_NAME}:${IMAGE_TAG}"
-    echo "Dockerfile: $(basename "$DOCKERFILE")"
-    echo "Base image: ${BASE_IMAGE}"
-    echo "Build log: ${BUILD_LOG}"
-    echo ""
-    
-    # Prepare build arguments
-    BUILD_ARGS=(
-        --tag "${IMAGE_NAME}:${IMAGE_TAG}"
-        --file "$(basename "$DOCKERFILE")"
-        --build-arg "IMAGE=${BASE_IMAGE}"
-    )
-    
-    
-    # Add cache-from if specified
-    if [ -n "$CACHE_FROM" ]; then
-        echo "Using cache from: ${CACHE_FROM}"
-        BUILD_ARGS+=(--cache-from "${CACHE_FROM}")
-    fi
-    
-    # Add no-cache if requested
-    if [ "$NO_CACHE" = true ]; then
-        echo "Building without cache"
-        BUILD_ARGS+=(--no-cache)
-    fi
-    
-    # Use BuildKit for advanced caching features
-    export DOCKER_BUILDKIT=1
-    
-    # Build the image from the current directory (cp2k/docker)
-    echo "Starting build at $(date)"
-    echo "Build context: $(pwd)"
-    if docker build "${BUILD_ARGS[@]}" . 2>&1 | tee "${BUILD_LOG}"; then
-        echo ""
-        echo "=== Build completed successfully at $(date) ==="
-        docker images "${IMAGE_NAME}:${IMAGE_TAG}"
-        return 0
-    else
-        echo ""
-        echo "=== Build failed ==="
-        echo "Check ${BUILD_LOG} for details"
-        return 1
-    fi
-}
+BUILD_ARGS=(
+    --tag "${IMAGE_NAME}:${IMAGE_TAG}"
+    --file "${SCRIPT_DIR}/Dockerfile"
+    --build-arg "IMAGE=${BASE_IMAGE}"
+    --build-arg "GPU_ARCH=${GPU_ARCH}"
+    --build-arg "CPU_ARCH=${CPU_ARCH}"
+    --build-arg "ROCM_VERSION=${ROCM_VERSION}"
+    --build-arg "ROCM_PATH=${ROCM_PATH}"
+    --build-arg "GCC_VERSION=${GCC_VERSION}"
+    --build-arg "SPACK_BRANCH=${SPACK_BRANCH}"
+    --build-arg "SPACK_PACKAGES_TAG=${SPACK_PACKAGES_TAG}"
+    --build-arg "BUILD_JOBS=${BUILD_JOBS}"
+)
+[ -n "${CACHE_FROM}" ] && BUILD_ARGS+=(--cache-from "${CACHE_FROM}")
+[ "${NO_CACHE}" = true ] && BUILD_ARGS+=(--no-cache)
 
-# Main execution
-main() {
-    echo "=========================================="
-    echo "CP2K Docker Build Script"
-    echo "=========================================="
-    echo ""
-    
-    if [ "$CLEAN" = true ]; then
-        cleanup
-        echo ""
-    fi
-    
-    setup_cache
-    echo ""
-    
-    build_image
-}
+export DOCKER_BUILDKIT=1
 
-# Run main function
-main "$@"
+echo "Starting build at $(date)"
+if docker build "${BUILD_ARGS[@]}" "${REPO_ROOT}" 2>&1 | tee "${BUILD_LOG}"; then
+    echo
+    echo "=== Build completed at $(date) ==="
+    docker images "${IMAGE_NAME}:${IMAGE_TAG}"
+else
+    echo
+    echo "=== Build failed; see ${BUILD_LOG} ===" >&2
+    exit 1
+fi

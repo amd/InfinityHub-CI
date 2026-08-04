@@ -1,189 +1,125 @@
-# CP2K Container Build Instructions
+# CP2K — Container Build
 
-This document provides instructions on how to build CP2K into a Docker container using Spack for dependency management. The container is portable between environments and includes all CP2K dependencies built with ROCm support.
+This document describes how to build CP2K with ROCm support as a Docker
+container. The image is produced by [`../shared/cp2k_build.sh`](../shared/cp2k_build.sh)
+running inside a ROCm base image; the Dockerfile here is intentionally a
+thin layer over that script so the recipe is identical to the
+[`baremetal/`](../baremetal/) build.
 
-## Build System Requirements
+## Requirements
 
 - Git
-- Docker (or Podman)
-- BuildKit (recommended for better caching)
+- Docker (or Podman) with BuildKit recommended
+- Internet access during the build (Spack and source tarballs)
+- ~50 GB free disk space (Spack build stage is large)
 
-## Overview
+Supported CPUs/GPUs/OS are in the
+[main README](../README.md#system-requirements).
 
-This Docker recipe uses **Spack** to build CP2K and all its dependencies. This is the **recommended build method from the CP2K developer community**, providing a robust and maintainable approach to building CP2K with all its scientific computing dependencies.
+## What the build does
 
-The build process:
-1. Sets up the base ROCm development environment
-2. Builds UCX, UCC, and OpenMPI with ROCm support
-3. Installs Spack package manager
-4. Uses a Spack environment (`cp2k_environment/spack.yaml`) to build CP2K and all dependencies
-5. Creates a symlink at `/opt/cp2k` for easy access to CP2K executables
+1. Starts from a ROCm base image (default: `rocm/dev-ubuntu-24.04:7.2-complete`).
+2. Installs the minimal system tooling Spack needs to bootstrap (no UCX,
+   UCC, OpenMPI, or GCC are pre-installed via apt — Spack builds them).
+3. COPYs `shared/` into the image and runs `shared/cp2k_build.sh`.
+4. Symlinks the resulting CP2K install at `/opt/cp2k`.
 
-## Inputs
+The complete build recipe (Spack version, GCC version, MPI stack,
+dependencies, gfx950 patch) lives in `shared/cp2k_build.sh` and is shared
+verbatim with the baremetal flow.
 
-### Build Arguments
+## Quick start
 
-Possible `build-arg` parameters for the Docker build command:
-
-- **IMAGE** (default: `rocm/dev-ubuntu-24.04:7.0-complete`)
-  - Base container image with ROCm development tools
-  - Must include ROCm 7.0+ support
-
-- **UCX_BRANCH** (default: `v1.19.0`)
-  - UCX (Unified Communication X) version for MPI communication
-
-- **UCC_BRANCH** (default: `v1.5.1`)
-  - UCC (Unified Collective Communication) version
-
-- **OMPI_BRANCH** (default: `v5.0.8`)
-  - OpenMPI version
-
-- **AMDGPU_TARGETS** (default: `gfx908,gfx90a,gfx942`)
-  - GPU architectures to target (comma-separated)
-  - Common targets: `gfx908` (MI100), `gfx90a` (MI200), `gfx942` (MI300)
-
-- **CP2K_BRANCH** (default: `v2026.1`)
-  - CP2K version to build (specified in `spack.yaml`)
-
-> **NOTE**
-> The GPU architecture targets are configured in the Spack environment file (`cp2k_environment/spack.yaml`) via the `amdgpu_target` variant. The default targets are set to `gfx942` (MI300).
-
-## Build Instructions
-
-### Quick Start
-
-Use the provided build script for convenience:
+Build from the repository root (the Dockerfile lives in `docker/` but the
+build context must be the repo root so `shared/` is available):
 
 ```bash
-cd /path/to/cp2k/docker
-./build_cp2k.sh --clean
+cd /path/to/cp2k-recipe
+./docker/build_cp2k.sh
 ```
 
-This will:
-- Clean up old containers/images
-- Build the CP2K Docker image
-- Save build logs to `build.log`
+That defaults to:
+- `gfx950` (MI350X) GPU target
+- `zen5` CPU microarch
+- ROCm `7.2.0`
+- `gcc@14.3.0`, `openmpi@5.0.10`, `ucx@1.20.0`, `ucc@1.7.0` — all built by
+  Spack
 
-### Manual Build
+## Configuration
 
-To build manually:
+The build wrapper forwards environment variables to the Dockerfile as
+`--build-arg`s. The shared build knobs (`GPU_ARCH`, `CPU_ARCH`,
+`ROCM_VERSION`, `ROCM_PATH`, `GCC_VERSION`, `SPACK_BRANCH`,
+`SPACK_PACKAGES_TAG`, `BUILD_JOBS`) and the validation disclaimer are in the
+[main README](../README.md#build-configuration). Docker-specific knobs:
+
+| Variable | Default |
+|---|---|
+| `IMAGE_NAME` | `cp2k` |
+| `IMAGE_TAG` | `latest` |
+| `BASE_IMAGE` | `rocm/dev-ubuntu-24.04:7.2-complete` |
+
+Example: build an MI300X / Zen3 image off a ROCm 7.0 base:
 
 ```bash
-cd /path/to/cp2k/docker
-docker build -t mycontainer/cp2k:latest .
+BASE_IMAGE=rocm/dev-ubuntu-24.04:7.0-complete \
+    GPU_ARCH=gfx942 \
+    CPU_ARCH=zen3 \
+    ROCM_VERSION=7.0.0 \
+    IMAGE_TAG=mi300x \
+    ./docker/build_cp2k.sh
 ```
 
-> **Notes:**
-> - `mycontainer/cp2k:latest` will be the name of your local container
-> - The `.` at the end tells Docker where your build context is located
-> - Ensure you're in the `docker` directory (contains `Dockerfile`, `spack.sh`, and `cp2k_environment/`)
+### Manual `docker build`
 
-### Custom Configuration
-
-To build with custom parameters:
+If you want to skip the wrapper:
 
 ```bash
-docker build \
-    -t mycontainer/cp2k:latest \
-    --build-arg AMDGPU_TARGETS=gfx908,gfx90a \
-    --build-arg IMAGE=rocm/dev-ubuntu-24.04:7.0-complete \
+cd /path/to/cp2k-recipe
+DOCKER_BUILDKIT=1 docker build \
+    -t cp2k:latest \
+    -f docker/Dockerfile \
+    --build-arg GPU_ARCH=gfx950 \
+    --build-arg CPU_ARCH=zen5 \
+    --build-arg ROCM_VERSION=7.2.0 \
     .
 ```
 
-> **DISCLAIMER**: This Docker build has only been validated using the default values. Using a different base image or branch may result in build failures or poor performance.
+The `.` at the end is critical — the build context must be the repo root
+so the `shared/` directory is available to `COPY`.
 
-### Using Build Cache
+### Build flags
 
-For faster rebuilds after making changes:
+`build_cp2k.sh` accepts:
 
-```bash
-# Tag current image
-docker tag mycontainer/cp2k:latest mycontainer/cp2k:previous
+- `--clean` — remove old containers / images before building
+- `--no-cache` — bypass Docker cache
+- `--cache-from IMAGE` — use `IMAGE` as a cache source
 
-# Make your changes (edit spack.yaml, package.py, etc.)
+> **Disclaimer**: This image has only been validated with the default
+> values. Different base images, GPU targets, or ROCm versions may cause
+> build failures or suboptimal performance.
 
-# Rebuild using cache
-./build_cp2k.sh --cache-from mycontainer/cp2k:previous
-```
+## Running the container
 
-## Spack Environment Configuration
+The container exposes `cp2k.psmp` on `PATH` and bakes in sane OpenMPI/UCX
+runtime defaults (matching the run scripts). It needs the AMD KFD/DRI
+devices and `--ipc=host` for GPU IPC.
 
-The CP2K build is controlled by the Spack environment located in `cp2k_environment/`:
-
-- **`spack.yaml`**: Defines all package specifications, variants, and build options
-- **`repos/`**: Custom Spack package repositories (contains CP2K, DBCSR, libvdwxc packages)
-- **`config.yaml`**: Spack configuration settings
-
-### Key CP2K Variants
-
-The CP2K package is built with the following variants (see `spack.yaml`):
-- `+rocm`: ROCm GPU acceleration
-- `+cosma`: COSMA library for matrix operations
-- `+sirius`: SIRIUS library for electronic structure
-- `+spglib`: Space group library
-- `+hdf5`: HDF5 I/O support
-- `+mpi`: MPI parallelization
-- `+openmp`: OpenMP threading
-- `smm=libxsmm`: Small matrix multiplication via libxsmm
-
-### Modifying the Build
-
-To change CP2K variants or dependencies:
-
-1. Edit `cp2k_environment/spack.yaml`
-2. Modify the `cp2k@2026.1` spec line with desired variants
-3. Rebuild the container
-
-Example: To disable a feature, change `+feature` to `~feature` in the spec.
-
-## Build Process Details
-
-The Dockerfile follows these steps:
-
-1. **Base Image Setup**: Installs system packages and development tools
-2. **UCX/UCC/OpenMPI**: Builds communication libraries with ROCm support
-3. **Spack Installation**: Clones Spack from GitHub
-4. **Environment Setup**: Copies `cp2k_environment/` and `spack.sh` into container
-5. **Spack Build**: Runs `spack.sh` which:
-   - Activates the Spack environment
-   - Finds external packages (system-installed tools including GCC from the base image)
-   - Concretizes the dependency graph
-   - Installs all packages (including CP2K) with 16 parallel jobs
-   - Creates symlink `/opt/cp2k` → Spack installation directory
-
-### Build Time
-
-Expected build times:
-- Base setup + UCX/UCC/OpenMPI: ~10-15 minutes
-- Spack dependency builds: ~20-30 minutes
-- CP2K compilation: ~5-10 minutes
-- **Total**: ~35-55 minutes (depending on system)
-
-## Run CP2K Container
-
-### Docker
-
-If you want access to any output files generated during the run, add `-v $(pwd):/tmp` before the container name.
-
-#### Docker Interactive
+### Interactive shell
 
 ```bash
-<<<<<<< cp2k_update
 docker run --rm -it \
     --device=/dev/kfd \
     --device=/dev/dri \
     --security-opt seccomp=unconfined \
     --ipc=host \
     -e PMIX_MCA_gds=^ds21 \
-    -v $(pwd):/tmp \
-    mycontainer/cp2k:latest \
-    /bin/bash
-=======
-docker run --rm -it --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --ipc=host -e PMIX_MCA_gds=^ds21 mycontainer/cp2k /bin/bash
->>>>>>> main
+    -v "$PWD":/workdir -w /workdir \
+    cp2k:latest /bin/bash
 ```
 
-#### Docker Single Command
+### One-off command
 
 ```bash
 docker run --rm \
@@ -192,155 +128,139 @@ docker run --rm \
     --security-opt seccomp=unconfined \
     --ipc=host \
     -e PMIX_MCA_gds=^ds21 \
-    -v $(pwd):/tmp \
-    mycontainer/cp2k:latest \
+    -v "$PWD":/workdir -w /workdir \
+    cp2k:latest \
     bash -c "cp2k.psmp -i input.inp -o output.out"
 ```
 
-### CP2K Executables
+### Singularity / Apptainer
 
-The container provides CP2K executables via the Spack environment:
-
-- **`cp2k.psmp`**: Parallel SMP (Shared Memory Parallel) version
-  - Built with MPI and OpenMP support
-  - Includes ROCm GPU acceleration
-  - Located at `/opt/cp2k/bin/cp2k.psmp` (also in PATH)
-
-The executable is accessible via:
-- Direct path: `/opt/cp2k/bin/cp2k.psmp`
-- PATH: `cp2k.psmp` (after sourcing Spack environment)
-- Symlink: `/opt/cp2k` → Spack installation directory
-
-### Running Benchmarks
-
-Example benchmark scripts are provided in `scripts/`:
-
-- **`run_dft_nrep2.sh`**: DFT benchmark with 16 MPI ranks
-- **`run_rpa32.sh`**: RPA benchmark with two stages (init + solver)
-- **`set_cpu_affinity.sh`** and **`set_gpu_affinity.sh`**: Affinity scripts that can be tuned for the system the benchmarks are run on
-
-> **DISCLAIMER**: The affinity scripts (`set_cpu_affinity.sh` and `set_gpu_affinity.sh`) must be tuned according to your specific system configuration to achieve maximum performance. The default settings may not be optimal for all hardware configurations.
-
-To run benchmarks:
+Convert the local Docker image:
 
 ```bash
-<<<<<<< cp2k_update
-cd /path/to/cp2k/docker
-./scripts/run_dft_nrep2.sh
-=======
-docker run --rm --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined --ipc=host -e PMIX_MCA_gds=^ds21 mycontainer/cp2k bash -c "<cp2k Command>"
->>>>>>> main
-```
-
-These scripts handle:
-- CP2K repository cloning
-- CPU/GPU affinity setup
-- Output file management
-
-### Singularity
-
-To build a Singularity image from the Docker image:
-
-```bash
-singularity build cp2k.sif docker-daemon://mycontainer/cp2k:latest
-```
-
-#### Singularity Interactive
-
-```bash
+singularity build cp2k.sif docker-daemon://cp2k:latest
 singularity shell --no-home --writable-tmpfs cp2k.sif
 ```
 
-#### Singularity Single Command
+## Running benchmarks
+
+The scripts in [`scripts/`](scripts/) mirror the corresponding files in
+[`baremetal/scripts/`](../baremetal/scripts/) — same filenames, same
+SBATCH header, same lowercase topology variables, same EXPNAME and output
+directory layout. The only difference is that the `mpirun` call is wrapped
+in `docker run` against the `cp2k` image. They mount the CP2K source
+benchmarks from the host (cloning them on first run if needed) and write
+outputs to `docker/outputs/<benchmark>/...`.
+
+| Script | Benchmark |
+|---|---|
+| `scripts/cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run` | `QS_DM_LS / H2O-dft-ls.NREP2` |
+| `scripts/cp2k_QS_mp2_rpa_32-H2O.run` | `QS_mp2_rpa / 32-H2O` (init + solver) |
+
+Both scripts double as SLURM batch jobs (just `sbatch` them on a system
+that allows running docker inside SLURM) and as plain interactive scripts
+(just `./` them) — the SBATCH directives are shell comments when run
+outside SLURM, and every `SLURM_*` variable has a sensible default.
+
+The topology variables (`numa_per_node`, `gpus_per_node`, etc.), MPI/UCX
+defaults, figure of merit, and the `DBCSR_USE_ACC_G2G` option are shared
+across flavors and documented in the
+[main README](../README.md#running-cp2k-benchmarks). The docker launchers
+add one knob:
+
+| Variable | Default |
+|---|---|
+| `CONTAINER_IMAGE` | `cp2k:latest` |
+
+Set `numa_per_node` to your node's actual NUMA domain count (`numactl -H`).
+
+Examples:
 
 ```bash
-singularity run --no-home --writable-tmpfs cp2k.sif bash -c "cp2k.psmp -i input.inp -o output.out"
+# DFT, interactive
+./docker/scripts/cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run
+
+# DFT against a different image, smaller box
+CONTAINER_IMAGE=cp2k:mi300x SLURM_NTASKS=8 numa_per_node=4 gpus_per_node=4 \
+    ./docker/scripts/cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run
+
+# RPA, interactive
+./docker/scripts/cp2k_QS_mp2_rpa_32-H2O.run
+
+# Either as a SLURM job (set numa_per_node to the node's NUMA count)
+sbatch --export=ALL,numa_per_node=<domains> ./docker/scripts/cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run
+sbatch --export=ALL,numa_per_node=<domains> ./docker/scripts/cp2k_QS_mp2_rpa_32-H2O.run
 ```
 
-## Runtime Options
+Output goes under
+`docker/outputs/<benchmark>/<experiment>/<arch>_N<nodes>.n<ranks>.t<threads>.g<gpus>_<jobid>/...`
+and each script prints the [figure of merit](../README.md#figure-of-merit)
+from the resulting `*.out`.
 
-### GPU-to-GPU Communication (g2g)
+The launchers internally:
+1. Clone CP2K source (for benchmark inputs) into `../cp2k_repo/` on first run.
+2. Run `docker run` with `--device=/dev/kfd --device=/dev/dri --ipc=host`,
+   bind-mounting the benchmark dir at `/benchmark` and the host output
+   directory at `/outputs`.
+3. Inside the container, source the Spack env, locate `cp2k.psmp` and
+   `close.sh`, then call `mpirun --map-by ppr:N:numa:PE=T close.sh cp2k.psmp ...`.
 
-To enable GPU-to-GPU communication in DBCSR, set the environment variable:
+## Runtime options
+
+### GPU-to-GPU communication
+
+The DFT launcher sets `DBCSR_USE_ACC_G2G=1`; it is not set image-wide. See
+[GPU-to-GPU communication](../README.md#gpu-to-gpu-communication) in the
+main README. To disable it for a comparison run:
 
 ```bash
-export DBCSR_USE_ACC_G2G=1
+DBCSR_USE_ACC_G2G=0 ./docker/scripts/cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run
 ```
 
-This can improve performance for multi-GPU runs. Example:
+### MPI / UCX
 
-```bash
-docker run --rm \
-    --device=/dev/kfd \
-    --device=/dev/dri \
-    -e DBCSR_USE_ACC_G2G=1 \
-    mycontainer/cp2k:latest \
-    bash -c "mpirun -np 16 -x DBCSR_USE_ACC_G2G=1 cp2k.psmp -i input.inp"
-```
+The image bakes the same OpenMPI/UCX defaults listed in the
+[main README](../README.md#mpi--ucx-defaults). Override via `-e VAR=...` on
+`docker run`.
 
 ## Troubleshooting
 
-### Build Failures
+### Build fails
 
-If the build fails during Spack installation:
+1. `cat docker/build.log` for the full Spack output.
+2. Make sure the build context is the repo root (`.`), not `docker/` —
+   `shared/` must be visible.
+3. Verify the base image has the matching ROCm version.
+4. Ensure ~50 GB free disk; Spack's build stage is large.
 
-1. Check `build.log` for detailed error messages
-2. Verify network connectivity (Spack downloads packages)
-3. Ensure sufficient disk space (~25GB+ required)
-4. Check that base image has ROCm support
-
-### Missing Executables
-
-If CP2K executable is not found:
+### `cp2k.psmp not found` inside the container
 
 ```bash
-# Inside container
-source /opt/spack/share/spack/setup-env.sh
-spack env activate /opt/cp2k_environment
+docker run --rm -it cp2k:latest bash
+source /opt/cp2k-build/spack_git/share/spack/setup-env.sh
+spack env activate cp2k
+spack load cp2k
 which cp2k.psmp
 ```
 
-### GPU Issues
+The image's `PATH` includes `/opt/cp2k/bin`, which symlinks to the Spack
+install prefix; this should normally just work.
 
-If GPU is not detected:
+### GPU not detected
 
-- Verify `/dev/kfd` and `/dev/dri` devices exist on host
-- Check ROCm installation in base image
-- Ensure GPU architecture matches `amdgpu_target` in `spack.yaml`
+- Verify `/dev/kfd` and `/dev/dri` exist on the host.
+- `docker run --rm --device=/dev/kfd --device=/dev/dri cp2k:latest rocm-smi`
+- Confirm the `GPU_ARCH` baked into the image matches your hardware
+  (`gfx942` for MI300X, `gfx950` for MI350X, etc.).
 
-## Licensing Information
+## Files in this directory
 
-Your use of this application is subject to the terms of the applicable component-level license identified below. To the extent any subcomponent in this container requires an offer for corresponding source code, AMD hereby makes such an offer for corresponding source code form, which will be made available upon request. By accessing and using this application, you are agreeing to fully comply with the terms of this license. If you do not agree to the terms of this license, do not access or use this application.
-
-The application is provided in a container image format that includes the following separate and independent components:
-
-| Package | License | URL |
-|---|---|---|
-| Ubuntu | Creative Commons CC-BY-SA Version 3.0 UK License | [Ubuntu Legal](https://ubuntu.com/legal) |
-| CMAKE | OSI-approved BSD-3 clause | [CMake License](https://cmake.org/licensing/) |
-| OpenMPI | BSD 3-Clause | [OpenMPI License](https://www-lb.open-mpi.org/community/license.php)<br /> [OpenMPI Dependencies Licenses](https://docs.open-mpi.org/en/v5.0.x/license/index.html) |
-| OpenUCX | BSD 3-Clause | [OpenUCX License](https://openucx.org/license/) |
-| ROCm | Custom/MIT/Apache V2.0/UIUC OSL | [ROCm Licensing Terms](https://rocm.docs.amd.com/en/latest/about/license.html) |
-| CP2K | GNU GPL Version 2 | [CP2k](https://www.cp2k.org/)<br />[CP2K License](https://github.com/cp2k/cp2k/blob/master/LICENSE) |
-| Spack | Apache-2.0 OR MIT | [Spack License](https://github.com/spack/spack/blob/develop/LICENSE-APACHE) |
-| OpenBlas | BSD 3-Clause | [OpenBlas](https://www.openblas.net/)<br /> [OpenBlas License](https://github.com/xianyi/OpenBLAS/blob/develop/LICENSE) |
-| COSMA | BSD 3-Clause | [COSMA License](https://github.com/eth-cscs/COSMA/blob/master/LICENSE) |
-| Libxsmm | BSD 3-Clause | [Libxsmm License](https://libxsmm.readthedocs.io/en/latest/LICENSE/) |
-| Libxc | MPL v2.0 | [Libxc License](https://github.com/ElectronicStructureLibrary/libxc) |
-| SpLA | BSD 3-Clause | [SpLA License](https://github.com/eth-cscs/spla/blob/master/LICENSE) |
-| DBCSR | GPL-2.0 | [DBCSR License](https://github.com/cp2k/dbcsr) |
-| SIRIUS | BSD 3-Clause | [SIRIUS License](https://github.com/electronic-structure/SIRIUS) |
-
-Additional third-party content in this container may be subject to additional licenses and restrictions. The components are licensed to you directly by the party that owns the content pursuant to the license terms included with such content and is not licensed to you by AMD. ALL LINKED THIRD-PARTY CONTENT IS MADE AVAILABLE BY AMD "AS IS" WITHOUT A WARRANTY OF ANY KIND. USE OF THE CONTAINER IS DONE AT YOUR SOLE DISCRETION AND UNDER NO CIRCUMSTANCES WILL AMD BE LIABLE TO YOU FOR ANY THIRD-PARTY CONTENT. YOU ASSUME ALL RISK AND ARE SOLELY RESPONSIBLE FOR ANY DAMAGES THAT MAY ARISE FROM YOUR USE OF THE CONTAINER.
-
-## Disclaimer
-
-The information contained herein is for informational purposes only, and is subject to change without notice. In addition, any stated support is planned and is also subject to change. While every precaution has been taken in the preparation of this document, it may contain technical inaccuracies, omissions and typographical errors, and AMD is under no obligation to update or otherwise correct this information. Advanced Micro Devices, Inc. makes no representations or warranties with respect to the accuracy or completeness of the contents of this document, and assumes no liability of any kind, including the implied warranties of noninfringement, merchantability or fitness for particular purposes, with respect to the operation or use of AMD hardware, software or other products described herein. No license, including implied or arising by estoppel, to any intellectual property rights is granted by this document. Terms and limitations applicable to the purchase or use of AMD's products are as set forth in a signed agreement between the parties or in AMD's Standard Terms and Conditions of Sale.
-
-## Notices and Attribution
-
-© 2022-26 Advanced Micro Devices, Inc. All rights reserved. AMD, the AMD Arrow logo, Instinct, Radeon Instinct, ROCm, and combinations thereof are trademarks of Advanced Micro Devices, Inc.
-
-Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. Docker, Inc. and other parties may also have trademark rights in other terms used herein. Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
-
-All other trademarks and copyrights are property of their respective owners and are only mentioned for informative purposes.
+```
+docker/
+├── Dockerfile          # ROCm base + shared/cp2k_build.sh
+├── build_cp2k.sh       # `docker build` wrapper
+└── scripts/
+    ├── _run_common.sh  # docker run helpers (mirrors baremetal/scripts/_run_common.sh)
+    ├── cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run
+    └── cp2k_QS_mp2_rpa_32-H2O.run
+```

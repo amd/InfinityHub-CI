@@ -1,0 +1,101 @@
+#!/usr/bin/bash
+#-----------------------------------------------------------------------------
+#SBATCH -p MI350x
+#SBATCH -t 00:30:00
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=32
+#SBATCH --gres=gpu:8
+#SBATCH --exclusive
+#SBATCH -J cp2k_QS_mp2_rpa_32-H2O-singularity
+#SBATCH -o cp2k_QS_mp2_rpa_32-H2O-singularity-%j.out
+
+# Singularity variant of the QS_mp2_rpa 32-H2O benchmark (init + solver).
+# Mirrors docker/scripts/, launching via `singularity exec --rocm`. Runs as an
+# sbatch job or interactively.
+
+set -eu
+set -o pipefail
+
+SCRIPT_NAME_FULL=${BASH_SOURCE[0]}
+if [ -n "${SLURM_JOB_ID:-}" ]; then
+    is_batch_job=$(scontrol show jobid="${SLURM_JOB_ID}" | grep -q BatchFlag=1 && echo yes || echo no)
+    if [ "${is_batch_job}" = "yes" ]; then
+        SCRIPT_NAME_FULL=$(scontrol show jobid="${SLURM_JOB_ID}" | grep "Command=" | cut -d= -f2 | cut -d' ' -f1)
+    fi
+fi
+
+SCRIPT_DIR=$(cd "$(dirname "${SCRIPT_NAME_FULL}")" && pwd)
+# shellcheck source=./_run_common.sh
+source "${SCRIPT_DIR}/_run_common.sh"
+
+ensure_singularity
+
+ARCH="${arch:-mi350x}"
+CP2K_CONFIG=QS_mp2_rpa
+CP2K_EXPERIMENT=32-H2O
+
+lcpus_per_node=${lcpus_per_node:-256}
+physcpus_per_node=${physcpus_per_node:-128}
+numa_per_node=${numa_per_node:-8}
+gpus_per_node=${GPUS_PER_NODE:-8}
+
+nnodes=${SLURM_NNODES:-1}
+ntasks=${SLURM_NTASKS:-$(( nnodes * 32 ))}
+ntasks_per_node=${SLURM_NTASKS_PER_NODE:-$(( ntasks / nnodes ))}
+ntasks_per_numa=$(( ntasks_per_node / numa_per_node ))
+nthreads=${SLURM_CPUS_PER_TASK:-$(( physcpus_per_node / ntasks_per_node ))}
+ntasks_init=${ntasks_init:-1}
+nthreads_init=${nthreads_init:-$(( physcpus_per_node / numa_per_node ))}
+
+BENCH_DIR="$(cp2k_benchmark_dir "${CP2K_CONFIG}/${CP2K_EXPERIMENT}")"
+for f in H2O-32-PBE-TZ.inp H2O-32-RI-dRPA-TZ.inp; do
+    if [ ! -f "${BENCH_DIR}/${f}" ]; then
+        echo "ERROR: benchmark input not found: ${BENCH_DIR}/${f}" >&2
+        exit 1
+    fi
+done
+
+EXPNAME="${ARCH}_N${nnodes}.n${ntasks}.t${nthreads}.g${gpus_per_node}_${SLURM_JOB_ID:-local}"
+OUTPUT_DIR="${HOST_OUTPUT_ROOT}/${CP2K_CONFIG}/${CP2K_EXPERIMENT}/${EXPNAME}"
+CONTAINER_OUT="/outputs/${CP2K_CONFIG}/${CP2K_EXPERIMENT}/${EXPNAME}"
+mkdir -p "${OUTPUT_DIR}"
+
+cat <<EOF
+==========================================
+CP2K RPA benchmark (${CP2K_CONFIG} / ${CP2K_EXPERIMENT}) - singularity
+  image:       ${SIF_IMAGE}
+  init:        ${ntasks_init} rank   x ${nthreads_init} threads
+  solver:      ${ntasks} ranks x ${nthreads} threads (ppr:${ntasks_per_numa}:numa)
+  GPUs/node:   ${gpus_per_node}
+  output dir:  ${OUTPUT_DIR}
+==========================================
+EOF
+
+LAUNCH=$(cat <<LAUNCH_EOF
+cd /benchmark
+mkdir -p ${CONTAINER_OUT}
+
+echo "----- Stage 1: init -----"
+date
+mpirun --report-bindings -np ${ntasks_init} --map-by ppr:1:node:PE=${nthreads_init} -x OMP_NUM_THREADS=${nthreads_init} "\${GPU_BIND_BIN}" "\${CP2K_BIN}" -i H2O-32-PBE-TZ.inp -o ${CONTAINER_OUT}/H2O-32-PBE-TZ.out
+date
+
+echo "----- Stage 2: solver -----"
+date
+mpirun --report-bindings -np ${ntasks} --map-by ppr:${ntasks_per_numa}:numa:PE=${nthreads} -x OMP_NUM_THREADS=${nthreads} "\${GPU_BIND_BIN}" "\${CP2K_BIN}" -i H2O-32-RI-dRPA-TZ.inp -o ${CONTAINER_OUT}/H2O-32-RI-dRPA-TZ.out
+date
+LAUNCH_EOF
+)
+
+singularity exec --rocm \
+    --bind "${BENCH_DIR}":/benchmark \
+    --bind "${HOST_OUTPUT_ROOT}":/outputs \
+    --env GPUS_PER_NODE="${gpus_per_node}" \
+    --env OMP_PROC_BIND=spread \
+    --env OMP_PLACES=threads \
+    --env OMP_STACKSIZE=256M \
+    "${SIF_IMAGE}" \
+    bash -c "$(container_command "${LAUNCH}")"
+
+report_fom "${OUTPUT_DIR}/H2O-32-PBE-TZ.out"
+report_fom "${OUTPUT_DIR}/H2O-32-RI-dRPA-TZ.out"

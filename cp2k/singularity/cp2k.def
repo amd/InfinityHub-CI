@@ -1,0 +1,58 @@
+Bootstrap: docker
+From: {{ BASE_IMAGE }}
+
+# Build:   ../singularity/build_cp2k.sh   (run from the repo root)
+# Recipe is shared with baremetal/docker via shared/cp2k_build.sh.
+
+%arguments
+    BASE_IMAGE=rocm/dev-ubuntu-24.04:7.2-complete
+    GPU_ARCH=gfx950
+    CPU_ARCH=zen5
+    ROCM_VERSION=7.2.0
+    ROCM_PATH=/opt/rocm-7.2.0
+    GCC_VERSION=14.3.0
+    SPACK_BRANCH=v1.1.1
+    SPACK_PACKAGES_TAG=v2026.03.0
+    BUILD_JOBS=32
+
+%files
+    shared /opt/cp2k-build/shared
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+        autoconf automake bzip2 build-essential ca-certificates cmake curl file \
+        flex gfortran git gnupg gzip libelf-dev libnuma-dev libstdc++-12-dev \
+        libtool libxml2-dev m4 make nano numactl patch pkg-config python3 \
+        python3-dev python3-pip ssh tar unzip vim wget xz-utils
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+    export BUILD_ROOT=/opt/cp2k-build
+    export SPACK_BRANCH={{ SPACK_BRANCH }}
+    export SPACK_PACKAGES_TAG={{ SPACK_PACKAGES_TAG }}
+    export GCC_VERSION={{ GCC_VERSION }}
+    export CPU_ARCH={{ CPU_ARCH }}
+    export GPU_ARCH={{ GPU_ARCH }}
+    export ROCM_VERSION={{ ROCM_VERSION }}
+    export ROCM_PATH={{ ROCM_PATH }}
+    export BUILD_JOBS={{ BUILD_JOBS }}
+    /opt/cp2k-build/shared/cp2k_build.sh
+    ln -sfn /opt/cp2k-build/cp2k /opt/cp2k
+
+%environment
+    export ROCM_PATH={{ ROCM_PATH }}
+    export PATH=${ROCM_PATH}/bin:/opt/cp2k/bin:$PATH
+    export LD_LIBRARY_PATH=${ROCM_PATH}/lib:${ROCM_PATH}/lib64:$LD_LIBRARY_PATH
+    export OMPI_MCA_pml=ucx
+    export OMPI_MCA_osc=ucx
+    export OMPI_MCA_coll_ucc_enable=1
+    export OMPI_MCA_coll_ucc_priority=100
+    export UCX_TLS=self,sm,rocm_copy,rocm_ipc,ud_x
+    export UCX_HANDLE_ERRORS=bt
+    export UCX_MAX_RNDV_RAILS=1
+    export HSA_ENABLE_SDMA=0
+    export HSA_ENABLE_IPC_MODE_LEGACY=1
+    export HIP_MEM_POOL_SUPPORT=1
+
+%runscript
+    exec /bin/bash "$@"
