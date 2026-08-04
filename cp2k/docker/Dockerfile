@@ -1,188 +1,102 @@
-ARG IMAGE="rocm/dev-ubuntu-24.04:7.0-complete"
+ARG IMAGE="rocm/dev-ubuntu-24.04:7.2-complete"
 
 FROM ${IMAGE}
 
-#ARG ROCM_URL="https://repo.radeon.com/amdgpu-install/7.0/ubuntu/noble/amdgpu-install_7.0.70000-1_all.deb"
-ARG UCX_BRANCH="v1.19.0"
-ARG UCC_BRANCH="v1.5.1"
-ARG OMPI_BRANCH="v5.0.8"
-ARG APT_GET_APPS=""
-ARG AMDGPU_TARGETS="gfx908,gfx90a,gfx942"
+# ---------------------------------------------------------------------------
+# Spack-based CP2K build. Unlike the previous recipe, this image does NOT
+# build UCX, UCC, or OpenMPI by hand. Spack builds them itself, along with
+# a fresh GCC toolchain, the full scientific stack, and CP2K. The Dockerfile
+# is intentionally a thin layer over shared/cp2k_build.sh so the build
+# recipe is identical for baremetal and container builds.
+# ---------------------------------------------------------------------------
 
-# Update and Install basic Linux development tools
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        ca-certificates \
-        git \
-        ssh \
-        make \
-        vim \
-        nano \
-        libtinfo-dev\
-        initramfs-tools \
-        libelf-dev \
-        numactl \
-        curl \
-        wget \
-        tmux \
-        build-essential \
+ARG GPU_ARCH=gfx950
+ARG CPU_ARCH=zen5
+ARG ROCM_VERSION=7.2.0
+ARG ROCM_PATH=/opt/rocm-${ROCM_VERSION}
+ARG GCC_VERSION=14.3.0
+ARG SPACK_BRANCH=v1.1.1
+ARG SPACK_PACKAGES_TAG=v2026.03.0
+ARG BUILD_JOBS=32
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# System packages required to bootstrap Spack and build the GCC/MPI/CP2K
+# stack from source. ROCm itself is provided by the base image.
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         autoconf \
         automake \
+        bzip2 \
+        build-essential \
+        ca-certificates \
         cmake \
-        gcc-12 \
-        g++-12 \
-        libtool \
-        pkg-config \
-        libnuma-dev \
-        gfortran \
+        curl \
+        file \
         flex \
-        hwloc \
-        gfortran-12 \
+        gfortran \
+        git \
+        gnupg \
+        gzip \
+        libelf-dev \
+        libnuma-dev \
         libstdc++-12-dev \
+        libtool \
         libxml2-dev \
+        m4 \
+        make \
+        nano \
+        numactl \
+        patch \
+        pkg-config \
+        python3 \
         python3-dev \
         python3-pip \
-        unzip ${APT_GET_APPS}\
-    && apt-get clean
+        ssh \
+        tar \
+        unzip \
+        vim \
+        wget \
+        xz-utils \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN rm /usr/bin/gcc /usr/bin/g++ /usr/bin/gfortran
-RUN ln -s /usr/bin/gcc-12 /usr/bin/gcc
-RUN ln -s /usr/bin/g++-12 /usr/bin/g++
-RUN ln -s /usr/bin/gfortran-12 /usr/bin/gfortran 
+ENV ROCM_PATH=${ROCM_PATH} \
+    PATH=${ROCM_PATH}/bin:/opt/cp2k/bin:${PATH} \
+    LD_LIBRARY_PATH=${ROCM_PATH}/lib:${ROCM_PATH}/lib64:${LD_LIBRARY_PATH:-}
 
-# RUN wget -qO- https://repo.radeon.com/rocm/rocm.gpg.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/rocm.gpg \
-#    && wget -O rocm.deb ${ROCM_URL} \
-#    && apt install -y ./rocm.deb \
-#    && amdgpu-install --usecase=rocm,hiplibsdk --no-dkms -y
+# Drop the shared build recipe into the image and run it. BUILD_ROOT lives
+# under /opt so the resulting Spack tree is self-contained and easy to find.
+WORKDIR /opt/cp2k-build
+COPY shared /opt/cp2k-build/shared
 
-# RUN bash -c """IFS=',' read -r -a ARCH <<<${AMDGPU_TARGETS} \
-#        &&  for gpu_arch in \${ARCH[@]}; do \
-#            echo \$gpu_arch  >> /opt/rocm/bin/target.lst; \
-#        done""" \
-#    && chmod a+r /opt/rocm/bin/target.lst 
+RUN BUILD_ROOT=/opt/cp2k-build \
+    SPACK_BRANCH=${SPACK_BRANCH} \
+    SPACK_PACKAGES_TAG=${SPACK_PACKAGES_TAG} \
+    GCC_VERSION=${GCC_VERSION} \
+    CPU_ARCH=${CPU_ARCH} \
+    GPU_ARCH=${GPU_ARCH} \
+    ROCM_VERSION=${ROCM_VERSION} \
+    ROCM_PATH=${ROCM_PATH} \
+    BUILD_JOBS=${BUILD_JOBS} \
+    /opt/cp2k-build/shared/cp2k_build.sh \
+    && ln -sfn /opt/cp2k-build/cp2k /opt/cp2k
 
-# # Requires cmake > 3.22 
-# RUN mkdir -p /opt/cmake  \
-#  && wget --no-check-certificate --quiet -O - https://cmake.org/files/v3.30/cmake-3.30.5-linux-x86_64.tar.gz | tar --strip-components=1 -xz -C /opt/cmake
-
-ENV ROCM_PATH=/opt/rocm \
-    UCX_PATH=/opt/ucx \
-    UCC_PATH=/opt/ucc \
-    OMPI_PATH=/opt/ompi \
-    # FC=amdflang \
-    # CC=amdclang \
-    # CXX=amdclang++ \
-    AMDGPU_TARGETS=${AMDGPU_TARGETS}
-
-# Adding rocm/cmake to the Environment 
-ENV PATH=$ROCM_PATH/bin:/opt/cmake/bin:$PATH \
-    LD_LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$ROCM_PATH/llvm/lib:$ROCM_PATH/lib/llvm/lib:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=$ROCM_PATH/lib:$ROCM_PATH/lib64:$LIBRARY_PATH \
-    C_INCLUDE_PATH=$ROCM_PATH/include:$C_INCLUDE_PATH \
-    CPLUS_INCLUDE_PATH=$ROCM_PATH/include:$CPLUS_INCLUDE_PATH \
-    CMAKE_PREFIX_PATH=$ROCM_PATH/lib/cmake:$CMAKE_PREFIX_PATH
-
-
-WORKDIR /tmp
-
-# Install UCX
-RUN git clone https://github.com/openucx/ucx.git -b ${UCX_BRANCH} \
-    && cd ucx \
-    && ./autogen.sh \
-    && mkdir build \
-    && cd build \
-    && ../contrib/configure-release --prefix=$UCX_PATH \
-        --with-rocm=$ROCM_PATH \
-        --without-knem \
-        --without-xpmem  \
-        --without-cuda \
-        --enable-optimizations  \
-        --disable-logging \
-        --disable-debug \
-        --disable-examples \
-    && make -j $(nproc)  \
-    && make install
-
-# Install UCC
-RUN git clone -b ${UCC_BRANCH} https://github.com/openucx/ucc \
-    && cd ucc \
-    && ./autogen.sh \
-    && mkdir build \
-    && cd build \
-    && ../configure --prefix=${UCC_PATH} --with-rocm=${ROCM_PATH} --with-ucx=${UCX_PATH} --with-rccl=no --with-rocm-arch=all-arch-no-native \
-    && make -j $(nproc) \
-    && make install
-
-
-# Install OpenMPI
-RUN git clone --recursive https://github.com/open-mpi/ompi.git -b ${OMPI_BRANCH} \
-    && cd ompi \
-    && ./autogen.pl \
-    && mkdir build \
-    && cd build \
-    && ../configure --prefix=$OMPI_PATH --with-ucx=$UCX_PATH \
-        --with-ucc=${UCC_PATH} \
-        --enable-mca-no-build=btl-uct  \
-        --without-verbs \
-        --with-pmix=internal \
-        --enable-mpi \
-        --enable-mpi-fortran=yes \
-        --disable-man-pages \
-        --disable-debug \
-    && make -j $(nproc) \
-    && make install
-
-# Adding OpenMPI, UCX, and UCC to Environment
-ENV PATH=$OMPI_PATH/bin:$UCX_PATH/bin:$UCC_PATH/bin:$PATH \
-    LD_LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$UCC_PATH/lib:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=$OMPI_PATH/lib:$UCX_PATH/lib:$UCC_PATH/lib:$LIBRARY_PATH \
-    C_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$UCC_PATH/include:$C_INCLUDE_PATH \
-    CPLUS_INCLUDE_PATH=$OMPI_PATH/include:$UCX_PATH/include:$UCC_PATH/include:$CPLUS_INCLUDE_PATH \
-    PKG_CONFIG_PATH=$OMPI_PATH/lib/pkgconfig:$UCX_PATH/lib/pkgconfig/:$PKG_CONFIG_PATH  \
-    OMPI_ALLOW_RUN_AS_ROOT=1 \
+# Runtime defaults that match the run scripts.
+ENV OMPI_ALLOW_RUN_AS_ROOT=1 \
     OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 \
-    UCX_WARN_UNUSED_ENV_VARS=n
-
-# Install Additional Apps Below
-
-
-ARG CP2K_BRANCH="v2026.1"
-
-
-ENV LD_LIBRARY_PATH=$ROCM_PATH/lib/hipblas:$ROCM_PATH/lib/hipfft:$ROCM_PATH/lib/rocfft:$ROCM_PATH/lib/rocblas:$LD_LIBRARY_PATH \
-    LIBRARY_PATH=$ROCM_PATH/lib/rocfft:$ROCM_PATH/lib/hipblas:$ROCM_PATH/lib/rocblas:$LIBRARY_PATH \
-    C_INCLUDE_PATH=$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/rocblas:$C_INCLUDE_PATH \
-    CPLUS_INCLUDE_PATH=$ROCM_PATH/include/rocfft:$ROCM_PATH/include/hipfft:$ROCM_PATH/include/hipblas:$ROCM_PATH/include/rocblas:$CPLUS_INCLUDE_PATH \
-    CP2K_DIR=/opt/cp2k 
-
-#SHELL [ "/bin/bash", "-c" ]
-
-WORKDIR /opt/
-
-# we do not need to clone cp2k but we still do it
-#RUN git clone https:://github.com/cp2k/cp2k.git
-
-# clone spack.
-RUN git clone https://github.com/spack/spack.git
-ENV PATH=$PATH:/opt/spack/bin
-RUN spack external find --all
-RUN gfortran --version
-RUN /opt/ompi/bin/mpif90 --version
-COPY ./cp2k_environment ./cp2k_environment
-COPY ./spack.sh ./spack.sh
-# compile cp2k and all its dependencies. See spack.yaml file the environment directory.
-# creates a link /opt/cp2k to avoid calling spack load cp2k which will not work as intended in the container
-
-RUN ./spack.sh
-# the entire configuration is treated externally using spack environments
-
-ENV PATH=$PATH:/opt/cp2k/bin:/scripts \
     OMPI_MCA_pml=ucx \
-    OMPI_MCA_pml_ucx_tls=any \
     OMPI_MCA_osc=ucx \
-    OMPI_MCA_btl=^vader,tcp,uct \
-    OMPI_MCA_pml_ucx_devices=any \
-    UCX_TLS=self,sm,tcp,rocm
+    OMPI_MCA_coll_ucc_enable=1 \
+    OMPI_MCA_coll_ucc_priority=100 \
+    UCX_TLS=self,sm,rocm_copy,rocm_ipc,ud_x \
+    UCX_HANDLE_ERRORS=bt \
+    UCX_MAX_RNDV_RAILS=1 \
+    HSA_ENABLE_SDMA=0 \
+    HSA_ENABLE_IPC_MODE_LEGACY=1 \
+    HIP_MEM_POOL_SUPPORT=1
+# Note: DBCSR_USE_ACC_G2G is not set image-wide. Per-benchmark launchers
+# (e.g. scripts/run_dft_nrep2.sh) set it explicitly when needed.
 
-# cp2k can be called with cp2k.psmp without without any spack knowledge 
 CMD ["/bin/bash"]

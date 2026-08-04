@@ -1,0 +1,107 @@
+#!/usr/bin/bash
+#-----------------------------------------------------------------------------
+#SBATCH -p MI350x
+#SBATCH -t 00:30:00
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=16
+#SBATCH --gres=gpu:8
+#SBATCH --exclusive
+#SBATCH -J cp2k_QS_DM_LS_H2O-dft-ls-NREP2
+#SBATCH -o cp2k_QS_DM_LS_H2O-dft-ls-NREP2-%j.out
+
+# SLURM batch script for the QS_DM_LS H2O-dft-ls.NREP2 benchmark.
+# Defaults to a single-node MI350X-class layout (256 logical CPUs, 128
+# physical CPUs, 8 NUMA domains, 8 GPUs); override the lowercase topology
+# vars below for other machines. Activates the Spack environment built by
+# ../build_cp2k.sh, then runs the benchmark with NUMA-aware OpenMPI
+# binding (--map-by ppr:N:numa:PE=T) and one GPU per rank via close.sh +
+# ROCR_VISIBLE_DEVICES. Sets DBCSR_USE_ACC_G2G=1 to enable DBCSR
+# GPU-to-GPU communication (DFT-specific tuning). Also runs interactively
+# (`./cp2k_QS_DM_LS_H2O-dft-ls-NREP2.run`) — the SBATCH directives are
+# then treated as plain shell comments.
+
+set -eu
+set -o pipefail
+
+SCRIPT_NAME_FULL=${BASH_SOURCE[0]}
+if [ -n "${SLURM_JOB_ID:-}" ]; then
+    is_batch_job=$(scontrol show jobid="${SLURM_JOB_ID}" | grep -q BatchFlag=1 && echo yes || echo no)
+    if [ "${is_batch_job}" = "yes" ]; then
+        SCRIPT_NAME_FULL=$(scontrol show jobid="${SLURM_JOB_ID}" | grep "Command=" | cut -d= -f2 | cut -d' ' -f1)
+    fi
+fi
+
+SCRIPT_DIR=$(cd "$(dirname "${SCRIPT_NAME_FULL}")" && pwd)
+# shellcheck source=./_run_common.sh
+source "${SCRIPT_DIR}/_run_common.sh"
+
+ARCH="${arch:-mi350x}"
+CP2K_CONFIG=QS_DM_LS
+CP2K_EXPERIMENT=H2O-dft-ls-NREP2
+CP2K_INPUT=H2O-dft-ls.NREP2.inp
+CP2K_OUTPUT=H2O-dft-ls.NREP2.out
+
+# Cluster topology defaults (single-node MI350X-class: 256 logical CPUs /
+# 128 physical CPUs / 8 NUMA domains / 8 GPUs). Override via env vars.
+lcpus_per_node=${lcpus_per_node:-256}
+physcpus_per_node=${physcpus_per_node:-128}
+numa_per_node=${numa_per_node:-8}
+gpus_per_node=${GPUS_PER_NODE:-8}
+
+nnodes=${SLURM_NNODES:-1}
+ntasks=${SLURM_NTASKS:-$(( nnodes * 16 ))}
+ntasks_per_node=${SLURM_NTASKS_PER_NODE:-$(( ntasks / nnodes ))}
+ntasks_per_numa=$(( ntasks_per_node / numa_per_node ))
+nthreads=${SLURM_CPUS_PER_TASK:-$(( physcpus_per_node / ntasks_per_node ))}
+
+export GPUS_PER_NODE="${gpus_per_node}"
+export OMP_NUM_THREADS="${nthreads}"
+
+activate_cp2k
+export_runtime_env
+
+# Enable DBCSR GPU-to-GPU communication (improves DFT performance on multi-GPU)
+export DBCSR_USE_ACC_G2G="${DBCSR_USE_ACC_G2G:-1}"
+
+CP2K_BIN="$(require_cp2k_bin)"
+
+BENCH_DIR="$(cp2k_benchmark_dir "${CP2K_CONFIG}")"
+INPUT_PATH="${BENCH_DIR}/${CP2K_INPUT}"
+if [ ! -f "${INPUT_PATH}" ]; then
+    echo "ERROR: benchmark input not found: ${INPUT_PATH}" >&2
+    exit 1
+fi
+
+EXPNAME="${ARCH}_N${nnodes}.n${ntasks}.t${nthreads}.g${gpus_per_node}_${SLURM_JOB_ID:-local}"
+OUTPUT_DIR="${BAREMETAL_DIR}/outputs/${CP2K_CONFIG}/${CP2K_EXPERIMENT}/${EXPNAME}"
+mkdir -p "${OUTPUT_DIR}"
+cd "${OUTPUT_DIR}"
+
+env > env.out
+ln -sfn "${CP2K_BIN}" "$(basename "${CP2K_BIN}")"
+ln -sfn "${BENCH_DIR}"/* .
+
+# Per-host node bindings for OpenMPI (-host)
+nodebind=""
+for nodename in $(scontrol show hostnames "${SLURM_NODELIST:-$(hostname -s)}" 2>/dev/null || hostname -s); do
+    nodebind+="${nodename}:${lcpus_per_node},"
+done
+nodebind="-host ${nodebind%,}"
+
+[ -x "${GPU_SMI_BIN}" ] && "${GPU_SMI_BIN}" || true
+
+echo "----- DFT benchmark: ${CP2K_INPUT} -----"
+echo "  ranks/node:   ${ntasks_per_node}"
+echo "  threads/rank: ${nthreads}"
+echo "  GPUs/node:    ${gpus_per_node}"
+echo "  ranks/NUMA:   ${ntasks_per_numa}"
+date
+set -x
+mpirun --report-bindings -np "${ntasks}" ${nodebind} \
+    --map-by "ppr:${ntasks_per_numa}:numa:PE=${nthreads}" \
+    -x DBCSR_USE_ACC_G2G \
+    "${GPU_BIND_BIN}" \
+    "$(basename "${CP2K_BIN}")" -i "${CP2K_INPUT}" -o "${CP2K_OUTPUT}"
+set +x
+date
+report_fom "${OUTPUT_DIR}/${CP2K_OUTPUT}"
