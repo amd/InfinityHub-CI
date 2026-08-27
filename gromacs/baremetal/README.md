@@ -39,7 +39,7 @@ mkdir build
 cd build
 ```
 
-4. Run cmake command. The variable `OPEN_MPI_ENABLED` has been included, please set it accordingly. By default GROMACS will build for a number of current AMD CDNA and RDNA architectures. You can change this by setting the `GMX_HIP_TARGET_ARCH` variable to the exact architecture you want to build for
+4. Run cmake command. The variable `OPEN_MPI_ENABLED` has been included, please set it accordingly. By default GROMACS will build for a number of current AMD CDNA and RDNA architectures. You can change this by setting the `GMX_HIP_TARGET_ARCH` variable to the exact architecture you want to build for. Note `CMAKE_HIP_ARCHITECTURE` may not propagate into ```GMX_HIP_TARGET_ARCH```: one recommands to explicit ```-DGMX_GPU=HIP -DGMX_HIP_TARGET_ARCH=<CNDA arch>``` instead.
 >- Threaded MPI (Recommended): `off`
 >- For OpenMPI: `on`
 
@@ -50,9 +50,12 @@ cmake -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CXX_COMPILER=${ROCM_PATH}/bin/amdclang++ \
         -DGMX_MPI=${OPEN_MPI_ENABLED} \
         -DGMX_GPU=HIP \
+        -DGMX_HIP_TARGET_ARCH=<CNDA arch> \
         -DREGRESSIONTEST_DOWNLOAD=OFF \
       ..
 ```
+
+where the CNDA arch can be gfx801,gfx802,gfx803,gfx900,gfx906,gfx90a,gfx90c,gfx942,gfx950, etc.
 
 5. Complete the install with the following make commands
 ```bash
