@@ -1,0 +1,11 @@
+# Build trees (Spack)
+cp2k-baremetal/
+
+# Cloned CP2K source (fetched by run scripts)
+/cp2k_repo/
+
+# Benchmark run outputs
+outputs/
+
+# Container images
+*.sif

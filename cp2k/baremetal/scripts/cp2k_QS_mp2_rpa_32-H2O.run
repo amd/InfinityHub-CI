@@ -1,0 +1,110 @@
+#!/usr/bin/bash
+#-----------------------------------------------------------------------------
+#SBATCH -p MI350x
+#SBATCH -t 00:30:00
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=32
+#SBATCH --gres=gpu:8
+#SBATCH --exclusive
+#SBATCH -J cp2k_QS_mp2_rpa_32-H2O
+#SBATCH -o cp2k_QS_mp2_rpa_32-H2O-%j.out
+
+# SLURM batch script for the QS_mp2_rpa 32-H2O benchmark. Defaults to a
+# single-node MI350X-class layout (256 logical CPUs, 128 physical CPUs,
+# 8 NUMA domains, 8 GPUs); override the lowercase topology vars below for
+# other machines. Activates the Spack environment built by
+# ../build_cp2k.sh, then runs the init and solver stages back to back with
+# NUMA-aware OpenMPI binding (--map-by ppr:N:numa:PE=T) and one GPU per
+# rank via close.sh + ROCR_VISIBLE_DEVICES. Also runs interactively
+# (`./cp2k_QS_mp2_rpa_32-H2O.run`) — the SBATCH directives are then
+# treated as plain shell comments.
+
+set -eu
+set -o pipefail
+
+SCRIPT_NAME_FULL=${BASH_SOURCE[0]}
+if [ -n "${SLURM_JOB_ID:-}" ]; then
+    is_batch_job=$(scontrol show jobid="${SLURM_JOB_ID}" | grep -q BatchFlag=1 && echo yes || echo no)
+    if [ "${is_batch_job}" = "yes" ]; then
+        SCRIPT_NAME_FULL=$(scontrol show jobid="${SLURM_JOB_ID}" | grep "Command=" | cut -d= -f2 | cut -d' ' -f1)
+    fi
+fi
+
+SCRIPT_DIR=$(cd "$(dirname "${SCRIPT_NAME_FULL}")" && pwd)
+# shellcheck source=./_run_common.sh
+source "${SCRIPT_DIR}/_run_common.sh"
+
+ARCH="${arch:-mi350x}"
+CP2K_CONFIG=QS_mp2_rpa
+CP2K_EXPERIMENT=32-H2O
+
+# Cluster topology defaults (single-node MI350X-class: 256 logical CPUs /
+# 128 physical CPUs / 8 NUMA domains / 8 GPUs). Override via env vars.
+lcpus_per_node=${lcpus_per_node:-256}
+physcpus_per_node=${physcpus_per_node:-128}
+numa_per_node=${numa_per_node:-8}
+gpus_per_node=${GPUS_PER_NODE:-8}
+
+nnodes=${SLURM_NNODES:-1}
+ntasks=${SLURM_NTASKS:-$(( nnodes * 32 ))}
+ntasks_per_node=${SLURM_NTASKS_PER_NODE:-$(( ntasks / nnodes ))}
+ntasks_per_numa=$(( ntasks_per_node / numa_per_node ))
+nthreads=${SLURM_CPUS_PER_TASK:-$(( physcpus_per_node / ntasks_per_node ))}
+ntasks_init=${ntasks_init:-1}
+nthreads_init=${nthreads_init:-$(( physcpus_per_node / numa_per_node ))}
+
+export GPUS_PER_NODE="${gpus_per_node}"
+export OMP_NUM_THREADS="${nthreads}"
+
+activate_cp2k
+export_runtime_env
+
+CP2K_BIN="$(require_cp2k_bin)"
+
+BENCH_DIR="$(cp2k_benchmark_dir "${CP2K_CONFIG}/${CP2K_EXPERIMENT}")"
+INIT_INPUT="${BENCH_DIR}/H2O-32-PBE-TZ.inp"
+SOLVER_INPUT="${BENCH_DIR}/H2O-32-RI-dRPA-TZ.inp"
+
+EXPNAME="${ARCH}_N${nnodes}.n${ntasks}.t${nthreads}.g${gpus_per_node}_${SLURM_JOB_ID:-local}"
+OUTPUT_DIR="${BAREMETAL_DIR}/outputs/${CP2K_CONFIG}/${CP2K_EXPERIMENT}/${EXPNAME}"
+mkdir -p "${OUTPUT_DIR}"
+cd "${OUTPUT_DIR}"
+
+env > env.out
+ln -sfn "${CP2K_BIN}" "$(basename "${CP2K_BIN}")"
+ln -sfn "${BENCH_DIR}"/* .
+
+# Per-host node bindings for OpenMPI (-host)
+nodebind=""
+for nodename in $(scontrol show hostnames "${SLURM_NODELIST:-$(hostname -s)}" 2>/dev/null || hostname -s); do
+    nodebind+="${nodename}:${lcpus_per_node},"
+done
+nodebind="-host ${nodebind%,}"
+
+[ -x "${GPU_SMI_BIN}" ] && "${GPU_SMI_BIN}" || true
+
+# Stage 1: init
+export OMP_NUM_THREADS="${nthreads_init}"
+echo "----- Stage 1: init -----"
+date
+set -x
+mpirun --report-bindings -np "${ntasks_init}" ${nodebind} \
+    --map-by "ppr:1:node:PE=${nthreads_init}" \
+    "${GPU_BIND_BIN}" \
+    "$(basename "${CP2K_BIN}")" -i "$(basename "${INIT_INPUT}")" -o H2O-32-PBE-TZ.out
+set +x
+date
+report_fom "${OUTPUT_DIR}/H2O-32-PBE-TZ.out"
+
+# Stage 2: solver
+export OMP_NUM_THREADS="${nthreads}"
+echo "----- Stage 2: solver -----"
+date
+set -x
+mpirun --report-bindings -np "${ntasks}" ${nodebind} \
+    --map-by "ppr:${ntasks_per_numa}:numa:PE=${nthreads}" \
+    "${GPU_BIND_BIN}" \
+    "$(basename "${CP2K_BIN}")" -i "$(basename "${SOLVER_INPUT}")" -o H2O-32-RI-dRPA-TZ.out
+set +x
+date
+report_fom "${OUTPUT_DIR}/H2O-32-RI-dRPA-TZ.out"
